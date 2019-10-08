@@ -10,6 +10,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application.
     application
+
+    id("org.ajoberstar.grgit") version "4.0.0-rc.1"
 }
 
 repositories {
