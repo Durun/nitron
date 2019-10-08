@@ -20,7 +20,11 @@ repositories {
 
 dependencies {
     // Versions
+    val jacksonVersion = "2.10.0"
     val kotlintestVersion = "3.4.2"
+
+    // This dependency is used by the application.
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
