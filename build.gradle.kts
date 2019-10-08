@@ -50,3 +50,27 @@ application {
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
 }
+
+fun updateGitRepo(
+        path: String,
+        gitUrl: String,
+        branch: String = "master")
+{
+    val repo = kotlin.runCatching {
+        org.ajoberstar.grgit.Grgit.open(mapOf("dir" to path))
+    }.getOrElse {
+        org.ajoberstar.grgit.Grgit.clone(mapOf("dir" to path, "uri" to gitUrl))
+    }
+    repo.pull(mapOf("branch" to branch))
+}
+
+tasks.register("updateTestGrammar") {
+    val testDataDir = "${project.projectDir}/testdata"
+    val testGrammarDir = "${testDataDir}/grammars"
+    val testGrammarUrl = "https://github.com/antlr/grammars-v4.git"
+    updateGitRepo(
+            path=testGrammarDir,
+            gitUrl=testGrammarUrl
+    )
+}
+test.dependsOn(tasks["updateTestGrammar"])
