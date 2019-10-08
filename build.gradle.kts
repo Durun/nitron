@@ -19,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    // Versions
+    val kotlintestVersion = "3.4.2"
+
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
@@ -26,13 +29,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintestVersion")
 }
 
 application {
     // Define the main class for the application
     mainClassName = "io.github.durun.nitron.AppKt"
+}
+
+val test by tasks.getting(Test::class) {
+    useJUnitPlatform { }
 }
