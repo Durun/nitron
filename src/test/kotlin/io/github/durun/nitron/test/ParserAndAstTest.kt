@@ -68,7 +68,7 @@ class ParserAndAstTest: StringSpec({
                 val result = kotlin.runCatching {
                     ParserTester(grammarFiles, startRule, exampleFiles)
                 }
-                result.getOrNull() ?: throw CompilationErrorException("failed to compile ${langDir}")
+                result.getOrNull() ?: throw Exception("failed to compile ${langDir}")
             }()
 
             val asts = {
