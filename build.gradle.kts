@@ -68,7 +68,7 @@ fun updateGitRepo(
     repo.pull(mapOf("branch" to branch))
 }
 
-tasks.register("updateTestGrammar") {
+val updateTestGrammar by tasks.register("updateTestGrammar") {
     val testDataDir = "${project.projectDir}/testdata"
     val testGrammarDir = "${testDataDir}/grammars"
     val testGrammarUrl = "https://github.com/antlr/grammars-v4.git"
@@ -77,13 +77,13 @@ tasks.register("updateTestGrammar") {
             gitUrl=testGrammarUrl
     )
 }
-test.dependsOn(tasks["updateTestGrammar"])
+test.dependsOn(updateTestGrammar)
 
 
 /**
  * Creates fat-jar/uber-jar.
  */
-tasks.register<Jar>("fatJar") {
+val fatJar by tasks.register<Jar>("fatJar") {
     baseName = "${project.name}-fatJar"
     manifest {
         attributes(
@@ -99,4 +99,4 @@ tasks.register<Jar>("fatJar") {
     )
     with(tasks.jar.get() as CopySpec)
 }
-build.dependsOn(tasks["fatJar"])
+build.dependsOn(fatJar)
