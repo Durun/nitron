@@ -11,7 +11,7 @@ import io.github.durun.nitron.parser.CommonParser
 import java.io.PrintStream
 import java.nio.file.Path
 
-class ParseToJsonApp: CliktCommand() {
+class App: CliktCommand() {
     val grammarDir: Path by argument().path()
     val inputPath: Path by argument().path()
     val outputPath: Path? by option().path()
@@ -30,4 +30,4 @@ class ParseToJsonApp: CliktCommand() {
         output.println(json)
     }
 }
-fun main(args: Array<String>) = ParseToJsonApp().main(args)
+fun main(args: Array<String>) = App().main(args)

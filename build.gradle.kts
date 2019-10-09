@@ -3,6 +3,7 @@
  *
  * This generated file contains a sample Kotlin application project to get you started.
  */
+import org.gradle.jvm.tasks.Jar
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
@@ -46,9 +47,10 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = "io.github.durun.nitron.AppKt"
+    mainClassName = "io.github.durun.nitron.app.AppKt"
 }
 
+val build = tasks["build"]
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
 }
@@ -76,3 +78,25 @@ tasks.register("updateTestGrammar") {
     )
 }
 test.dependsOn(tasks["updateTestGrammar"])
+
+
+/**
+ * Creates fat-jar/uber-jar.
+ */
+tasks.register<Jar>("fatJar") {
+    baseName = "${project.name}-fatJar"
+    manifest {
+        attributes(
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version,
+                "Main-Class" to project.application.mainClassName
+        )
+    }
+    from(
+            configurations.runtimeClasspath.get().map{
+                if (it.isDirectory) it else zipTree(it)
+            }
+    )
+    with(tasks.jar.get() as CopySpec)
+}
+build.dependsOn(tasks["fatJar"])
