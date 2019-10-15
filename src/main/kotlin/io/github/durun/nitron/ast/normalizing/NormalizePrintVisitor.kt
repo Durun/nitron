@@ -26,9 +26,12 @@ class NormalizePrintVisitor(
     }
 
     override fun visitTerminal(node: AstTerminalNode): String {
-        return node.token
+        return normalizeTokenIfNeeded(node.tokenType) ?: node.token
     }
 
+    private fun normalizeTokenIfNeeded(tokenType: String): String? {
+        return nonNumberedRuleMap[tokenType]
+    }
     private fun normalizeRuleIfNeeded(rule: String, id: String): String? {
         return nonNumberedRuleMap[rule]
                 ?: numberedRuleMap[rule]?.let{ "${it}${getAndUpdateRuleCount(it, id)}" }
