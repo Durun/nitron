@@ -1,4 +1,4 @@
-package io.github.durun.nitron.ast.basic
+package io.github.durun.nitron.ast
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
