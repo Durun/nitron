@@ -2,7 +2,9 @@ package io.github.durun.nitron.ast
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import io.github.durun.nitron.ast.basic.AstRuleNode
 import io.github.durun.nitron.ast.basic.AstTerminalNode
+import io.github.durun.nitron.ast.basic.TextRange
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -14,5 +16,6 @@ import io.github.durun.nitron.ast.basic.AstTerminalNode
         JsonSubTypes.Type(name = "Terminal", value = AstTerminalNode::class)
 )
 interface AstNode {
+    val range: TextRange?
     val children: List<AstNode>?
 }

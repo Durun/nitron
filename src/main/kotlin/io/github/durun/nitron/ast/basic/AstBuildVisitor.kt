@@ -27,8 +27,13 @@ class AstBuildVisitor(
     override fun visitTerminal(node: TerminalNode?): AstNode {
         val token = node?.text
                 ?: throw Exception("TerminalNode has no text")
+        val range = TextRange(
+                start = symbol.startIndex,
+                stop = symbol.stopIndex
+        )
         return AstTerminalNode(
-                token = token
+                token = token,
+                range = range
         )
     }
 
