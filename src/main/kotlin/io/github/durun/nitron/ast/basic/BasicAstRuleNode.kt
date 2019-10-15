@@ -5,11 +5,12 @@ import io.github.durun.nitron.ast.AstNode
 
 class BasicAstRuleNode(
         @JsonProperty("ruleName")
-        val ruleName: String,
+        override val ruleName: String,
 
         @JsonProperty("children")
         override val children: List<AstNode>
-): AstNode {
+
+): AstRuleNode {
         @JsonProperty("range")
         override val range: TextRange?
         init {
