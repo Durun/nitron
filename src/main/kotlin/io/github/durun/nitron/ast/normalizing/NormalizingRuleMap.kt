@@ -1,5 +1,9 @@
 package io.github.durun.nitron.ast.normalizing
 
+/**
+ * (正規化対象の規則, 正規化後の記号)の対応関係
+ * @param [ruleMap] key=正規化対象の構造を 親->子孫 の順に格納したリスト, value=正帰化後の記号
+ */
 class NormalizingRuleMap(
         private val ruleMap: Map<List<String>, String>
 ): Map<List<String>, String> {
@@ -22,6 +26,13 @@ class NormalizingRuleMap(
 
     override fun isEmpty(): Boolean = ruleMap.isEmpty()
 
+    /**
+     * [key]の後ろ側に対応する(正規化後の記号)を返す.
+     * 複数該当する場合は最短マッチ.
+     *
+     * @param [key] 構文木の規則のスタック
+     * @return 正規化後の記号. 該当するものが存在しなければnullを返す.
+     */
     override fun get(key: List<String>): String? {
         return keyLengths.mapNotNull { length ->
             val subStack = key.takeLast(length)
