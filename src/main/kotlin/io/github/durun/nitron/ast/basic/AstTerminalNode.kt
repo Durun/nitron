@@ -23,4 +23,5 @@ class AstTerminalNode(
         override fun contains(range: TextRange): Boolean
                 = this.range.contains(range)
 
+        override fun pickByRules(rules: Collection<String>): List<AstNode> = emptyList()
 }

@@ -22,4 +22,5 @@ interface AstNode {
     fun <R> accept(visitor: AstVisitor<R>) = visitor.visit(this)
     fun getText(): String?
     fun contains(range: TextRange): Boolean
+    fun pickByRules(rules: Collection<String>): List<AstNode>
 }

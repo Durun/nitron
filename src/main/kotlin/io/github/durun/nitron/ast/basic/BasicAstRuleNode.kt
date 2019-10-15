@@ -31,4 +31,9 @@ class BasicAstRuleNode(
     override fun contains(range: TextRange): Boolean
             = this.range?.contains(range) ?: false
 
+    override fun pickByRules(rules: Collection<String>): List<AstNode>
+            = if (rules.contains(this.ruleName))
+        listOf(this)
+    else    children.flatMap { it.pickByRules(rules) }
+
 }
