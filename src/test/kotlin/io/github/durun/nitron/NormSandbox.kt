@@ -3,6 +3,7 @@ package io.github.durun.nitron
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.ast.basic.AstBuildVisitor
 import io.github.durun.nitron.ast.normalizing.NormalizePrintVisitor
+import io.github.durun.nitron.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.parser.CommonParser
 import java.nio.file.Paths
 
@@ -39,8 +40,13 @@ fun main() {
     println(json)
 
     val normStr = ast.accept(NormalizePrintVisitor(
-            nonNumberedRuleMap = mapOf("stringLiteral" to "S"),
-            numberedRuleMap = mapOf("variableDeclaration" to "\$V", "primaryExpression" to "\$V")
+            nonNumberedRuleMap = NormalizingRuleMap(
+                    listOf("stringLiteral") to "S"
+            ),
+            numberedRuleMap = NormalizingRuleMap(
+                    listOf("variableDeclaration") to "\$V",
+                    listOf("primaryExpression") to "\$V"
+            )
     ))
     println(ast.getText())
     println(normStr)
