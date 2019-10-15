@@ -74,4 +74,12 @@ class NormalizeTest: StringSpec({
             normalize(input).replace(" ", "") shouldBe nText.replace(" ", "")
         }
     }
+    "kotlin non normalized rules" {
+        forall(
+                row("fun main(){null}"),
+                row("fun main(){true; false}")
+        ) { input ->
+            normalize(input).replace(" ", "") shouldBe input.replace(" ", "")
+        }
+    }
 })
