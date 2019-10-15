@@ -2,6 +2,7 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.ast.basic.AstBuildVisitor
 import io.github.durun.nitron.ast.normalizing.NormalizePrintVisitor
+import io.github.durun.nitron.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.getGrammarList
 import io.github.durun.nitron.parser.CommonParser
 import io.kotlintest.data.forall
@@ -19,11 +20,17 @@ private fun normalize(input: String): String {
     val ast = tree.accept(AstBuildVisitor(antlrParser))
     // normalize
     return ast.accept(NormalizePrintVisitor(
-            nonNumberedRuleMap = mapOf(
-                    "stringLiteral" to "S",
-                    "literalConstant" to "N"
+            nonNumberedRuleMap = NormalizingRuleMap(
+                    listOf("stringLiteral") to "\"S\"",
+                    listOf("CharacterLiteral") to "'C'",
+                    listOf("IntegerLiteral") to "N",
+                    listOf("RealLiteral") to "N"
             ),
-            numberedRuleMap = mapOf("variableDeclaration" to "\$V")
+            numberedRuleMap = NormalizingRuleMap(
+                    listOf("primaryExpression", "simpleIdentifier") to "\$V",
+                    listOf("variableDeclaration", "simpleIdentifier") to "\$V",
+                    listOf("directlyAssignableExpression", "simpleIdentifier") to "\$V"
+            )
     )).replace("(<EOF> *)+".toRegex(), "")
 }
 
@@ -31,9 +38,9 @@ class NormalizeTest: StringSpec({
     "kotlin stringLiteral" {
         forall(
                 row(    "fun main(){\"line string\"}",
-                        "fun main(){S}"),
+                        "fun main(){\"S\"}"),
                 row(    "fun main(){\"\"\"multi line string\"\"\"}",
-                        "fun main(){S}")
+                        "fun main(){\"S\"}")
         ) { input, nText ->
             normalize(input).replace(" ", "") shouldBe nText.replace(" ", "")
         }
@@ -72,6 +79,14 @@ class NormalizeTest: StringSpec({
                         "fun main(){val \$V0; var \$V1; \$V1 = \$V0.size}")
         ) { input, nText ->
             normalize(input).replace(" ", "") shouldBe nText.replace(" ", "")
+        }
+    }
+    "kotlin non normalized rules" {
+        forall(
+                row("fun main(){null}"),
+                row("fun main(){true; false}")
+        ) { input ->
+            normalize(input).replace(" ", "") shouldBe input.replace(" ", "")
         }
     }
 })

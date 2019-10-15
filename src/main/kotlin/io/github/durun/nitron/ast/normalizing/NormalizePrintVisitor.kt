@@ -5,33 +5,44 @@ import io.github.durun.nitron.ast.AstVisitor
 import io.github.durun.nitron.ast.basic.AstTerminalNode
 import io.github.durun.nitron.ast.basic.AstRuleNode
 import java.lang.IllegalStateException
+import java.util.*
+import kotlin.collections.HashMap
 
 class NormalizePrintVisitor(
-        val nonNumberedRuleMap: Map<String, String>,
-        val numberedRuleMap: Map<String, String>
+        val nonNumberedRuleMap: NormalizingRuleMap,
+        val numberedRuleMap: NormalizingRuleMap
 ): AstVisitor<String> {
     // Map: (normalizedRuleName -> (id -> count))
     private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
+
+    private val visitedRuleStack: Stack<String> = Stack()
 
     override fun visit(node: AstNode): String {
         TODO()
     }
 
     override fun visitRule(node: AstRuleNode): String {
-        val rule = node.ruleName
+        visitedRuleStack.push(node.ruleName)    //  enter
         val id = node.getText() ?: ""
-        val thisText = normalizeRuleIfNeeded(rule, id)
+        val thisText = normalizeVisitingRuleNodeIfNeeded(id)
         val childrenText = node.children?.joinToString(" ") { it.accept(this) }
+        visitedRuleStack.pop()                  // leave
         return thisText ?: childrenText ?: ""
     }
 
     override fun visitTerminal(node: AstTerminalNode): String {
-        return node.token
+        visitedRuleStack.push(node.tokenType)   //  enter
+        val thisText = normalizeVisitingTerminalNodeIfNeeded() ?: node.token
+        visitedRuleStack.pop()                  // leave
+        return thisText
     }
 
-    private fun normalizeRuleIfNeeded(rule: String, id: String): String? {
-        return nonNumberedRuleMap[rule]
-                ?: numberedRuleMap[rule]?.let{ "${it}${getAndUpdateRuleCount(it, id)}" }
+    private fun normalizeVisitingTerminalNodeIfNeeded(): String? {
+        return nonNumberedRuleMap[visitedRuleStack]
+    }
+    private fun normalizeVisitingRuleNodeIfNeeded(id: String): String? {
+        return nonNumberedRuleMap[visitedRuleStack]
+                ?: numberedRuleMap[visitedRuleStack]?.let{ "${it}${getAndUpdateRuleCount(it, id)}" }
     }
     private fun getAndUpdateRuleCount(normalizedRuleName: String, id: String): Int {
         val idTable = nameTables[normalizedRuleName] ?: throw IllegalStateException("No such rule in nameTables")
