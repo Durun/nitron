@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.durun.nitron.ast.basic.BasicAstRuleNode
 import io.github.durun.nitron.ast.basic.AstTerminalNode
 import io.github.durun.nitron.ast.basic.TextRange
+import io.github.durun.nitron.ast.normalizing.NormalAstRuleNode
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -13,7 +14,8 @@ import io.github.durun.nitron.ast.basic.TextRange
 )
 @JsonSubTypes(
         JsonSubTypes.Type(name = "Rule", value = BasicAstRuleNode::class),
-        JsonSubTypes.Type(name = "Terminal", value = AstTerminalNode::class)
+        JsonSubTypes.Type(name = "Terminal", value = AstTerminalNode::class),
+        JsonSubTypes.Type(name = "NormalizedRule", value = NormalAstRuleNode::class)
 )
 interface AstNode {
     val range: TextRange?
