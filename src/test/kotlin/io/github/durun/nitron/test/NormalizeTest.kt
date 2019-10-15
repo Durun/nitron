@@ -20,8 +20,10 @@ private fun normalize(input: String): String {
     // normalize
     return ast.accept(NormalizePrintVisitor(
             nonNumberedRuleMap = mapOf(
-                    "stringLiteral" to "S",
-                    "literalConstant" to "N"
+                    "stringLiteral" to "\"S\"",
+                    "CharacterLiteral" to "'C'",
+                    "IntegerLiteral" to "N",
+                    "RealLiteral" to "N"
             ),
             numberedRuleMap = mapOf("variableDeclaration" to "\$V")
     )).replace("(<EOF> *)+".toRegex(), "")
@@ -31,9 +33,9 @@ class NormalizeTest: StringSpec({
     "kotlin stringLiteral" {
         forall(
                 row(    "fun main(){\"line string\"}",
-                        "fun main(){S}"),
+                        "fun main(){\"S\"}"),
                 row(    "fun main(){\"\"\"multi line string\"\"\"}",
-                        "fun main(){S}")
+                        "fun main(){\"S\"}")
         ) { input, nText ->
             normalize(input).replace(" ", "") shouldBe nText.replace(" ", "")
         }
