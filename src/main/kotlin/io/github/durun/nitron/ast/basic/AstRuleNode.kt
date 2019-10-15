@@ -7,6 +7,6 @@ class AstRuleNode(
         val ruleName: String,
 
         @JsonProperty("children")
-        val children: List<AstNode>
+        override val children: List<AstNode>
 ): AstNode {
 }

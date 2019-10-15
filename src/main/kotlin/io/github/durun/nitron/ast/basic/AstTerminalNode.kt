@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class AstTerminalNode(
         @JsonProperty("token")
-        val token: String
+        val token: String,
+
+        @JsonProperty("children")
+        override val children: List<AstNode>? = null,
 ) : AstNode {
 
 }

@@ -13,4 +13,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(name = "Terminal", value = AstTerminalNode::class)
 )
 interface AstNode {
+    val children: List<AstNode>?
 }
