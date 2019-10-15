@@ -18,4 +18,6 @@ import io.github.durun.nitron.ast.basic.TextRange
 interface AstNode {
     val range: TextRange?
     val children: List<AstNode>?
+
+    fun <R> accept(visitor: AstVisitor<R>) = visitor.visit(this)
 }

@@ -17,5 +17,6 @@ class AstTerminalNode(
         @JsonProperty("range")
         override val range: TextRange
 ) : AstNode {
+        override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
 
 }
