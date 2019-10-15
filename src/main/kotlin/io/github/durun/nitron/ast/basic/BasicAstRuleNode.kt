@@ -2,6 +2,7 @@ package io.github.durun.nitron.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.ast.AstNode
+import io.github.durun.nitron.ast.normalizing.normalizeByRules
 
 class BasicAstRuleNode(
         @JsonProperty("ruleName")
@@ -36,4 +37,15 @@ class BasicAstRuleNode(
         listOf(this)
     else    children.flatMap { it.pickByRules(rules) }
 
+    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode>
+            = this.pickByRules(rules).flatMap {node ->
+        val subtrees = node.children?.flatMap { it.pickRecursiveByRules(rules) } ?: emptyList()
+        val normNode = node.mapChildren { it.normalizeByRules(rules) }
+        listOf(listOf(normNode), subtrees).flatten()
+    }
+
+    override fun mapChildren(map: (AstNode) -> AstNode): BasicAstRuleNode {
+        val newChildren = this.children.map(map)
+        return BasicAstRuleNode(ruleName, newChildren)
+    }
 }

@@ -23,4 +23,6 @@ interface AstNode {
     fun getText(): String?
     fun contains(range: TextRange): Boolean
     fun pickByRules(rules: Collection<String>): List<AstNode>
+    fun pickRecursiveByRules(rules: Collection<String>): List<AstNode>
+    fun mapChildren(map: (AstNode) -> AstNode): AstNode
 }
