@@ -5,6 +5,12 @@ import io.github.durun.nitron.ast.AstNode
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 
+/**
+ * [AstNode]をビルドするための[ParseTreeVisitor].
+ * [ParseTree]にacceptさせると[AstNode]を返す.
+ *
+ * @param [parser] 文法規則の情報を持つ[Parser].
+ */
 class AstBuildVisitor(
         private val parser: Parser
 ) : ParseTreeVisitor<AstNode> {

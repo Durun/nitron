@@ -8,6 +8,12 @@ import java.lang.IllegalStateException
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * [AstNode]にacceptさせると正規化されたソースコードを返すビジター
+ *
+ * @param [nonNumberedRuleMap] 番号を付けない正規化対応付け
+ * @param [numberedRuleMap] 番号を付ける正規化対応付け
+ */
 class NormalizePrintVisitor(
         val nonNumberedRuleMap: NormalizingRuleMap,
         val numberedRuleMap: NormalizingRuleMap

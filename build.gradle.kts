@@ -4,6 +4,7 @@
  * This generated file contains a sample Kotlin application project to get you started.
  */
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
@@ -13,6 +14,7 @@ plugins {
     application
 
     id("org.ajoberstar.grgit") version "4.0.0-rc.1"
+    id("org.jetbrains.dokka") version "0.10.0"
 }
 
 repositories {
@@ -100,3 +102,13 @@ val fatJar by tasks.register<Jar>("fatJar") {
     with(tasks.jar.get() as CopySpec)
 }
 build.dependsOn(fatJar)
+
+/**
+ * Generate KDoc
+ */
+tasks {
+    val dokka by getting(DokkaTask::class) {
+        outputFormat = "html"
+        outputDirectory = "$buildDir/dokka"
+    }
+}

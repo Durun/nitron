@@ -7,6 +7,11 @@ import io.github.durun.nitron.ast.basic.BasicAstRuleNode
 import io.github.durun.nitron.ast.basic.AstRuleNode
 import io.github.durun.nitron.ast.basic.TextRange
 
+/**
+ * 部分木の情報を除くことで抽象化された非終端ノード.
+ *
+ * @param [originalNode] 元の非終端ノード
+ */
 class NormalAstRuleNode(
         private val originalNode: BasicAstRuleNode
 ): AstRuleNode {

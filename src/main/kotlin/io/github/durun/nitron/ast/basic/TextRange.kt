@@ -2,9 +2,18 @@ package io.github.durun.nitron.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+/**
+ * 文字列の範囲
+ */
 class TextRange(
+        /**
+         * 開始位置
+         */
         @JsonProperty("start")
         val start: Int,
+        /**
+         * 終了位置
+         */
         @JsonProperty("stop")
         val stop: Int
 ) {
