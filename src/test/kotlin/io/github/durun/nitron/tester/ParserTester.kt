@@ -1,6 +1,5 @@
 package io.github.durun.nitron.tester
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.ast.basic.AstBuildVisitor
 import io.github.durun.nitron.ast.AstNode
 import io.github.durun.nitron.parser.CommonParser
