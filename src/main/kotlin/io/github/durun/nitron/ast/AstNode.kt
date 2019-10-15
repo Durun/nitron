@@ -20,4 +20,5 @@ interface AstNode {
     val children: List<AstNode>?
 
     fun <R> accept(visitor: AstVisitor<R>) = visitor.visit(this)
+    fun getText(): String?
 }

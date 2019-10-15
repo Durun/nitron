@@ -23,4 +23,8 @@ class BasicAstRuleNode(
                         TextRange(first.start, last.stop)
                 }
         }
+
+    override fun getText(): String?
+            = children.mapNotNull { it.getText() }
+            .joinToString(" ")
 }

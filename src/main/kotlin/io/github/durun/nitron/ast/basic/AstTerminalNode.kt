@@ -18,5 +18,6 @@ class AstTerminalNode(
         override val range: TextRange
 ) : AstNode {
         override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
+        override fun getText(): String = token
 
 }
