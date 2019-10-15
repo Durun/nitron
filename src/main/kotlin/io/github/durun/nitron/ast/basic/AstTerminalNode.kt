@@ -1,5 +1,6 @@
 package io.github.durun.nitron.ast.basic
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.ast.AstNode
 import io.github.durun.nitron.ast.basic.TextRange
@@ -19,6 +20,8 @@ class AstTerminalNode(
         override val range: TextRange
 ) : AstNode {
         override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
+
+        @JsonIgnore
         override fun getText(): String = token
 
         override fun contains(range: TextRange): Boolean

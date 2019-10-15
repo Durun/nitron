@@ -1,5 +1,6 @@
 package io.github.durun.nitron.ast.basic
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.ast.AstNode
 import io.github.durun.nitron.ast.normalizing.normalizeByRules
@@ -25,6 +26,7 @@ class BasicAstRuleNode(
                 }
         }
 
+    @JsonIgnore
     override fun getText(): String?
             = children.mapNotNull { it.getText() }
             .joinToString(" ")

@@ -1,5 +1,6 @@
 package io.github.durun.nitron.ast.normalizing
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.ast.AstNode
 import io.github.durun.nitron.ast.basic.BasicAstRuleNode
@@ -20,6 +21,7 @@ class NormalAstRuleNode(
 
     override fun contains(range: TextRange): Boolean = originalNode.contains(range)
 
+    @JsonIgnore
     override fun getText(): String = ruleName.toUpperCase()
 
     override fun pickByRules(rules: Collection<String>): List<AstNode>
