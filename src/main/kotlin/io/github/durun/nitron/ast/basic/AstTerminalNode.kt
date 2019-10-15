@@ -20,4 +20,7 @@ class AstTerminalNode(
         override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
         override fun getText(): String = token
 
+        override fun contains(range: TextRange): Boolean
+                = this.range.contains(range)
+
 }

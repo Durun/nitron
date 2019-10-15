@@ -27,4 +27,8 @@ class BasicAstRuleNode(
     override fun getText(): String?
             = children.mapNotNull { it.getText() }
             .joinToString(" ")
+
+    override fun contains(range: TextRange): Boolean
+            = this.range?.contains(range) ?: false
+
 }
