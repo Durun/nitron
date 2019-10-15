@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.*
 class AstBuildVisitor(
         private val parser: Parser
 ) : ParseTreeVisitor<AstNode> {
+    private val tokenTypeMap: Map<Int, String> = parser.tokenTypeMap.entries.map { it.value to it.key }.toMap()
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
@@ -27,12 +28,15 @@ class AstBuildVisitor(
     override fun visitTerminal(node: TerminalNode?): AstNode {
         val token = node?.text
                 ?: throw Exception("TerminalNode has no text")
+        val symbol = node.symbol
         val range = TextRange(
                 start = symbol.startIndex,
                 stop = symbol.stopIndex
         )
+        val tokenType = tokenTypeMap[symbol.type] ?: throw NoSuchElementException("No such tokenType.")
         return AstTerminalNode(
                 token = token,
+                tokenType = tokenType,
                 range = range
         )
     }

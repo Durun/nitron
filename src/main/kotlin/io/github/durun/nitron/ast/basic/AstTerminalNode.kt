@@ -8,6 +8,9 @@ class AstTerminalNode(
         @JsonProperty("token")
         val token: String,
 
+        @JsonProperty("tokenType")
+        val tokenType: String,
+
         @JsonProperty("children")
         override val children: List<AstNode>? = null,
 
