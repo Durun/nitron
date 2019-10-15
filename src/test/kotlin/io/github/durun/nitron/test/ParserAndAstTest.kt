@@ -1,16 +1,13 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.parser.CommonParser
 import io.github.durun.nitron.tester.ParserTester
 import io.github.durun.nitron.tester.reserializeJson
 import io.kotlintest.data.forall
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.tables.row
-import org.snt.inmemantlr.exceptions.CompilationErrorException
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.text.ParseException
 import java.util.stream.Collectors
 
 

@@ -1,12 +1,10 @@
 package io.github.durun.nitron.ast.basic
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.durun.nitron.ast.AstNode
+import io.github.durun.nitron.ast.AstVisitor
 
-class AstRuleNode(
-        @JsonProperty("ruleName")
-        val ruleName: String,
+interface AstRuleNode: AstNode {
+    val ruleName: String
 
-        @JsonProperty("children")
-        val children: List<AstNode>
-): AstNode {
+    override fun <R> accept(visitor: AstVisitor<R>) = visitor.visitRule(this)
 }

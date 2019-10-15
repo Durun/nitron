@@ -2,6 +2,8 @@ package io.github.durun.nitron
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.ast.normalizing.normalizeByRules
 import org.snt.inmemantlr.GenericParser
 import org.snt.inmemantlr.listener.DefaultListener
 import java.nio.file.Paths
@@ -14,7 +16,24 @@ fun main() {
             dir.resolve("UnicodeClasses.g4").toFile()
 
     )
-    val input = """fun main() { println("hello") }"""//dir.resolve("examples/Test.kt").toFile()
+    val input = """
+        fun main() {
+            val str = "bye"
+            println("hello")
+            if (true) {
+                print(str)
+                when(str) {
+                    "hello" -> print("hoge")
+                    "bye" -> print("yahoo")
+                    else -> println("aho")
+                }
+                if(false) println("FALSE")
+                else println("???")
+                if(false) { println("FALSE") }
+                else { println("???") }
+            }
+        }
+        """.trimIndent()//dir.resolve("examples/Test.kt").toFile()
     val production = "kotlinFile"
 
 
@@ -31,6 +50,16 @@ fun main() {
     val json = mapper.writeValueAsString(ast)
     println(json)
 
+    val pickRules = listOf("statement")
+    println("pick by: $pickRules")
+    val normAst = ast.pickRecursiveByRules(pickRules).map { it.normalizeByRules(listOf("stringLiteral", "variableDeclaration")) }
+    println(
+            normAst.filterIsInstance<BasicAstRuleNode>()
+                    .joinToString("\n") {
+                        "[${it.ruleName}]\n${it.getText()?.prependIndent("\t")}"
+                    }
+    )
+    println(mapper.writeValueAsString(normAst))
 }
 
 
