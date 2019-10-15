@@ -2,9 +2,8 @@ package io.github.durun.nitron.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.ast.AstNode
-import io.github.durun.nitron.ast.basic.TextRange
 
-class AstRuleNode(
+class BasicAstRuleNode(
         @JsonProperty("ruleName")
         val ruleName: String,
 

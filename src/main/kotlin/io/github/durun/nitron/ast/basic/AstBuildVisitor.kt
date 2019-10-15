@@ -18,7 +18,7 @@ class AstBuildVisitor(
                 ?: throw Exception("Rulenode has no ruleIndex")
         val ruleName = parser.ruleNames[ruleIndex]
                 ?: throw Exception("can't get ruleName")
-
+        return BasicAstRuleNode(
         return AstRuleNode(
                 ruleName = ruleName,
                 children = children
