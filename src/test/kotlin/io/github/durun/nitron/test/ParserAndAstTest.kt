@@ -56,6 +56,13 @@ class ParserAndAstTest: StringSpec({
                     .filter { it.toString().endsWith(".g4")}
                     .collect(Collectors.toList())
 
+            val utilFiles =
+                Files.walk(grammarDir, 5)
+                        .filter { it.toFile().isFile }
+                        .filter { it.toString().endsWith(".java")}
+                        .filter { !it.toString().contains("example") }
+                        .collect(Collectors.toList())
+
             val exampleFiles = Files.walk(exampleDir, 3)
                     .filter { it.toFile().isFile }
                     .filter { it.endsWith(suffix) }
@@ -65,7 +72,11 @@ class ParserAndAstTest: StringSpec({
                 val result = kotlin.runCatching {
                     ParserTester(grammarFiles, startRule, exampleFiles)
                 }
-                result.getOrNull() ?: throw Exception("failed to compile ${langDir}")
+                val result2 = if (result.isFailure) kotlin.runCatching {
+                    ParserTester(grammarFiles, startRule, exampleFiles, utilFiles)
+                } else kotlin.runCatching { null }
+                result.getOrNull() ?: result2.getOrNull()
+                ?: throw result2.exceptionOrNull() ?: Exception("failed to compile ${langDir}")
             }()
 
             val asts = {

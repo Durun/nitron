@@ -8,9 +8,10 @@ import java.nio.file.Path
 class ParserTester(
         val grammarFiles: List<Path>,
         val startRuleName: String,
-        val inputFiles: List<Path>
+        val inputFiles: List<Path>,
+        val utilityJavaFiles: List<Path>? = null
 ) {
-    private val parser = CommonParser(grammarFiles)
+    private val parser = CommonParser(grammarFiles, utilityJavaFiles)
     fun getAsts(): List<AstNode> {
         val ast = inputFiles.mapNotNull {
             val result = parser.parse(it, startRuleName)
