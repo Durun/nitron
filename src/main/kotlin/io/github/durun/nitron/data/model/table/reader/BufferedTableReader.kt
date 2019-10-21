@@ -10,7 +10,7 @@ open class BufferedTableReader<V> (
         private val bufferSize: Int = 10000,
         private val transform: (ResultRow) -> V = { table.read(it) }
 ): TableReader<V> {
-    override fun toSequence(statement: Table.() -> Query): Sequence<V> = sequence {
+    override fun read(statement: Table.() -> Query): Sequence<V> = sequence {
         var i = 0
         do {
             val sequence = transaction(db) {
@@ -23,5 +23,5 @@ open class BufferedTableReader<V> (
         } while (sequence.iterator().hasNext())
     }
 
-    override fun toSequence() = toSequence { selectAll() }
+    override fun read(): Sequence<V> = read { selectAll() }
 }
