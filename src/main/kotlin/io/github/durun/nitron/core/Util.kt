@@ -1,4 +1,4 @@
-package io.github.durun.nitron
+package io.github.durun.nitron.core
 
 import java.nio.file.Files
 import java.nio.file.Path

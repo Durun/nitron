@@ -1,4 +1,4 @@
-package io.github.durun.nitron.ast.basic
+package io.github.durun.nitron.core.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

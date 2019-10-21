@@ -1,9 +1,9 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.ast.basic.AstBuildVisitor
-import io.github.durun.nitron.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.getGrammarList
-import io.github.durun.nitron.parser.CommonParser
+import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.core.getGrammarList
+import io.github.durun.nitron.core.parser.CommonParser
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import java.nio.file.Paths

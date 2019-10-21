@@ -1,7 +1,7 @@
-package io.github.durun.nitron.ast.basic
+package io.github.durun.nitron.core.ast.basic
 
-import io.github.durun.nitron.ast.AstNode
-import io.github.durun.nitron.ast.AstVisitor
+import io.github.durun.nitron.core.ast.AstNode
+import io.github.durun.nitron.core.ast.AstVisitor
 
 /**
  * 構文木の非終端ノード

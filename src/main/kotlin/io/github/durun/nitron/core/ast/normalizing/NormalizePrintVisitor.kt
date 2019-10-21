@@ -1,9 +1,9 @@
-package io.github.durun.nitron.ast.normalizing
+package io.github.durun.nitron.core.ast.normalizing
 
-import io.github.durun.nitron.ast.AstNode
-import io.github.durun.nitron.ast.AstVisitor
-import io.github.durun.nitron.ast.basic.AstRuleNode
-import io.github.durun.nitron.ast.basic.AstTerminalNode
+import io.github.durun.nitron.core.ast.AstNode
+import io.github.durun.nitron.core.ast.AstVisitor
+import io.github.durun.nitron.core.ast.basic.AstRuleNode
+import io.github.durun.nitron.core.ast.basic.AstTerminalNode
 import java.util.*
 import kotlin.collections.HashMap
 

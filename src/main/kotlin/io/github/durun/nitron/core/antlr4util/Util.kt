@@ -1,4 +1,4 @@
-package io.github.durun.nitron.antlr4util
+package io.github.durun.nitron.core.antlr4util
 
 import org.antlr.v4.runtime.tree.ParseTree
 

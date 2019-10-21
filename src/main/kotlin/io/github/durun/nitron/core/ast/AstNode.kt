@@ -1,11 +1,11 @@
-package io.github.durun.nitron.ast
+package io.github.durun.nitron.core.ast
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.github.durun.nitron.ast.basic.AstTerminalNode
-import io.github.durun.nitron.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.ast.basic.TextRange
-import io.github.durun.nitron.ast.normalizing.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.basic.AstTerminalNode
+import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.normalizing.NormalAstRuleNode
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

@@ -1,11 +1,11 @@
-package io.github.durun.nitron.ast.normalizing
+package io.github.durun.nitron.core.ast.normalizing
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.durun.nitron.ast.AstNode
-import io.github.durun.nitron.ast.basic.AstRuleNode
-import io.github.durun.nitron.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.AstNode
+import io.github.durun.nitron.core.ast.basic.AstRuleNode
+import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.basic.TextRange
 
 /**
  * 部分木の情報を除くことで抽象化された非終端ノード.

@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model
 
-import io.github.durun.nitron.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.basic.TextRange
 import java.security.MessageDigest
 
 

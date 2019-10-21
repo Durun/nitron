@@ -1,7 +1,7 @@
-package io.github.durun.nitron.ast.basic
+package io.github.durun.nitron.core.ast.basic
 
-import io.github.durun.nitron.antlr4util.children
-import io.github.durun.nitron.ast.AstNode
+import io.github.durun.nitron.core.antlr4util.children
+import io.github.durun.nitron.core.ast.AstNode
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 

@@ -1,4 +1,4 @@
-package io.github.durun.nitron.parser
+package io.github.durun.nitron.core.parser
 
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.ParserRuleContext

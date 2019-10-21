@@ -1,9 +1,9 @@
 package io.github.durun.nitron
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.durun.nitron.ast.basic.AstBuildVisitor
-import io.github.durun.nitron.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.ast.normalizing.normalizeByRules
+import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.normalizing.normalizeByRules
 import org.snt.inmemantlr.GenericParser
 import org.snt.inmemantlr.listener.DefaultListener
 import java.nio.file.Paths

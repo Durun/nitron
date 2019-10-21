@@ -1,6 +1,6 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.basic.TextRange
 import io.kotlintest.data.forall
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
