@@ -4,7 +4,7 @@ import io.github.durun.nitron.data.model.table.ReadWritableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-internal open class BufferedTableWriter<V>(
+internal class BufferedTableWriter<V>(
         private val db: Database,
         private val table: ReadWritableTable<V>,
         private val idColumn: Column<Int>,

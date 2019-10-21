@@ -4,7 +4,7 @@ import io.github.durun.nitron.data.model.table.ReadableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-open class BufferedTableReader<V> (
+internal class BufferedTableReader<V>(
         private val db: Database,
         private val table: ReadableTable<V>,
         private val bufferSize: Int = 10000,
