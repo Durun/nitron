@@ -1,10 +1,10 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.ast.basic.AstBuildVisitor
-import io.github.durun.nitron.ast.normalizing.NormalizePrintVisitor
-import io.github.durun.nitron.ast.normalizing.NormalizingRuleMap
-import io.github.durun.nitron.getGrammarList
-import io.github.durun.nitron.parser.CommonParser
+import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.ast.normalizing.NormalizePrintVisitor
+import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
+import io.github.durun.nitron.core.getGrammarList
+import io.github.durun.nitron.core.parser.CommonParser
 import io.kotlintest.data.forall
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec

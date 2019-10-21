@@ -6,9 +6,9 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.path
-import io.github.durun.nitron.ast.basic.AstBuildVisitor
-import io.github.durun.nitron.getGrammarList
-import io.github.durun.nitron.parser.CommonParser
+import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.getGrammarList
+import io.github.durun.nitron.core.parser.CommonParser
 import java.io.PrintStream
 import java.nio.file.Path
 

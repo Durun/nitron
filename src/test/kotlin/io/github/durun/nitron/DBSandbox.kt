@@ -1,7 +1,7 @@
 package io.github.durun.nitron
 
-import io.github.durun.nitron.data.database.SQLiteDatabase
-import io.github.durun.nitron.data.model.table.reader.BugfixRevisionsReader
+import io.github.durun.nitron.inout.database.SQLiteDatabase
+import io.github.durun.nitron.inout.model.table.reader.BugfixRevisionsReader
 import org.jetbrains.exposed.sql.selectAll
 import java.nio.file.Paths
 
