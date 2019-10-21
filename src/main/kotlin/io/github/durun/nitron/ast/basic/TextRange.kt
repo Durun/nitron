@@ -35,4 +35,11 @@ class TextRange(
         private fun endsAfterOrJust(that: TextRange): Boolean {
                 return (that.stop <= this.stop)
         }
+
+        override fun hashCode(): Int {
+                return arrayOf(
+                        start,
+                        stop
+                ).hashCode()
+        }
 }
