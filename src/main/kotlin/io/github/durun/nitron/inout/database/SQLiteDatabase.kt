@@ -1,4 +1,4 @@
-package io.github.durun.nitron.data.database
+package io.github.durun.nitron.inout.database
 
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.sqlite.JDBC

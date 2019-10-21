@@ -1,14 +1,14 @@
 package io.github.durun.nitron.test
 
 import io.github.durun.nitron.ast.basic.TextRange
-import io.github.durun.nitron.data.database.SQLiteDatabase
-import io.github.durun.nitron.data.model.*
-import io.github.durun.nitron.data.model.table.Changes
-import io.github.durun.nitron.data.model.table.Codes
-import io.github.durun.nitron.data.model.table.reader.ChangesReader
-import io.github.durun.nitron.data.model.table.reader.CodesReader
-import io.github.durun.nitron.data.model.table.writer.ChangesWriter
-import io.github.durun.nitron.data.model.table.writer.CodesWriter
+import io.github.durun.nitron.inout.database.SQLiteDatabase
+import io.github.durun.nitron.inout.model.*
+import io.github.durun.nitron.inout.model.table.Changes
+import io.github.durun.nitron.inout.model.table.Codes
+import io.github.durun.nitron.inout.model.table.reader.ChangesReader
+import io.github.durun.nitron.inout.model.table.reader.CodesReader
+import io.github.durun.nitron.inout.model.table.writer.ChangesWriter
+import io.github.durun.nitron.inout.model.table.writer.CodesWriter
 import io.kotlintest.properties.Gen
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FreeSpec

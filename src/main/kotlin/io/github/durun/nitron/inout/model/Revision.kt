@@ -1,4 +1,4 @@
-package io.github.durun.nitron.data.model
+package io.github.durun.nitron.inout.model
 
 import java.util.*
 

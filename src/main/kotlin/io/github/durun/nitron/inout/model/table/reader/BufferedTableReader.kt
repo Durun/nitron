@@ -1,6 +1,6 @@
-package io.github.durun.nitron.data.model.table.reader
+package io.github.durun.nitron.inout.model.table.reader
 
-import io.github.durun.nitron.data.model.table.ReadableTable
+import io.github.durun.nitron.inout.model.table.ReadableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 

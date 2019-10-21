@@ -1,7 +1,7 @@
-package io.github.durun.nitron.data.model.table
+package io.github.durun.nitron.inout.model.table
 
-import io.github.durun.nitron.data.model.Revision
-import io.github.durun.nitron.data.model.ammoniaDateFormat
+import io.github.durun.nitron.inout.model.Revision
+import io.github.durun.nitron.inout.model.ammoniaDateFormat
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 

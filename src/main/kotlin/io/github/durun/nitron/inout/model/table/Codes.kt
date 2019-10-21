@@ -1,7 +1,7 @@
-package io.github.durun.nitron.data.model.table
+package io.github.durun.nitron.inout.model.table
 
 import io.github.durun.nitron.ast.basic.TextRange
-import io.github.durun.nitron.data.model.Code
+import io.github.durun.nitron.inout.model.Code
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert

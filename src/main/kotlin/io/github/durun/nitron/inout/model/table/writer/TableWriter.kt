@@ -1,4 +1,4 @@
-package io.github.durun.nitron.data.model.table.writer
+package io.github.durun.nitron.inout.model.table.writer
 
 interface TableWriter<V> {
     fun write(value: V)
