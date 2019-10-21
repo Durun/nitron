@@ -12,5 +12,5 @@ interface AstRuleNode: AstNode {
      */
     val ruleName: String
 
-    override fun <R> accept(visitor: AstVisitor<R>) = visitor.visitRule(this)
+    override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitRule(this)
 }

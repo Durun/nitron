@@ -31,7 +31,7 @@ interface AstNode {
      */
     val children: List<AstNode>?
 
-    fun <R> accept(visitor: AstVisitor<R>) = visitor.visit(this)
+    fun <R> accept(visitor: AstVisitor<R>): R = visitor.visit(this)
 
     /**
      * 元のソースコードを返す.
