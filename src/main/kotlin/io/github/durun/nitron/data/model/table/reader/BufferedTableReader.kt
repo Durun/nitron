@@ -9,7 +9,7 @@ internal class BufferedTableReader<V>(
         private val table: ReadableTable<V>,
         private val bufferSize: Int = 10000,
         private val transform: (ResultRow) -> V = { table.read(it) }
-): TableReader<V> {
+) : TableReader<V> {
     override fun read(statement: Table.() -> Query): Sequence<V> = sequence {
         var i = 0
         do {

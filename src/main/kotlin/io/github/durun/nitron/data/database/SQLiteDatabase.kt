@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.sqlite.JDBC
 import java.sql.Connection
 
-object SQLiteDatabase:
+object SQLiteDatabase :
         FileDatabase by FileDatabaseBase(
                 JDBC::class,
                 { "jdbc:sqlite:$it" },

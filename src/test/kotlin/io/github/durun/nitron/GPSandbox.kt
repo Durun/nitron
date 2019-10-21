@@ -63,6 +63,6 @@ fun main() {
 }
 
 
-class ParserListener(): DefaultListener(){
+class ParserListener : DefaultListener() {
     fun getParser() = this.parser ?: null
 }

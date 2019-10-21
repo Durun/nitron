@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 
-class ParserAndAstTest: FreeSpec() {
+class ParserAndAstTest : FreeSpec() {
     init {
         "parse and dump" - {
             "calculator" {
@@ -85,7 +85,7 @@ class ParserAndAstTest: FreeSpec() {
                              suffix: String? = null, exclude: String? = null, depth: Int = 1): List<Path> {
         val allFiles = Files.walk(dir, depth).filter { it.toFile().isFile }
         val matchedFiles = suffix?.let { allFiles.filter { it.toString().endsWith(suffix) } } ?: allFiles
-        val resultFiles = exclude?.let { matchedFiles?.filter { ! it.toString().contains(exclude) } } ?: matchedFiles
+        val resultFiles = exclude?.let { matchedFiles?.filter { !it.toString().contains(exclude) } } ?: matchedFiles
         return resultFiles.collect(Collectors.toList())
     }
 
@@ -98,6 +98,7 @@ class ParserAndAstTest: FreeSpec() {
                 startRule = startRule
         )
     }
+
     private fun testDefaultWithUtilFiles(lang: String, suffix: String, startRule: String) {
         val grammarDir = baseDir.resolve(lang)
         val exampleDir = grammarDir.resolve("examples")

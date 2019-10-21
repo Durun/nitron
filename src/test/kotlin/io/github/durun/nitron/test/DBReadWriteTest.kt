@@ -18,7 +18,7 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.*
 
-class DBReadWriteTest: FreeSpec() {
+class DBReadWriteTest : FreeSpec() {
     val path = Paths.get("testdata/database/test.db")
     val db = SQLiteDatabase.connect(path)
 
@@ -76,7 +76,7 @@ class DBReadWriteTest: FreeSpec() {
                 softwareName = soft,
                 rawText = text,
                 normalizedText = text,
-                range = TextRange(start, start+length)
+                range = TextRange(start, start + length)
         )
     }
     val changeGen = Gen.bind(

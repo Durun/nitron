@@ -2,10 +2,11 @@ package io.github.durun.nitron.data.model.table
 
 import io.github.durun.nitron.data.model.Revision
 import io.github.durun.nitron.data.model.ammoniaDateFormat
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 
 
-object BugfixRevisions: ReadableTable<Revision>("bugfixrevisions")
+object BugfixRevisions : ReadableTable<Revision>("bugfixrevisions") {
     val software: Column<String> = text("software").primaryKey()
     val id: Column<String> = text("id").primaryKey()
     val date: Column<String> = text("date")

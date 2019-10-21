@@ -9,7 +9,7 @@ import java.io.File
 import java.nio.file.Path
 
 class CommonParser
-private constructor (
+private constructor(
         val gParser: GenericParser,
         val utilityJavaFiles: Array<File>? = null
 ) {
@@ -18,14 +18,15 @@ private constructor (
     constructor(
             grammarFiles: List<Path>,
             utilityJavaFiles: List<Path>? = null
-    ): this(
-            grammarFiles.map{ it.toFile() }.toTypedArray(),
-            utilityJavaFiles?.map{ it.toFile() }?.toTypedArray()
+    ) : this(
+            grammarFiles.map { it.toFile() }.toTypedArray(),
+            utilityJavaFiles?.map { it.toFile() }?.toTypedArray()
     )
+
     constructor(
             grammarFiles: Array<File>,
             utilityJavaFiles: Array<File>? = null
-    ): this(
+    ) : this(
             GenericParser(
                     ToolCustomizer { it },
                     *grammarFiles
@@ -35,7 +36,9 @@ private constructor (
 
     init {
         gParser.setListener(pListener)
-        if (!utilityJavaFiles.isNullOrEmpty()) { gParser.addUtilityJavaFiles(*utilityJavaFiles) }
+        if (!utilityJavaFiles.isNullOrEmpty()) {
+            gParser.addUtilityJavaFiles(*utilityJavaFiles)
+        }
         gParser.compile()
     }
 
@@ -48,6 +51,7 @@ private constructor (
         val parser = pListener.getParser() ?: throw IllegalStateException("couldn't get parser")
         return Pair(tree, parser)
     }
+
     fun parse(input: Path, startRuleName: String?): Pair<ParserRuleContext, Parser> {
         val tree = gParser.parse(
                 input.toFile(),
@@ -59,6 +63,6 @@ private constructor (
     }
 }
 
-private class ParserListener(): DefaultListener() {
+private class ParserListener : DefaultListener() {
     fun getParser() = this.parser ?: null
 }

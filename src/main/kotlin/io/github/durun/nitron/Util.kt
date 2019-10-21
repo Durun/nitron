@@ -6,6 +6,6 @@ import java.util.stream.Collectors
 
 fun getGrammarList(dir: Path): List<Path> {
     return Files.list(dir)
-            .filter{ it.toString().endsWith(".g4") }
+            .filter { it.toString().endsWith(".g4") }
             .collect(Collectors.toList())
 }

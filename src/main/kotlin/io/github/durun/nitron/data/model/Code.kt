@@ -14,6 +14,7 @@ class Code(
     companion object {
         private val md5: MessageDigest = MessageDigest.getInstance("MD5")
     }
+
     val hash: ByteArray
         get() = md5.digest(normalizedText.toByteArray())
     val hashString: String

@@ -16,14 +16,15 @@ private constructor(
         @JsonProperty("range")
         override val range: TextRange?
 
-): AstRuleNode {
+) : AstRuleNode {
     constructor(
             ruleName: String,
             children: List<AstNode>
-    ): this(
+    ) : this(
             ruleName = ruleName,
             children = children,
-            range = children.mapNotNull { it.range }
+            range = children
+                    .mapNotNull { it.range }
                     .let { validRange ->
                         if (validRange.isEmpty()) {
                             null
@@ -34,24 +35,34 @@ private constructor(
                         }
                     }
     )
+
     @JsonIgnore
-    override fun getText(): String?
-            = children.mapNotNull { it.getText() }
-            .joinToString(" ")
+    override fun getText(): String? {
+        return children
+                .mapNotNull { it.getText() }
+                .joinToString(" ")
+    }
 
-    override fun contains(range: TextRange): Boolean
-            = this.range?.contains(range) ?: false
+    override fun contains(range: TextRange): Boolean = this.range?.contains(range) ?: false
 
-    override fun pickByRules(rules: Collection<String>): List<AstNode>
-            = if (rules.contains(this.ruleName))
-        listOf(this)
-    else    children.flatMap { it.pickByRules(rules) }
+    override fun pickByRules(rules: Collection<String>): List<AstNode> {
+        return if (rules.contains(this.ruleName))
+            listOf(this)
+        else
+            children.flatMap { it.pickByRules(rules) }
+    }
 
-    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode>
-            = this.pickByRules(rules).flatMap {node ->
-        val subtrees = node.children?.flatMap { it.pickRecursiveByRules(rules) } ?: emptyList()
-        val normNode = node.mapChildren { it.normalizeByRules(rules) }
-        listOf(listOf(normNode), subtrees).flatten()
+    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> {
+        return this.pickByRules(rules)
+                .flatMap { node ->
+                    val subtrees = node
+                            .children
+                            ?.flatMap { it.pickRecursiveByRules(rules) }
+                            ?: emptyList()
+                    val normNode = node
+                            .mapChildren { it.normalizeByRules(rules) }
+                    listOf(listOf(normNode), subtrees).flatten()
+                }
     }
 
     override fun mapChildren(map: (AstNode) -> AstNode): BasicAstRuleNode {

@@ -9,7 +9,7 @@ internal class BufferedTableWriter<V>(
         private val table: ReadWritableTable<V>,
         private val idColumn: Column<Int>,
         private val bufferSize: Int = 100
-): TableWriter<V> {
+) : TableWriter<V> {
     override fun write(value: V) {
         transaction(db) {
             val nextId = getNextId(table)
@@ -31,7 +31,7 @@ internal class BufferedTableWriter<V>(
         write(buffer)
     }
 
-    private fun getNextId(table: Table): Int{
+    private fun getNextId(table: Table): Int {
         val all = table.slice(idColumn).selectAll()
         val dec = all.orderBy(idColumn, SortOrder.DESC)
         val max = dec.firstOrNull()?.get(idColumn) ?: 0
