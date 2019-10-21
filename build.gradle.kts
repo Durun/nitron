@@ -30,12 +30,16 @@ dependencies {
     val inmemantlrVersion = "1.6"
     val kotlintestVersion = "3.4.2"
     val cliktVersion = "2.2.0"
+    val sqliteJdbcVersion = "3.28.0"
+    val exposedVersion = "0.17.6"
 
     // This dependency is used by the application.
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("org.antlr:antlr4:$antlrVersion")
     implementation("com.github.julianthome:inmemantlr-api:$inmemantlrVersion")
     implementation("com.github.ajalt:clikt:$cliktVersion")
+    implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
+    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
