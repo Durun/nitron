@@ -8,7 +8,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import java.nio.file.Paths
 
-class SeparatingTest: StringSpec({
+class SeparatingTest : StringSpec({
     "kotlin separating statements" {
         val grammarDir = Paths.get("testdata/grammars/kotlin")
         val parser = CommonParser(getGrammarList(grammarDir))

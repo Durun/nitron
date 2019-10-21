@@ -7,10 +7,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
 internal class FileDatabaseBase(
-    private val driver: KClass<out Driver>,
-    private val urlMap: (Path) -> String,
-    private val patch: () -> Unit = {}
-): FileDatabase {
+        private val driver: KClass<out Driver>,
+        private val urlMap: (Path) -> String,
+        private val patch: () -> Unit = {}
+) : FileDatabase {
     override fun connect(path: Path): Database {
         val db = Database.connect(urlMap(path), driver.jvmName)
         patch()

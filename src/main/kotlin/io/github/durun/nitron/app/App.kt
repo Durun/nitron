@@ -12,7 +12,7 @@ import io.github.durun.nitron.parser.CommonParser
 import java.io.PrintStream
 import java.nio.file.Path
 
-class App: CliktCommand() {
+class App : CliktCommand() {
     private val grammarDir: Path by argument(
             name = "grammar_dir",
             help = "directory containing grammar(.g4) files"
@@ -43,4 +43,5 @@ class App: CliktCommand() {
         output.println(json)
     }
 }
+
 fun main(args: Array<String>) = App().main(args)

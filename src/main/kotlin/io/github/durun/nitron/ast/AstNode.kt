@@ -2,8 +2,8 @@ package io.github.durun.nitron.ast
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.github.durun.nitron.ast.basic.BasicAstRuleNode
 import io.github.durun.nitron.ast.basic.AstTerminalNode
+import io.github.durun.nitron.ast.basic.BasicAstRuleNode
 import io.github.durun.nitron.ast.basic.TextRange
 import io.github.durun.nitron.ast.normalizing.NormalAstRuleNode
 
@@ -31,7 +31,7 @@ interface AstNode {
      */
     val children: List<AstNode>?
 
-    fun <R> accept(visitor: AstVisitor<R>) = visitor.visit(this)
+    fun <R> accept(visitor: AstVisitor<R>): R = visitor.visit(this)
 
     /**
      * 元のソースコードを返す.
@@ -39,6 +39,7 @@ interface AstNode {
      * @return 元のソースコード
      */
     fun getText(): String?
+
     fun contains(range: TextRange): Boolean
 
     /**

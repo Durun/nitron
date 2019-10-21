@@ -11,9 +11,10 @@ import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.FreeSpec
 import java.nio.file.Paths
 
-class DBReadTest: FreeSpec() {
+class DBReadTest : FreeSpec() {
     val path = Paths.get("testdata/database/bugs.db")
     val printSize = 4
+
     init {
         "read bug.db" - {
             "bugfixrevision table" {
@@ -47,7 +48,7 @@ class DBReadTest: FreeSpec() {
                 seq.take(printSize).forEach { println(it) }
                 seq.forEach {
                     it.id shouldNotBe null
-                    when(it.changeType) {
+                    when (it.changeType) {
                         ChangeType.CHANGE -> {
                             isNotEmpty(it.beforeCode) shouldBe true
                             isNotEmpty(it.afterCode) shouldBe true

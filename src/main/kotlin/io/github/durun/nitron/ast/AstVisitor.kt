@@ -1,7 +1,7 @@
 package io.github.durun.nitron.ast
 
-import io.github.durun.nitron.ast.basic.AstTerminalNode
 import io.github.durun.nitron.ast.basic.AstRuleNode
+import io.github.durun.nitron.ast.basic.AstTerminalNode
 
 /**
  * [AstNode]にacceptさせると[R]を返すビジター

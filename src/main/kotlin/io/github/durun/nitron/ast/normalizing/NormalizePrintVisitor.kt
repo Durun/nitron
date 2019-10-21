@@ -2,9 +2,8 @@ package io.github.durun.nitron.ast.normalizing
 
 import io.github.durun.nitron.ast.AstNode
 import io.github.durun.nitron.ast.AstVisitor
-import io.github.durun.nitron.ast.basic.AstTerminalNode
 import io.github.durun.nitron.ast.basic.AstRuleNode
-import java.lang.IllegalStateException
+import io.github.durun.nitron.ast.basic.AstTerminalNode
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -17,7 +16,7 @@ import kotlin.collections.HashMap
 class NormalizePrintVisitor(
         val nonNumberedRuleMap: NormalizingRuleMap,
         val numberedRuleMap: NormalizingRuleMap
-): AstVisitor<String> {
+) : AstVisitor<String> {
     // Map: (normalizedRuleName -> (id -> count))
     private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
 
@@ -46,10 +45,12 @@ class NormalizePrintVisitor(
     private fun normalizeVisitingTerminalNodeIfNeeded(): String? {
         return nonNumberedRuleMap[visitedRuleStack]
     }
+
     private fun normalizeVisitingRuleNodeIfNeeded(id: String): String? {
         return nonNumberedRuleMap[visitedRuleStack]
-                ?: numberedRuleMap[visitedRuleStack]?.let{ "${it}${getAndUpdateRuleCount(it, id)}" }
+                ?: numberedRuleMap[visitedRuleStack]?.let { "${it}${getAndUpdateRuleCount(it, id)}" }
     }
+
     private fun getAndUpdateRuleCount(normalizedRuleName: String, id: String): Int {
         val idTable = nameTables[normalizedRuleName] ?: throw IllegalStateException("No such rule in nameTables")
         idTable.putIfAbsent(id, idTable.size)

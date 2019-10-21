@@ -27,15 +27,14 @@ class AstTerminalNode(
         @JsonProperty("range")
         override val range: TextRange
 ) : AstNode {
-        override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
+    override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
 
-        @JsonIgnore
-        override fun getText(): String = token
+    @JsonIgnore
+    override fun getText(): String = token
 
-        override fun contains(range: TextRange): Boolean
-                = this.range.contains(range)
+    override fun contains(range: TextRange): Boolean = this.range.contains(range)
 
-        override fun pickByRules(rules: Collection<String>): List<AstNode> = emptyList()
-        override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> = pickByRules(rules)
-        override fun mapChildren(map: (AstNode) -> AstNode): AstTerminalNode = this
+    override fun pickByRules(rules: Collection<String>): List<AstNode> = emptyList()
+    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> = pickByRules(rules)
+    override fun mapChildren(map: (AstNode) -> AstNode): AstTerminalNode = this
 }

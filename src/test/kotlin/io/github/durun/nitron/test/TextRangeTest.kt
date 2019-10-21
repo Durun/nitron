@@ -7,16 +7,16 @@ import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.tables.row
 
-class TextRangeTest: StringSpec({
+class TextRangeTest : StringSpec({
     "contains" {
         forall(
-                row(0,9,10,20, false),
-                row(0,20,10,20, true),
-                row(10,20,10,20, true),
-                row(10,21,10,20, true),
-                row(11,20,10,20, false),
-                row(20,20,10,20, false),
-                row(21,21,10,20, false)
+                row(0, 9, 10, 20, false),
+                row(0, 20, 10, 20, true),
+                row(10, 20, 10, 20, true),
+                row(10, 21, 10, 20, true),
+                row(11, 20, 10, 20, false),
+                row(20, 20, 10, 20, false),
+                row(21, 21, 10, 20, false)
         ) { startA, endA, startB, endB, result ->
             TextRange(startA, endA).contains(TextRange(startB, endB)) shouldBe result
         }

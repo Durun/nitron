@@ -6,8 +6,8 @@ package io.github.durun.nitron.ast.normalizing
  */
 class NormalizingRuleMap(
         private val ruleMap: Map<List<String>, String>
-): Map<List<String>, String> {
-    constructor(vararg rulePairs: Pair<List<String>, String>): this(ruleMap = hashMapOf(*rulePairs))
+) : Map<List<String>, String> {
+    constructor(vararg rulePairs: Pair<List<String>, String>) : this(ruleMap = hashMapOf(*rulePairs))
 
     private val keyLengths = ruleMap.keys.map { it.size }.sorted().distinct()
 

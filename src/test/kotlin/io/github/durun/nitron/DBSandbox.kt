@@ -15,7 +15,7 @@ fun test() {
     val db = SQLiteDatabase.connect(path)
 
     val seq = BugfixRevisionsReader(db).read { selectAll() }
-    seq.forEachIndexed {i, it ->
+    seq.forEachIndexed { i, it ->
         println("$i $it")
     }
     println(seq.count())

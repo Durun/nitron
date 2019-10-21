@@ -9,8 +9,7 @@ import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
 
-object Changes: ReadWritableTable<Change>("changes")
-{
+object Changes : ReadWritableTable<Change>("changes") {
     val software: Column<String> = text("software")
             .references(Codes.software)
             .references(BugfixRevisions.software)

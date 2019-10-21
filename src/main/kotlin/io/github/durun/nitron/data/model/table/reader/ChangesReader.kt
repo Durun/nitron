@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.selectAll
 
-class ChangesReader(db: Database): TableReader<Change> by BufferedTableReader(db, Changes) {
+class ChangesReader(db: Database) : TableReader<Change> by BufferedTableReader(db, Changes) {
     override fun read(): Sequence<Change> = read {
         Changes
                 .innerJoin(beforeCodes, { beforeID }, { beforeCodes[Codes.id] })

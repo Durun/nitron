@@ -17,29 +17,32 @@ class TextRange(
         @JsonProperty("stop")
         val stop: Int
 ) {
-        fun contains(that: TextRange): Boolean
-                = startsBeforeOrJust(that) && endsAfterOrJust(that)
+    fun contains(that: TextRange): Boolean {
+        return startsBeforeOrJust(that) && endsAfterOrJust(that)
+    }
 
-        override fun equals(other: Any?): Boolean {
-                return (other is TextRange) && this.equals(other)
-        }
-        fun equals(other: TextRange?): Boolean {
-                return other?.let {
-                        (this.start == it.start) && (this.stop == it.stop)
-                } ?: false
-        }
+    override fun equals(other: Any?): Boolean {
+        return (other is TextRange) && this.equals(other)
+    }
 
-        private fun startsBeforeOrJust(that: TextRange): Boolean {
-                return (this.start <= that.start)
-        }
-        private fun endsAfterOrJust(that: TextRange): Boolean {
-                return (that.stop <= this.stop)
-        }
+    fun equals(other: TextRange?): Boolean {
+        return other?.let {
+            (this.start == it.start) && (this.stop == it.stop)
+        } ?: false
+    }
 
-        override fun hashCode(): Int {
-                return arrayOf(
-                        start,
-                        stop
-                ).hashCode()
-        }
+    private fun startsBeforeOrJust(that: TextRange): Boolean {
+        return (this.start <= that.start)
+    }
+
+    private fun endsAfterOrJust(that: TextRange): Boolean {
+        return (that.stop <= this.stop)
+    }
+
+    override fun hashCode(): Int {
+        return arrayOf(
+                start,
+                stop
+        ).hashCode()
+    }
 }

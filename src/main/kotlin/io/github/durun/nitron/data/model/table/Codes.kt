@@ -8,8 +8,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.InsertStatement
 
 
-object Codes: ReadWritableTable<Code>("codes")
-{
+object Codes : ReadWritableTable<Code>("codes") {
     val software: Column<String> = text("software").primaryKey()
     val id: Column<Int> = integer("id").autoIncrement().primaryKey()
     val rText: Column<String> = text("rText")
