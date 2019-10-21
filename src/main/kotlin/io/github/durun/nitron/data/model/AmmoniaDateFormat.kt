@@ -1,5 +1,6 @@
 package io.github.durun.nitron.data.model
 
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
-val ammoniaDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+val ammoniaDateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
