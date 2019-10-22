@@ -1,6 +1,6 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.core.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.basic.lineRangeOf
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.*
 import io.github.durun.nitron.inout.model.table.Changes
@@ -76,7 +76,7 @@ class DBReadWriteTest : FreeSpec() {
                 softwareName = soft,
                 rawText = text,
                 normalizedText = text,
-                range = TextRange(start, start + length)
+                range = lineRangeOf(start, start + length)
         )
     }
     val changeGen = Gen.bind(

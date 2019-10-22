@@ -31,7 +31,7 @@ private constructor(
                         } else {
                             val first = validRange.first()
                             val last = validRange.last()
-                            TextRange(first.start, last.stop)
+                            first.include(last)
                         }
                     }
     )
