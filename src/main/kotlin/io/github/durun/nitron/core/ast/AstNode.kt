@@ -40,8 +40,6 @@ interface AstNode {
      */
     fun getText(): String?
 
-    fun contains(range: TextRange): Boolean
-
     /**
      * [AstNode]を分割する.
      * レシーバーの部分木(自身を含む)のうち,

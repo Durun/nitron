@@ -43,8 +43,6 @@ private constructor(
                 .joinToString(" ")
     }
 
-    override fun contains(range: TextRange): Boolean = this.range?.contains(range) ?: false
-
     override fun pickByRules(rules: Collection<String>): List<AstNode> {
         return if (rules.contains(this.ruleName))
             listOf(this)
