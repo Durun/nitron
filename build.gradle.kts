@@ -6,7 +6,11 @@
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 
+group = "io.github.durun"
+version = "0.1-SNAPSHOT"
+
 plugins {
+    `maven-publish`
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.3.50"
 
@@ -119,3 +123,26 @@ tasks {
         outputDirectory = "$buildDir/dokka"
     }
 }
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    classifier = "javadoc"
+    from(tasks.dokka)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("default") {
+            from(components["java"])
+            artifact(dokkaJar)
+        }
+    }
+    repositories {
+        maven {
+            url = uri("$buildDir/repository")
+        }
+    }
+}
+val publish = tasks["publish"]
+build.dependsOn(publish)
