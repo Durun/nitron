@@ -1,0 +1,69 @@
+{
+	"grammarConfig": {
+		"grammarFiles": [
+			"grammars/kotlin/KotlinLexer.g4",
+			"grammars/kotlin/KotlinParser.g4",
+			"grammars/kotlin/UnicodeClasses.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "kotlinFile"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"statement"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": [
+						"stringLiteral"
+					],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": [
+						"CharacterLiteral"
+					],
+					"toSymbol": "'C'"
+				},
+				{
+					"fromRules": [
+						"IntegerLiteral"
+					],
+					"toSymbol": "N"
+				},
+				{
+					"fromRules": [
+						"RealLiteral"
+					],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": [
+						"primaryExpression",
+						"simpleIdentifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"variableDeclaration",
+						"simpleIdentifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"directlyAssignableExpression",
+						"simpleIdentifier"
+					],
+					"toSymbol": "$V"
+				}
+			]
+		}
+	}
+}

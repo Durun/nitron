@@ -6,7 +6,11 @@
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 
+group = "io.github.durun"
+version = "0.1-SNAPSHOT"
+
 plugins {
+    `maven-publish`
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.3.50"
 
@@ -15,6 +19,7 @@ plugins {
 
     id("org.ajoberstar.grgit") version "4.0.0-rc.1"
     id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.3.50"
 }
 
 repositories {
@@ -32,6 +37,7 @@ dependencies {
     val cliktVersion = "2.2.0"
     val sqliteJdbcVersion = "3.28.0"
     val exposedVersion = "0.17.6"
+    val kotlinSerializationVersion = "0.13.0"
 
     // This dependency is used by the application.
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -40,6 +46,7 @@ dependencies {
     implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinSerializationVersion")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -116,3 +123,26 @@ tasks {
         outputDirectory = "$buildDir/dokka"
     }
 }
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    classifier = "javadoc"
+    from(tasks.dokka)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("default") {
+            from(components["java"])
+            artifact(dokkaJar)
+        }
+    }
+    repositories {
+        maven {
+            url = uri("$buildDir/repository")
+        }
+    }
+}
+val publish = tasks["publish"]
+build.dependsOn(publish)

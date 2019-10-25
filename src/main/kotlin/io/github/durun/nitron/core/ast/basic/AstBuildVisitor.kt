@@ -34,15 +34,16 @@ class AstBuildVisitor(
         val token = node?.text
                 ?: throw Exception("TerminalNode has no text")
         val symbol = node.symbol
-        val range = TextRange(
-                start = symbol.startIndex,
-                stop = symbol.stopIndex
-        )
         val tokenType = tokenTypeMap[symbol.type] ?: throw NoSuchElementException("No such tokenType.")
         return AstTerminalNode(
                 token = token,
                 tokenType = tokenType,
-                range = range
+                range = textRangeOf(
+                        charStart = symbol.startIndex,
+                        charStop = symbol.stopIndex,
+                        lineStart = symbol.line,
+                        lineStop = symbol.line
+                )
         )
     }
 

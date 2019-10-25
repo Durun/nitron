@@ -31,7 +31,7 @@ private constructor(
                         } else {
                             val first = validRange.first()
                             val last = validRange.last()
-                            TextRange(first.start, last.stop)
+                            first.include(last)
                         }
                     }
     )
@@ -42,8 +42,6 @@ private constructor(
                 .mapNotNull { it.getText() }
                 .joinToString(" ")
     }
-
-    override fun contains(range: TextRange): Boolean = this.range?.contains(range) ?: false
 
     override fun pickByRules(rules: Collection<String>): List<AstNode> {
         return if (rules.contains(this.ruleName))

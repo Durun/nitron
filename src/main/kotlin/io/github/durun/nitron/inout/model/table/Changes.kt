@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model.table
 
-import io.github.durun.nitron.core.ast.basic.TextRange
+import io.github.durun.nitron.core.ast.basic.lineRangeOf
 import io.github.durun.nitron.inout.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -59,7 +59,7 @@ object Changes : ReadWritableTable<Change>("changes") {
                 softwareName = row[alias[Codes.software]],
                 rawText = row[alias[Codes.rText]],
                 normalizedText = row[alias[Codes.nText]],
-                range = TextRange(
+                range = lineRangeOf(
                         start = row[alias[Codes.start]],
                         stop = row[alias[Codes.end]]
                 ),

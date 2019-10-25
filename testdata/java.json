@@ -1,0 +1,53 @@
+{
+	"grammarConfig": {
+		"grammarFiles": [
+			"grammars/java8/Java8Lexer.g4",
+			"grammars/java8/Java8Parser.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "compilationUnit"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"statement"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": [
+						"StringLiteral"
+					],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": [
+						"CharacterLiteral"
+					],
+					"toSymbol": "'C'"
+				},
+				{
+					"fromRules": [
+						"IntegerLiteral"
+					],
+					"toSymbol": "N"
+				},
+				{
+					"fromRules": [
+						"FloatingPointLiteral"
+					],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": [
+						"Identifier"
+					],
+					"toSymbol": "V"
+				}
+			]
+		}
+	}
+}

@@ -24,8 +24,6 @@ class NormalAstRuleNode(
     @JsonProperty("range")
     override val range: TextRange? = originalNode.range
 
-    override fun contains(range: TextRange): Boolean = originalNode.contains(range)
-
     @JsonIgnore
     override fun getText(): String = ruleName.toUpperCase()
 
