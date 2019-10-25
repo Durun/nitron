@@ -15,6 +15,7 @@ plugins {
 
     id("org.ajoberstar.grgit") version "4.0.0-rc.1"
     id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.3.50"
 }
 
 repositories {
@@ -32,6 +33,7 @@ dependencies {
     val cliktVersion = "2.2.0"
     val sqliteJdbcVersion = "3.28.0"
     val exposedVersion = "0.17.6"
+    val kotlinSerializationVersion = "0.13.0"
 
     // This dependency is used by the application.
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -40,6 +42,7 @@ dependencies {
     implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinSerializationVersion")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
