@@ -43,10 +43,35 @@
 			"numberedRuleMap": [
 				{
 					"fromRules": [
-						"Identifier"
+						"expressionName"
 					],
-					"toSymbol": "V"
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"variableDeclaratorId"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"typeName"
+					],
+					"toSymbol": "$V"
 				}
+			],
+			"ignoreRules": [
+				"annotation",
+				"packageDeclaration",
+				"importDeclaration",
+				"classModifier",
+				"fieldModifier",
+				"methodModifier",
+				"constructorModifier",
+				"interfaceModifier",
+				"constantModifier",
+				"interfaceMethodModifier",
+				"annotationTypeElementModifier"
 			]
 		}
 	}
