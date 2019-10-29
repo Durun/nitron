@@ -43,7 +43,9 @@ data class NormalizeConfig(
         @SerialName("nonNumberedRuleMap")
         val nonNumberedRuleMapConfig: List<RuleMapConfig>,
         @SerialName("numberedRuleMap")
-        val numberedRuleMapConfig: List<RuleMapConfig>
+        val numberedRuleMapConfig: List<RuleMapConfig>,
+
+        val ignoreRules: List<String>
 ) {
     private fun toRuleMap(list: List<RuleMapConfig>): NormalizingRuleMap {
         return NormalizingRuleMap(
