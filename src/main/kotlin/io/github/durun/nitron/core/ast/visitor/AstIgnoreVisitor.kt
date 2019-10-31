@@ -9,7 +9,7 @@ import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
 
 class AstIgnoreVisitor(
         private val ignoreRules: List<String>
-): AstVisitor<AstNode> {
+) : AstVisitor<AstNode> {
     override fun visit(node: AstNode): AstNode {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
