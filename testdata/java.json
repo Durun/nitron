@@ -10,7 +10,9 @@
 	"processConfig": {
 		"splitConfig": {
 			"splitRules": [
-				"statement"
+				"statement",
+				"typeDeclaration",
+				"methodDeclaration"
 			]
 		},
 		"normalizeConfig": {
@@ -71,7 +73,8 @@
 				"interfaceModifier",
 				"constantModifier",
 				"interfaceMethodModifier",
-				"annotationTypeElementModifier"
+				"annotationTypeElementModifier",
+				"EOF"
 			]
 		}
 	}
