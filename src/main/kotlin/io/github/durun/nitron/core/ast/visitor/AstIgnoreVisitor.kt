@@ -19,7 +19,7 @@ class AstIgnoreVisitor(
             IgnoredAstNode()
         else {
             val children = node.children?.map { it.accept(this) }
-            if (children.isNullOrEmpty()) IgnoredAstNode()
+            if (children.isNullOrEmpty() || children.all { it is IgnoredAstNode }) IgnoredAstNode()
             else BasicAstRuleNode(node.ruleName, children)
         }
     }
