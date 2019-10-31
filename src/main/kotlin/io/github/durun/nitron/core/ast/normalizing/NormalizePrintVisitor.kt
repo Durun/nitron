@@ -23,7 +23,7 @@ class NormalizePrintVisitor(
     private val visitedRuleStack: Stack<String> = Stack()
 
     override fun visit(node: AstNode): String {
-        TODO()
+        return node.getText().orEmpty()
     }
 
     override fun visitRule(node: AstRuleNode): String {
