@@ -5,12 +5,14 @@ import io.github.durun.nitron.core.ast.AstVisitor
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
 import io.github.durun.nitron.core.ast.basic.AstTerminalNode
 import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
 
 class AstSplitVisitor(
         private val splitRules: List<String>
 ) : AstVisitor<List<AstNode>> {
     override fun visit(node: AstNode): List<AstNode> {
-        return emptyList()
+        return if (node is IgnoredAstNode) emptyList()
+        else listOf(node)
     }
 
     override fun visitRule(node: AstRuleNode): List<AstNode> {
@@ -21,10 +23,12 @@ class AstSplitVisitor(
             buf.last().add(it)
             if (hasSplitRule(it)) buf.add(mutableListOf())
         }
-        return buf.map {
-            if (hasSplitRule(it.firstOrNull())) it.first()
-            else BasicAstRuleNode(node.ruleName, it)
-        }
+        return buf
+                .filter { it.isNotEmpty() }
+                .map {
+                    if (hasSplitRule(it.firstOrNull())) it.first()
+                    else BasicAstRuleNode(node.ruleName, it)
+                }
     }
 
     override fun visitTerminal(node: AstTerminalNode): List<AstNode> {
