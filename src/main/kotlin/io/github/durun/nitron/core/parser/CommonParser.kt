@@ -29,7 +29,8 @@ private constructor(
     ) : this(
             GenericParser(
                     ToolCustomizer { it },
-                    *grammarFiles
+                    false,
+                    *grammarFiles.map { it.readText() }.toTypedArray()
             ),
             utilityJavaFiles
     )
