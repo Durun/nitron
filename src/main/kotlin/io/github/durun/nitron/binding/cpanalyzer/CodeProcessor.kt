@@ -32,6 +32,7 @@ class CodeProcessor(configFile: Path) {
         nonNumberedRuleMap = config.processConfig.normalizeConfig.nonNumberedRuleMap
         numberedRuleMap = config.processConfig.normalizeConfig.numberedRuleMap
         ignoreVisitor = AstIgnoreVisitor(config.processConfig.normalizeConfig.ignoreRules)
+        println("Parser compiled: config=${configFile}")   // TODO
     }
 
     fun process(input: String): List<Pair<AstNode, String>> {
