@@ -3,6 +3,7 @@ package io.github.durun.nitron.binding.cpanalyzer
 import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.AstVisitor
 import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
 import io.github.durun.nitron.core.ast.normalizing.NormalizePrintVisitor
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
@@ -21,7 +22,7 @@ class CodeProcessor(configFile: Path) {
 
     init {
         val config = LangConfigLoader.load(configFile)
-        val baseDir = configFile.parent
+        val baseDir = configFile.toAbsolutePath().parent
         parser = CommonParser(
                 grammarFiles = config.grammarConfig.grammarFilePaths(baseDir),
                 utilityJavaFiles = config.grammarConfig.utilJavaFilesPaths(baseDir)
@@ -31,17 +32,20 @@ class CodeProcessor(configFile: Path) {
         nonNumberedRuleMap = config.processConfig.normalizeConfig.nonNumberedRuleMap
         numberedRuleMap = config.processConfig.normalizeConfig.numberedRuleMap
         ignoreVisitor = AstIgnoreVisitor(config.processConfig.normalizeConfig.ignoreRules)
+        println("Parser compiled: config=${configFile}")   // TODO
     }
 
     fun process(input: String): List<Pair<AstNode, String>> {
         val (tree, antlrParser) = parser.parse(input, startRule)
         val ast = tree.accept(AstBuildVisitor(antlrParser))
         val statements = ast
-                .accept(ignoreVisitor)
                 .accept(splitVisitor)
-        return statements.map {
-            val normalizeVisitor = NormalizePrintVisitor(nonNumberedRuleMap, numberedRuleMap)
-            Pair(it, it.accept(normalizeVisitor))
-        }
+        return statements
+                .map { it.accept(ignoreVisitor) }
+                .filterNot { it is IgnoredAstNode }
+                .map {
+                    val normalizeVisitor = NormalizePrintVisitor(nonNumberedRuleMap, numberedRuleMap)
+                    Pair(it, it.accept(normalizeVisitor))
+                }
     }
 }

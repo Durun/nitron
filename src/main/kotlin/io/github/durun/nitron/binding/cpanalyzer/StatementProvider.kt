@@ -1,10 +1,13 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
+import io.github.durun.nitron.core.ast.visitor.AstFlattenVisitor
 import java.nio.file.Paths
 
 object StatementProvider {
+    @JvmStatic
     private val processors: MutableMap<String, CodeProcessor> = mutableMapOf()
 
+    @JvmStatic
     private fun getProcessor(lang: String): CodeProcessor {
         return processors[lang]
                 ?: let {
@@ -19,8 +22,16 @@ object StatementProvider {
         val processor = getProcessor(lang)
         val result = processor.process(fileText)
         return result.map { (statement, nText) ->
+            val tokens = statement.accept(AstFlattenVisitor)
+                    .mapIndexed { index, it ->
+                        Token(
+                                value = it.token,
+                                line = it.range.line.start,
+                                index = index
+                        )
+                    }
             Statement(
-                    listOf(Token(statement.getText() ?: "", statement.range?.line?.start ?: 0, 1)), // TODO
+                    tokens = tokens,
                     rText = statement.getText() ?: throw Exception(),
                     nText = nText
             )

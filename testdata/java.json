@@ -11,6 +11,8 @@
 		"splitConfig": {
 			"splitRules": [
 				"statement",
+				"blockStatement",
+				"catchClause",
 				"typeDeclaration",
 				"methodDeclaration"
 			]
