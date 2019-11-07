@@ -3,6 +3,7 @@ package io.github.durun.nitron.binding.cpanalyzer
 import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.AstVisitor
 import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
 import io.github.durun.nitron.core.ast.normalizing.NormalizePrintVisitor
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
@@ -37,11 +38,13 @@ class CodeProcessor(configFile: Path) {
         val (tree, antlrParser) = parser.parse(input, startRule)
         val ast = tree.accept(AstBuildVisitor(antlrParser))
         val statements = ast
-                .accept(ignoreVisitor)
                 .accept(splitVisitor)
-        return statements.map {
-            val normalizeVisitor = NormalizePrintVisitor(nonNumberedRuleMap, numberedRuleMap)
-            Pair(it, it.accept(normalizeVisitor))
-        }
+        return statements
+                .map { it.accept(ignoreVisitor) }
+                .filterNot { it is IgnoredAstNode }
+                .map {
+                    val normalizeVisitor = NormalizePrintVisitor(nonNumberedRuleMap, numberedRuleMap)
+                    Pair(it, it.accept(normalizeVisitor))
+                }
     }
 }
