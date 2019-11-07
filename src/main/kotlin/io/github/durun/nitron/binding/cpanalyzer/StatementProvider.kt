@@ -4,8 +4,10 @@ import io.github.durun.nitron.core.ast.visitor.AstFlattenVisitor
 import java.nio.file.Paths
 
 object StatementProvider {
+    @JvmStatic
     private val processors: MutableMap<String, CodeProcessor> = mutableMapOf()
 
+    @JvmStatic
     private fun getProcessor(lang: String): CodeProcessor {
         return processors[lang]
                 ?: let {
