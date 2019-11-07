@@ -22,7 +22,7 @@ class CodeProcessor(configFile: Path) {
 
     init {
         val config = LangConfigLoader.load(configFile)
-        val baseDir = configFile.parent
+        val baseDir = configFile.toAbsolutePath().parent
         parser = CommonParser(
                 grammarFiles = config.grammarConfig.grammarFilePaths(baseDir),
                 utilityJavaFiles = config.grammarConfig.utilJavaFilesPaths(baseDir)
