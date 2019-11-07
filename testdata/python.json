@@ -1,0 +1,49 @@
+{
+	"grammarConfig": {
+		"grammarFiles": [
+            "grammars/python3/Python3.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "file_input"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+                "stmt"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": [
+						"STRING"
+					],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": [
+						"NUMBER"
+					],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": [
+                        "atom",
+						"NAME"
+					],
+					"toSymbol": "$V"
+				}
+			],
+			"ignoreRules": [
+                "import_stmt",
+                "pass_stmt",
+                "NEWLINE",
+                "INDENT",
+                "DEDENT",
+                "EOF"
+			]
+		}
+	}
+}
