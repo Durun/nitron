@@ -29,7 +29,7 @@ class NormalizePrintVisitor(
     override fun visitRule(node: AstRuleNode): String {
         visitedRuleStack.push(node.ruleName)    //  enter
         val id = node.getText() ?: ""
-        val thisText = normalizeVisitingRuleNodeIfNeeded(id)
+        val thisText = normalizeVisitingNodeIfNeeded(id)
         val childrenText = node.children?.joinToString(" ") { it.accept(this) }
         visitedRuleStack.pop()                  // leave
         return thisText ?: childrenText ?: ""
@@ -37,16 +37,12 @@ class NormalizePrintVisitor(
 
     override fun visitTerminal(node: AstTerminalNode): String {
         visitedRuleStack.push(node.tokenType)   //  enter
-        val thisText = normalizeVisitingTerminalNodeIfNeeded() ?: node.token
+        val thisText = normalizeVisitingNodeIfNeeded(node.token) ?: node.token
         visitedRuleStack.pop()                  // leave
         return thisText
     }
 
-    private fun normalizeVisitingTerminalNodeIfNeeded(): String? {
-        return nonNumberedRuleMap[visitedRuleStack]
-    }
-
-    private fun normalizeVisitingRuleNodeIfNeeded(id: String): String? {
+    private fun normalizeVisitingNodeIfNeeded(id: String): String? {
         return nonNumberedRuleMap[visitedRuleStack]
                 ?: numberedRuleMap[visitedRuleStack]?.let { "${it}${getAndUpdateRuleCount(it, id)}" }
     }
