@@ -1,9 +1,12 @@
 {
+    "extensions": [
+        ".kt"
+    ],
 	"grammarConfig": {
 		"grammarFiles": [
-			"grammars/kotlin/KotlinLexer.g4",
-			"grammars/kotlin/KotlinParser.g4",
-			"grammars/kotlin/UnicodeClasses.g4"
+			"../grammars/kotlin/KotlinLexer.g4",
+			"../grammars/kotlin/KotlinParser.g4",
+			"../grammars/kotlin/UnicodeClasses.g4"
 		],
 		"utilJavaFiles": [],
 		"startRule": "kotlinFile"

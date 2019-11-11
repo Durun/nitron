@@ -1,7 +1,10 @@
 {
+	"extensions": [
+		".py"
+	],
 	"grammarConfig": {
 		"grammarFiles": [
-            "grammars/python3/Python3.g4"
+			"../grammars/python3/Python3.g4"
 		],
 		"utilJavaFiles": [],
 		"startRule": "file_input"
@@ -9,7 +12,7 @@
 	"processConfig": {
 		"splitConfig": {
 			"splitRules": [
-                "stmt"
+				"stmt"
 			]
 		},
 		"normalizeConfig": {
@@ -25,24 +28,34 @@
 						"NUMBER"
 					],
 					"toSymbol": "N"
+				},
+				{
+					"fromRules": [
+						"INDENT"
+					],
+					"toSymbol": "INDENT"
+				},
+				{
+					"fromRules": [
+						"DEDENT"
+					],
+					"toSymbol": "DEDENT"
 				}
 			],
 			"numberedRuleMap": [
 				{
 					"fromRules": [
-                        "atom",
+						"atom",
 						"NAME"
 					],
 					"toSymbol": "$V"
 				}
 			],
 			"ignoreRules": [
-                "import_stmt",
-                "pass_stmt",
-                "NEWLINE",
-                "INDENT",
-                "DEDENT",
-                "EOF"
+				"import_stmt",
+				"pass_stmt",
+				"NEWLINE",
+				"EOF"
 			]
 		}
 	}
