@@ -1,5 +1,7 @@
 {
     "langConfigFiles": {
-        "java": "lang/java.json"
+        "java": "lang/java.json",
+        "kotlin": "lang/kotlin.json",
+        "python": "lang/python.json"
     }
 }
