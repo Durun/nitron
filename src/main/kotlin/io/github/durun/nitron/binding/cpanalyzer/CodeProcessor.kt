@@ -8,11 +8,12 @@ import io.github.durun.nitron.core.ast.normalizing.NormalizePrintVisitor
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
 import io.github.durun.nitron.core.ast.visitor.AstSplitVisitor
-import io.github.durun.nitron.core.config.LangConfigLoader
+import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.CommonParser
-import java.nio.file.Path
 
-class CodeProcessor(configFile: Path) {
+class CodeProcessor(
+        private val config: LangConfig
+) {
     private val parser: CommonParser
     private val startRule: String
     private val splitVisitor: AstVisitor<List<AstNode>>
@@ -21,18 +22,16 @@ class CodeProcessor(configFile: Path) {
     private val ignoreVisitor: AstVisitor<AstNode>
 
     init {
-        val config = LangConfigLoader.load(configFile)
-        val baseDir = configFile.toAbsolutePath().parent
         parser = CommonParser(
-                grammarFiles = config.grammarConfig.grammarFilePaths(baseDir),
-                utilityJavaFiles = config.grammarConfig.utilJavaFilesPaths(baseDir)
+                grammarFiles = config.grammar.grammarFilePaths,
+                utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
-        startRule = config.grammarConfig.startRule
-        splitVisitor = AstSplitVisitor(config.processConfig.splitConfig.splitRules)
-        nonNumberedRuleMap = config.processConfig.normalizeConfig.nonNumberedRuleMap
-        numberedRuleMap = config.processConfig.normalizeConfig.numberedRuleMap
-        ignoreVisitor = AstIgnoreVisitor(config.processConfig.normalizeConfig.ignoreRules)
-        println("Parser compiled: config=${configFile}")   // TODO
+        startRule = config.grammar.startRule
+        splitVisitor = AstSplitVisitor(config.process.splitConfig.splitRules)
+        nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap
+        numberedRuleMap = config.process.normalizeConfig.numberedRuleMap
+        ignoreVisitor = AstIgnoreVisitor(config.process.normalizeConfig.ignoreRules)
+        println("Parser compiled: config=${config.dir}")   // TODO
     }
 
     fun process(input: String): List<Pair<AstNode, String>> {

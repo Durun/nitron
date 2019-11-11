@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
-import io.github.durun.nitron.core.config.LangConfigLoader
+import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.CommonParser
 import java.io.File
 import java.io.PrintStream
@@ -46,14 +46,13 @@ class AstPrintCommand : CliktCommand(
 
     override fun run() {
         val config = LangConfigLoader.load(configPath)
-        val baseDir = configPath.toAbsolutePath().parent
         val parser = CommonParser(
-                grammarFiles = config.grammarConfig.grammarFilePaths(baseDir),
-                utilityJavaFiles = config.grammarConfig.utilJavaFilesPaths(baseDir)
+                grammarFiles = config.grammar.grammarFilePaths,
+                utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
         inputs
                 .forEach { input ->
-                    val (tree, antlrParser) = parser.parse(input.readText(), config.grammarConfig.startRule)
+                    val (tree, antlrParser) = parser.parse(input.readText(), config.grammar.startRule)
                     val ast = tree.accept(AstBuildVisitor(antlrParser))
                     val text = ast.accept(AstPrintVisitor())
                     output.println("\n@ ${input.path}")

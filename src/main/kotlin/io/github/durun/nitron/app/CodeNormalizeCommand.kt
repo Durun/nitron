@@ -9,6 +9,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
+import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Path
@@ -43,7 +44,8 @@ class CodeNormalizeCommand : CliktCommand(
     )
 
     override fun run() {
-        val processor = CodeProcessor(configPath.toAbsolutePath())
+        val config = LangConfigLoader.load(configPath)
+        val processor = CodeProcessor(config)
         inputs
                 .forEach { input ->
                     val text = processor.processText(input.readText())
