@@ -27,15 +27,5 @@ class NormalAstRuleNode(
     @JsonIgnore
     override fun getText(): String = text ?: ruleName.toUpperCase()
 
-    override fun pickByRules(rules: Collection<String>): List<AstNode> {
-        return if (rules.contains(this.ruleName))
-            listOf(this)
-        else
-            emptyList()
-    }
-
-    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> = pickByRules(rules)
-
-    override fun mapChildren(map: (AstNode) -> AstNode): NormalAstRuleNode = this
 }
 

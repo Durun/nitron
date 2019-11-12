@@ -30,8 +30,4 @@ class AstTerminalNode(
 
     @JsonIgnore
     override fun getText(): String = token
-
-    override fun pickByRules(rules: Collection<String>): List<AstNode> = emptyList()
-    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> = pickByRules(rules)
-    override fun mapChildren(map: (AstNode) -> AstNode): AstTerminalNode = this
 }
