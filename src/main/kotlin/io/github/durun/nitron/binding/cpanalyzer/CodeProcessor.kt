@@ -4,9 +4,9 @@ import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.AstVisitor
 import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
 import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
-import io.github.durun.nitron.core.ast.normalizing.NormalizePrintVisitor
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
+import io.github.durun.nitron.core.ast.visitor.AstNormalizeVisitor
 import io.github.durun.nitron.core.ast.visitor.AstSplitVisitor
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.CommonParser
@@ -34,17 +34,31 @@ class CodeProcessor(
         println("Parser compiled: config=${config.dir}")   // TODO
     }
 
-    fun process(input: String): List<Pair<AstNode, String>> {
+    fun parse(input: String): AstNode {
         val (tree, antlrParser) = parser.parse(input, startRule)
-        val ast = tree.accept(AstBuildVisitor(antlrParser))
-        val statements = ast
-                .accept(splitVisitor)
-        return statements
-                .map { it.accept(ignoreVisitor) }
-                .filterNot { it is IgnoredAstNode }
-                .map {
-                    val normalizeVisitor = NormalizePrintVisitor(nonNumberedRuleMap, numberedRuleMap)
-                    Pair(it, it.accept(normalizeVisitor))
-                }
+        return tree.accept(AstBuildVisitor(antlrParser))
     }
+
+    private fun split(input: AstNode): List<AstNode> {
+        return input.accept(splitVisitor)
+    }
+
+    private fun dropIgnore(input: AstNode): AstNode? {
+        return input
+                .accept(ignoreVisitor)
+                .takeUnless { it is IgnoredAstNode }
+    }
+
+    private fun normalize(input: AstNode): AstNode {
+        val visitor = AstNormalizeVisitor(nonNumberedRuleMap, numberedRuleMap)
+        return input.accept(visitor)
+    }
+
+    fun proceess(input: AstNode): List<AstNode> {
+        return split(input)
+                .mapNotNull { dropIgnore(it) }
+                .map { normalize(it) }
+    }
+
+
 }

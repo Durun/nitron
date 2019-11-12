@@ -13,7 +13,8 @@ import io.github.durun.nitron.core.ast.basic.TextRange
  * @param [originalNode] 元の非終端ノード
  */
 class NormalAstRuleNode(
-        private val originalNode: BasicAstRuleNode
+        private val originalNode: AstRuleNode,
+        private val text: String? = null
 ) : AstRuleNode {
     @JsonProperty("ruleName")
     override val ruleName: String = originalNode.ruleName
@@ -25,7 +26,7 @@ class NormalAstRuleNode(
     override val range: TextRange? = originalNode.range
 
     @JsonIgnore
-    override fun getText(): String = ruleName.toUpperCase()
+    override fun getText(): String = text ?: ruleName.toUpperCase()
 
     override fun pickByRules(rules: Collection<String>): List<AstNode> {
         return if (rules.contains(this.ruleName))
