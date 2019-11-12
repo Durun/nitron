@@ -17,7 +17,6 @@ plugins {
     // Apply the application plugin to add support for building a CLI application.
     application
 
-    id("org.ajoberstar.grgit") version "4.0.0-rc.1"
     id("org.jetbrains.dokka") version "0.10.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.3.50"
 }
@@ -67,30 +66,6 @@ val build = tasks["build"]
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
 }
-
-fun updateGitRepo(
-        path: String,
-        gitUrl: String,
-        branch: String = "master")
-{
-    val repo = kotlin.runCatching {
-        org.ajoberstar.grgit.Grgit.open(mapOf("dir" to path))
-    }.getOrElse {
-        org.ajoberstar.grgit.Grgit.clone(mapOf("dir" to path, "uri" to gitUrl))
-    }
-    repo.pull(mapOf("branch" to branch))
-}
-
-val updateTestGrammar by tasks.register("updateTestGrammar") {
-    val testDataDir = "${project.projectDir}/testdata"
-    val testGrammarDir = "${testDataDir}/grammars"
-    val testGrammarUrl = "https://github.com/antlr/grammars-v4.git"
-    updateGitRepo(
-            path=testGrammarDir,
-            gitUrl=testGrammarUrl
-    )
-}
-test.dependsOn(updateTestGrammar)
 
 
 /**

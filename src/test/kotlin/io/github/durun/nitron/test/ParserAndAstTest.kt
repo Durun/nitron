@@ -32,7 +32,7 @@ class ParserAndAstTest : FreeSpec() {
             "C#" {
                 testDefault("csharp", ".cs", startRule = "compilation_unit")
             }
-            "Go" {
+            "!Go" {
                 testDefault("golang", ".go", startRule = "sourceFile")
             }
             "Java" {
@@ -50,13 +50,13 @@ class ParserAndAstTest : FreeSpec() {
             "Scala" {
                 testDefault("scala", ".txt", startRule = "compilationUnit")
             }
-            "JavaScript" {
+            "!JavaScript" {
                 testDefaultWithUtilFiles("javascript", ".js", startRule = "program")
             }
-            "TypeScript" {
+            "!TypeScript" {
                 testDefaultWithUtilFiles("typescript", ".ts", startRule = "program")
             }
-            "Objective-C" {
+            "!Objective-C" {
                 val lang = "objc"
                 val suffix = ".m"
                 val startRule = "translationUnit"

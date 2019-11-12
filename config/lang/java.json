@@ -1,8 +1,11 @@
 {
+    "extensions": [
+        ".java"
+    ],
 	"grammarConfig": {
 		"grammarFiles": [
-			"grammars/java8/Java8Lexer.g4",
-			"grammars/java8/Java8Parser.g4"
+			"../grammars/java8/Java8Lexer.g4",
+			"../grammars/java8/Java8Parser.g4"
 		],
 		"utilJavaFiles": [],
 		"startRule": "compilationUnit"
