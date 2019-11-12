@@ -12,7 +12,7 @@ import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.CommonParser
 
 class CodeProcessor(
-        private val config: LangConfig
+        config: LangConfig
 ) {
     private val parser: CommonParser
     private val startRule: String
@@ -39,8 +39,13 @@ class CodeProcessor(
         return tree.accept(AstBuildVisitor(antlrParser))
     }
 
-    private fun split(input: AstNode): List<AstNode> {
+    fun split(input: AstNode): List<AstNode> {
         return input.accept(splitVisitor)
+    }
+
+    fun split(input: String): List<AstNode> {
+        val ast = parse(input)
+        return split(ast)
     }
 
     private fun dropIgnore(input: AstNode): AstNode? {
@@ -54,11 +59,18 @@ class CodeProcessor(
         return input.accept(visitor)
     }
 
-    fun proceess(input: AstNode): List<AstNode> {
-        return split(input)
-                .mapNotNull { dropIgnore(it) }
-                .map { normalize(it) }
+    fun proceess(input: AstNode): AstNode? {
+        return dropIgnore(input)
+                ?.let { normalize(it) }
     }
 
+    fun proceess(input: List<AstNode>): List<AstNode> {
+        return input.mapNotNull { proceess(it) }
+    }
 
+    fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
+        return input.map {
+            it to proceess(it)
+        }
+    }
 }

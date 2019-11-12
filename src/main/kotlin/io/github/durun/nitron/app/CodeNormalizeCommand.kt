@@ -56,7 +56,8 @@ class CodeNormalizeCommand : CliktCommand(
 
     private fun CodeProcessor.processText(input: String): String {
         val ast = this.parse(input)
-        val texts = this.proceess(ast).map {
+        val astList = this.split(ast)
+        val texts = this.proceess(astList).map {
             val ruleName = if (it is AstRuleNode) it.ruleName else null
             val text = it.getText().orEmpty()
             "[${ruleName}]\n${text.prependIndent("\t")}"

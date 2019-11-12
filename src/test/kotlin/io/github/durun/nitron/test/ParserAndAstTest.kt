@@ -79,7 +79,7 @@ class ParserAndAstTest : FreeSpec() {
         }
     }
 
-    private val baseDir = Paths.get("testdata/grammars").toAbsolutePath()
+    private val baseDir = Paths.get("config/grammars").toAbsolutePath()
 
     private fun collectFiles(dir: Path,
                              suffix: String? = null, exclude: String? = null, depth: Int = 1): List<Path> {

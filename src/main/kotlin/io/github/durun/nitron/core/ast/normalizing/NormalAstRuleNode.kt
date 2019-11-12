@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
-import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.basic.TextRange
 
 /**
