@@ -1,6 +1,6 @@
 package io.github.durun.nitron.core.ast.visitor
 
-import io.github.durun.nitron.core.ast.basic.*
+import io.github.durun.nitron.core.ast.node.*
 
 class AstIgnoreVisitor(
         private val ignoreRules: List<String>

@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.basic
+package io.github.durun.nitron.core.ast.node
 
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 

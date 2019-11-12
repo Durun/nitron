@@ -1,6 +1,6 @@
 package io.github.durun.nitron.test
 
-import io.github.durun.nitron.core.ast.basic.lineRangeOf
+import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.*
 import io.github.durun.nitron.inout.model.table.Changes

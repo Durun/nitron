@@ -1,8 +1,8 @@
 package io.github.durun.nitron.core.ast.visitor
 
-import io.github.durun.nitron.core.ast.basic.AstNode
-import io.github.durun.nitron.core.ast.basic.AstRuleNode
-import io.github.durun.nitron.core.ast.basic.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
 
 object AstFlattenVisitor : AstVisitor<List<AstTerminalNode>> {
     override fun visit(node: AstNode): List<AstTerminalNode> {

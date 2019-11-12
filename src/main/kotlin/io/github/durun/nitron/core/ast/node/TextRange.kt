@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.basic
+package io.github.durun.nitron.core.ast.node
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import kotlin.math.max

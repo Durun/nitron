@@ -1,10 +1,10 @@
 package io.github.durun.nitron.core.parser
 
 import io.github.durun.nitron.core.antlr4util.children
-import io.github.durun.nitron.core.ast.basic.AstNode
-import io.github.durun.nitron.core.ast.basic.AstTerminalNode
-import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.basic.textRangeOf
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.node.textRangeOf
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 

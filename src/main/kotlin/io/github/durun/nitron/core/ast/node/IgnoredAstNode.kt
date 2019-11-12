@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.basic
+package io.github.durun.nitron.core.ast.node
 
 class IgnoredAstNode : AstNode {
     override val range: TextRange? = null

@@ -1,6 +1,6 @@
 package io.github.durun.nitron.tester
 
-import io.github.durun.nitron.core.ast.basic.AstNode
+import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
 import java.nio.file.Path
