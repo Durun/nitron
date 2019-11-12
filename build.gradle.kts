@@ -44,7 +44,7 @@ dependencies {
     implementation("com.github.julianthome:inmemantlr-api:$inmemantlrVersion")
     implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
-    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
+    compile("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinSerializationVersion")
 
     // Align versions of all Kotlin components
