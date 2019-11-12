@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(name = "R", value = NormalizedRuleNode::class)
 )
 interface Node {
-    @get:JsonIgnore val type: Int
+    @get:JsonIgnore
+    val type: Int
 }
 
 class TerminalNode(
