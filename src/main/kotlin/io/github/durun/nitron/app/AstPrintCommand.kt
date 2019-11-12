@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
-import io.github.durun.nitron.core.ast.AstBuildVisitor
+import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.CommonParser
