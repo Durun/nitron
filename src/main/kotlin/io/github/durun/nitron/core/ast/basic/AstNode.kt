@@ -2,7 +2,6 @@ package io.github.durun.nitron.core.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.github.durun.nitron.core.ast.normalizing.NormalAstRuleNode
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 @JsonTypeInfo(

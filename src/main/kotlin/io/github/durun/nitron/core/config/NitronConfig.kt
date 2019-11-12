@@ -1,6 +1,6 @@
 package io.github.durun.nitron.core.config
 
-import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
+import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,11 +1,11 @@
-package io.github.durun.nitron.core.ast.visitor
+package io.github.durun.nitron.core.ast.visitor.normalizing
 
 import io.github.durun.nitron.core.ast.basic.AstNode
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
 import io.github.durun.nitron.core.ast.basic.AstTerminalNode
 import io.github.durun.nitron.core.ast.basic.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.normalizing.NormalAstRuleNode
-import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
+import io.github.durun.nitron.core.ast.basic.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
 import kotlin.collections.HashMap
 

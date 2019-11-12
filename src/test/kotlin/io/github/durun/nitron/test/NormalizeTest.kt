@@ -1,8 +1,8 @@
 package io.github.durun.nitron.test
 
 import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.ast.visitor.NormalizePrintVisitor
-import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
+import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizePrintVisitor
+import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.parser.CommonParser
 import io.kotlintest.data.forall
 import io.kotlintest.shouldBe
