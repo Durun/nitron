@@ -128,7 +128,7 @@ class ParserAndAstTest : FreeSpec() {
         val parserTester = ParserTester(grammarFiles, startRule, exampleFiles, utilFiles)
         println("compile: OK")
         // parse
-        val asts = parserTester.getAsts()
+        parserTester.getAsts()
         println("parse: OK")
     }
 }

@@ -3,17 +3,21 @@ package io.github.durun.nitron.test
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.ast.visitor.NormalizePrintVisitor
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
-import io.github.durun.nitron.core.getGrammarList
 import io.github.durun.nitron.core.parser.CommonParser
 import io.kotlintest.data.forall
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.tables.row
+import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.stream.Collectors
 
 
 val grammarDir = Paths.get("testdata/grammars/kotlin-formal")
-val parser = CommonParser(getGrammarList(grammarDir))
+val gramarList = Files.list(grammarDir)
+        .filter { it.toString().endsWith(".g4") }
+        .collect(Collectors.toList())
+val parser = CommonParser(gramarList)
 private fun normalize(input: String): String {
     val startRule = "kotlinFile"
     val (tree, antlrParser) = parser.parse(input, startRule)
