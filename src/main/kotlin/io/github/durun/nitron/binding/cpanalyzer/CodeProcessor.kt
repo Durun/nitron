@@ -1,9 +1,9 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
-import io.github.durun.nitron.core.ast.AstNode
-import io.github.durun.nitron.core.ast.AstVisitor
-import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
-import io.github.durun.nitron.core.ast.normalizing.IgnoredAstNode
+import io.github.durun.nitron.core.ast.basic.AstNode
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
+import io.github.durun.nitron.core.ast.AstBuildVisitor
+import io.github.durun.nitron.core.ast.basic.IgnoredAstNode
 import io.github.durun.nitron.core.ast.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
 import io.github.durun.nitron.core.ast.visitor.AstNormalizeVisitor

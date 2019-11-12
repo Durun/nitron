@@ -2,7 +2,6 @@ package io.github.durun.nitron.core.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.normalizing.normalizeByRules
 
 class BasicAstRuleNode

@@ -2,8 +2,7 @@ package io.github.durun.nitron.core.ast.basic
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.durun.nitron.core.ast.AstNode
-import io.github.durun.nitron.core.ast.AstVisitor
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 /**
  * 構文木の終端ノード

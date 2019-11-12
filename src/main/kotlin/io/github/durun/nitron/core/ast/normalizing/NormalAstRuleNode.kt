@@ -2,7 +2,7 @@ package io.github.durun.nitron.core.ast.normalizing
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.durun.nitron.core.ast.AstNode
+import io.github.durun.nitron.core.ast.basic.AstNode
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
 import io.github.durun.nitron.core.ast.basic.TextRange
 
