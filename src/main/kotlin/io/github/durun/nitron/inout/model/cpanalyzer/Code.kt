@@ -1,4 +1,4 @@
-package io.github.durun.nitron.inout.model
+package io.github.durun.nitron.inout.model.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.TextRange
 import java.security.MessageDigest

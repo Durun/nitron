@@ -1,7 +1,7 @@
-package io.github.durun.nitron.inout.model.table
+package io.github.durun.nitron.inout.model.cpanalyzer.table
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
-import io.github.durun.nitron.inout.model.Code
+import io.github.durun.nitron.inout.model.cpanalyzer.Code
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert

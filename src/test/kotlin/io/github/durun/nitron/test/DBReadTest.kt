@@ -1,11 +1,11 @@
 package io.github.durun.nitron.test
 
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.ChangeType
-import io.github.durun.nitron.inout.model.Code
-import io.github.durun.nitron.inout.model.table.reader.BugfixRevisionsReader
-import io.github.durun.nitron.inout.model.table.reader.ChangesReader
-import io.github.durun.nitron.inout.model.table.reader.CodesReader
+import io.github.durun.nitron.inout.model.cpanalyzer.ChangeType
+import io.github.durun.nitron.inout.model.cpanalyzer.Code
+import io.github.durun.nitron.inout.model.cpanalyzer.table.reader.BugfixRevisionsReader
+import io.github.durun.nitron.inout.model.cpanalyzer.table.reader.ChangesReader
+import io.github.durun.nitron.inout.model.cpanalyzer.table.reader.CodesReader
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.FreeSpec

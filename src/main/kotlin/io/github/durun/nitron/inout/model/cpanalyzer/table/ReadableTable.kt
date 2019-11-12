@@ -1,4 +1,4 @@
-package io.github.durun.nitron.inout.model.table
+package io.github.durun.nitron.inout.model.cpanalyzer.table
 
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table

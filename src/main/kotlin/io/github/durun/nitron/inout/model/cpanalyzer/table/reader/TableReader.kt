@@ -1,4 +1,4 @@
-package io.github.durun.nitron.inout.model.table.reader
+package io.github.durun.nitron.inout.model.cpanalyzer.table.reader
 
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.Table

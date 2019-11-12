@@ -1,7 +1,8 @@
-package io.github.durun.nitron.inout.model.table
+package io.github.durun.nitron.inout.model.cpanalyzer.table
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.model.*
+import io.github.durun.nitron.inout.model.cpanalyzer.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.nio.file.Paths

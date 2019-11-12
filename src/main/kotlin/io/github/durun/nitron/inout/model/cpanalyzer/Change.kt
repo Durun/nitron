@@ -1,4 +1,4 @@
-package io.github.durun.nitron.inout.model
+package io.github.durun.nitron.inout.model.cpanalyzer
 
 import java.nio.file.Path
 import java.util.*

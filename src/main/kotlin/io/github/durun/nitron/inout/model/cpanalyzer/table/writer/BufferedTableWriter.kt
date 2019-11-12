@@ -1,6 +1,6 @@
-package io.github.durun.nitron.inout.model.table.writer
+package io.github.durun.nitron.inout.model.cpanalyzer.table.writer
 
-import io.github.durun.nitron.inout.model.table.ReadWritableTable
+import io.github.durun.nitron.inout.model.cpanalyzer.table.ReadWritableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 

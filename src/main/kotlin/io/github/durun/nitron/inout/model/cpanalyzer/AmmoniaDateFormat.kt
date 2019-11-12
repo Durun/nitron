@@ -1,4 +1,4 @@
-package io.github.durun.nitron.inout.model
+package io.github.durun.nitron.inout.model.cpanalyzer
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat

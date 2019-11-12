@@ -1,7 +1,7 @@
-package io.github.durun.nitron.inout.model.table
+package io.github.durun.nitron.inout.model.cpanalyzer.table
 
-import io.github.durun.nitron.inout.model.Revision
-import io.github.durun.nitron.inout.model.ammoniaDateFormat
+import io.github.durun.nitron.inout.model.cpanalyzer.Revision
+import io.github.durun.nitron.inout.model.cpanalyzer.ammoniaDateFormat
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 
