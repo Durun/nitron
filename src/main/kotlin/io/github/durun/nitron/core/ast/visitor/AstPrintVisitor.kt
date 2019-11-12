@@ -4,8 +4,7 @@ import io.github.durun.nitron.core.ast.basic.AstNode
 import io.github.durun.nitron.core.ast.basic.AstRuleNode
 import io.github.durun.nitron.core.ast.basic.AstTerminalNode
 
-class AstPrintVisitor
-    : AstVisitor<String> {
+object AstPrintVisitor : AstVisitor<String> {
     override fun visit(node: AstNode): String {
         return ""
     }
