@@ -10,7 +10,7 @@ object AstPrintVisitor : AstVisitor<String> {
     }
 
     override fun visitRule(node: AstRuleNode): String {
-        val thisTokens = node.getText()?.split(" ")?.let {
+        val thisTokens = node.getText().split(" ").let {
             val n = 3
             it
                     .take(n)

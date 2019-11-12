@@ -35,9 +35,7 @@ private constructor(
     )
 
     @JsonIgnore
-    override fun getText(): String? {
-        return children
-                .mapNotNull { it.getText() }
-                .joinToString(" ")
+    override fun getText(): String {
+        return children.joinToString(" ") { it.getText() }
     }
 }

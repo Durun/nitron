@@ -36,5 +36,5 @@ interface AstNode {
      * ただし空白は再現されない.
      * @return 元のソースコード
      */
-    fun getText(): String?
+    fun getText(): String
 }
