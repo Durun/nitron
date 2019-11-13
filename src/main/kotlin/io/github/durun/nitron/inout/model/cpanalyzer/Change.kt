@@ -21,7 +21,7 @@ class Change(
         val date: Date,
         val changeType: ChangeType,
         val diffType: DiffType = DiffType.TYPE3, // TODO
-        val id: Int? = null
+        val id: Long? = null
 ) {
     override fun toString(): String {
         return "Change[$softwareName $id] $commitHash $date $author\n" +

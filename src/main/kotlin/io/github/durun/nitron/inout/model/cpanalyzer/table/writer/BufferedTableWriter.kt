@@ -7,13 +7,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 internal class BufferedTableWriter<V>(
         private val db: Database,
         private val table: ReadWritableTable<V>,
-        private val idColumn: Column<Int>,
+        private val idColumn: Column<Long>,
         private val bufferSize: Int = 100
 ) : TableWriter<V> {
     override fun write(value: V) {
         transaction(db) {
             val nextId = getNextId(table)
-            table.insert(value, insertId = nextId)
+            table.write(value, insertId = nextId)
         }
     }
 
@@ -21,7 +21,7 @@ internal class BufferedTableWriter<V>(
         transaction(db) {
             val nextId = getNextId(table)
             values.forEachIndexed { index, v ->
-                table.insert(v, insertId = nextId + index)
+                table.write(v, insertId = nextId + index)
             }
         }
     }
@@ -31,7 +31,7 @@ internal class BufferedTableWriter<V>(
         write(buffer)
     }
 
-    private fun getNextId(table: Table): Int {
+    private fun getNextId(table: Table): Long {
         val all = table.slice(idColumn).selectAll()
         val dec = all.orderBy(idColumn, SortOrder.DESC)
         val max = dec.firstOrNull()?.get(idColumn) ?: 0

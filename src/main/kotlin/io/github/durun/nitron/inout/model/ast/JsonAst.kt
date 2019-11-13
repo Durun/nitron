@@ -31,6 +31,25 @@ class TerminalNode(
         get() = data.key
     val text: String
         @JsonIgnore get() = data.value
+
+    override fun toString(): String {
+        return "{$type: $text}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TerminalNode
+
+        if (data != other.data) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return data.hashCode()
+    }
 }
 
 class RuleNode(
@@ -45,6 +64,25 @@ class RuleNode(
         get() = data.key
     val children: List<Node>
         @JsonIgnore get() = data.value
+
+    override fun toString(): String {
+        return "{$type: [${children.joinToString()}]}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RuleNode
+
+        if (data != other.data) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return data.hashCode()
+    }
 }
 
 class NormalizedRuleNode(
@@ -59,6 +97,25 @@ class NormalizedRuleNode(
         get() = data.key
     val text: String
         @JsonIgnore get() = data.value
+
+    override fun toString(): String {
+        return "{$type: $text}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NormalizedRuleNode
+
+        if (data != other.data) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return data.hashCode()
+    }
 }
 
 
@@ -66,3 +123,29 @@ private class Entry<K, V>(
         override val key: K,
         override val value: V
 ) : Map.Entry<K, V>
+
+data class HashIndexedNode(
+        val node: Node,
+        val hash: ByteArray,
+        val grammar: String
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as HashIndexedNode
+
+        if (node != other.node) return false
+        if (!hash.contentEquals(other.hash)) return false
+        if (grammar != other.grammar) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = node.hashCode()
+        result = 31 * result + hash.contentHashCode()
+        result = 31 * result + grammar.hashCode()
+        return result
+    }
+}

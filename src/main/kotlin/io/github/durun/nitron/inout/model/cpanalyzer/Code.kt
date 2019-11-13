@@ -1,6 +1,7 @@
 package io.github.durun.nitron.inout.model.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.TextRange
+import io.github.durun.nitron.inout.model.ast.Node
 import java.security.MessageDigest
 
 
@@ -9,7 +10,8 @@ class Code(
         val rawText: String,
         val normalizedText: String,
         val range: TextRange,
-        val id: Int? = null
+        val id: Long? = null,
+        val structure: Node? = null
 ) {
     companion object {
         private val md5: MessageDigest = MessageDigest.getInstance("MD5")

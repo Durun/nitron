@@ -1,14 +1,14 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.visitor.AstVisitor
-import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.ast.node.IgnoredAstNode
-import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
-import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
 import io.github.durun.nitron.core.ast.visitor.AstSplitVisitor
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
+import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
+import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.LangConfig
+import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
 
 class CodeProcessor(

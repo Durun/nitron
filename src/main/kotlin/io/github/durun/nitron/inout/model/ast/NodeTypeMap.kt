@@ -8,9 +8,15 @@ class NodeTypeMap(
         private val ruleNameMap: ArrayMap<String>,
         val grammar: String
 ) {
+    constructor(tokens: Array<String>, rules: Array<String>, grammar: String) : this(
+            tokenTypeMap = ArrayMap(tokens),
+            ruleNameMap = ArrayMap(rules),
+            grammar = grammar
+    )
+
     constructor(parser: Parser) : this(
-            tokenTypeMap = ArrayMap(parser.tokenNames),
-            ruleNameMap = ArrayMap(parser.ruleNames),
+            tokens = parser.tokenNames,
+            rules = parser.ruleNames,
             grammar = parser.grammarFileName
     )
 
