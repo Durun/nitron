@@ -15,9 +15,13 @@
 			"splitRules": [
 				"statement",
 				"blockStatement",
+				"localVariableDeclarationStatement",
 				"catchClause",
 				"typeDeclaration",
-				"methodDeclaration"
+				"classMemberDeclaration",
+				"methodDeclaration",
+				"packageDeclaration",
+				"importDeclaration"
 			]
 		},
 		"normalizeConfig": {
