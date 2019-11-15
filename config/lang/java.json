@@ -42,13 +42,13 @@
 					"fromRules": [
 						"IntegerLiteral"
 					],
-					"toSymbol": "N"
+					"toSymbol": "$L"
 				},
 				{
 					"fromRules": [
 						"FloatingPointLiteral"
 					],
-					"toSymbol": "N"
+					"toSymbol": "$L"
 				}
 			],
 			"numberedRuleMap": [
@@ -83,6 +83,7 @@
 				"constantModifier",
 				"interfaceMethodModifier",
 				"annotationTypeElementModifier",
+				"'}'",
 				"EOF"
 			]
 		}
