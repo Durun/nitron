@@ -112,9 +112,9 @@ class JavaNormalizeTest : FreeSpec() {
     }
 
     private fun normStatements(
-            classBody: String = "",
+            classBody: String? = null,
             methodBody: String
-    ) = normStatements(listOf(classBody), listOf(methodBody))
+    ) = normStatements(classBody?.let { listOf(it) }.orEmpty(), listOf(methodBody))
 
     private fun String.toStatements(): List<String> {
         return processor.split(this)
