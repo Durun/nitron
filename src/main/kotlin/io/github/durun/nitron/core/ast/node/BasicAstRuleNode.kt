@@ -36,6 +36,6 @@ private constructor(
 
     @JsonIgnore
     override fun getText(): String {
-        return children.joinToString(" ") { it.getText() }
+        return children.map { it.getText() }.filter { it.isNotEmpty() }.joinToString(" ")
     }
 }
