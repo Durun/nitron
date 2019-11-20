@@ -36,7 +36,7 @@ object Codes : ReadWritableTable<Code>("codes") {
         it[rText] = value.rawText
         it[nText] = value.normalizedText
         it[hash] = value.hashString
-        it[start] = value.range.line.start
-        it[end] = value.range.line.stop
+        it[start] = value.range.line.first
+        it[end] = value.range.line.last
     }
 }
