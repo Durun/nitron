@@ -19,7 +19,7 @@ class CodeProcessor(
     private val splitVisitor: AstVisitor<List<AstNode>>
     private val nonNumberedRuleMap: NormalizingRuleMap
     private val numberedRuleMap: NormalizingRuleMap
-    private val ignoreVisitor: AstVisitor<AstNode>
+    private val ignoreVisitor: AstVisitor<AstNode?>
 
     init {
         parser = CommonParser(
