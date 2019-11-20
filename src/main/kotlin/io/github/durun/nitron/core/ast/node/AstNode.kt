@@ -2,7 +2,7 @@ package io.github.durun.nitron.core.ast.node
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.github.durun.nitron.core.ast.AstVisitor
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

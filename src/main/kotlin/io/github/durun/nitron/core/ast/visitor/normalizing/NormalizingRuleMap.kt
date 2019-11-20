@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.normalizing
+package io.github.durun.nitron.core.ast.visitor.normalizing
 
 /**
  * (正規化対象の規則, 正規化後の記号)の対応関係

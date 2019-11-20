@@ -1,7 +1,6 @@
 package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.AstVisitor
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 

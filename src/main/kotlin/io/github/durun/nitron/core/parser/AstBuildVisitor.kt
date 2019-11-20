@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.basic
+package io.github.durun.nitron.core.parser
 
 import io.github.durun.nitron.core.antlr4util.children
 import io.github.durun.nitron.core.ast.node.AstNode
