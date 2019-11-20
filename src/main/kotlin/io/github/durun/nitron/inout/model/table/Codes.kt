@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model.table
 
-import io.github.durun.nitron.core.ast.basic.lineRangeOf
+import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.model.Code
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
@@ -36,7 +36,7 @@ object Codes : ReadWritableTable<Code>("codes") {
         it[rText] = value.rawText
         it[nText] = value.normalizedText
         it[hash] = value.hashString
-        it[start] = value.range.line.start
-        it[end] = value.range.line.stop
+        it[start] = value.range.line.first
+        it[end] = value.range.line.last
     }
 }

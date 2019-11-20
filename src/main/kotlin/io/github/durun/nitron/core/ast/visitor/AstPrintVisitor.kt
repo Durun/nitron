@@ -1,11 +1,10 @@
 package io.github.durun.nitron.core.ast.visitor
 
-import io.github.durun.nitron.core.ast.AstNode
-import io.github.durun.nitron.core.ast.AstVisitor
-import io.github.durun.nitron.core.ast.basic.AstRuleNode
-import io.github.durun.nitron.core.ast.basic.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
 
-class AstPrintVisitor
+object AstPrintVisitor
     : AstVisitor<String> {
     override fun visit(node: AstNode): String {
         return ""

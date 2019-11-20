@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
-import io.github.durun.nitron.core.ast.basic.AstBuildVisitor
+import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.CommonParser
@@ -54,7 +54,7 @@ class AstPrintCommand : CliktCommand(
                 .forEach { input ->
                     val (tree, antlrParser) = parser.parse(input.readText(), config.grammar.startRule)
                     val ast = tree.accept(AstBuildVisitor(antlrParser))
-                    val text = ast.accept(AstPrintVisitor())
+                    val text = ast.accept(AstPrintVisitor)
                     output.println("\n@ ${input.path}")
                     output.println(text)
                 }
