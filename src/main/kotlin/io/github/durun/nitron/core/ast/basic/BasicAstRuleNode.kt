@@ -3,7 +3,6 @@ package io.github.durun.nitron.core.ast.basic
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.core.ast.AstNode
-import io.github.durun.nitron.core.ast.normalizing.normalizeByRules
 
 class BasicAstRuleNode
 private constructor(
@@ -41,30 +40,5 @@ private constructor(
         return children
                 .mapNotNull { it.getText() }
                 .joinToString(" ")
-    }
-
-    override fun pickByRules(rules: Collection<String>): List<AstNode> {
-        return if (rules.contains(this.ruleName))
-            listOf(this)
-        else
-            children.flatMap { it.pickByRules(rules) }
-    }
-
-    override fun pickRecursiveByRules(rules: Collection<String>): List<AstNode> {
-        return this.pickByRules(rules)
-                .flatMap { node ->
-                    val subtrees = node
-                            .children
-                            ?.flatMap { it.pickRecursiveByRules(rules) }
-                            ?: emptyList()
-                    val normNode = node
-                            .mapChildren { it.normalizeByRules(rules) }
-                    listOf(listOf(normNode), subtrees).flatten()
-                }
-    }
-
-    override fun mapChildren(map: (AstNode) -> AstNode): BasicAstRuleNode {
-        val newChildren = this.children.map(map)
-        return BasicAstRuleNode(ruleName, newChildren)
     }
 }

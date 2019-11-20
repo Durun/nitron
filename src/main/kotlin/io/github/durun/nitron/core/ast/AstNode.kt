@@ -39,30 +39,4 @@ interface AstNode {
      * @return 元のソースコード
      */
     fun getText(): String?
-
-    /**
-     * [AstNode]を分割する.
-     * レシーバーの部分木(自身を含む)のうち,
-     * ルートが[rules]のいずれかに該当する全ての最大の木を返す.
-     * @param [rules] 非終端規則
-     * @return 分割後の[AstNode]のリスト
-     */
-    fun pickByRules(rules: Collection<String>): List<AstNode>
-
-    /**
-     * [AstNode]を分割する.
-     * レシーバーの部分木のうち, ルートが[rules]のいずれかに該当する
-     * (1. 全ての最小の木),
-     * (2. 全ての最小でない木)
-     * を返す.
-     * (2)の真部分木のうち, ルートが[rules]のいずれかに該当する木は[NormalAstRuleNode]に置き換える.
-     * @param [rules] 非終端規則
-     * @return 分割後の[AstNode]のリスト
-     */
-    fun pickRecursiveByRules(rules: Collection<String>): List<AstNode>
-
-    /**
-     * 子ノードを[map]により置き換える.
-     */
-    fun mapChildren(map: (AstNode) -> AstNode): AstNode
 }
