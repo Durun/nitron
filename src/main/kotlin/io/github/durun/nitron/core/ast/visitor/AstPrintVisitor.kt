@@ -11,13 +11,13 @@ object AstPrintVisitor
     }
 
     override fun visitRule(node: AstRuleNode): String {
-        val thisTokens = node.getText()?.split(" ")?.let {
+        val thisTokens = node.getText().split(" ").let {
             val n = 3
             it
                     .take(n)
                     .joinToString(" ") +
                     if (n < it.size) " ..." else ""
-        }.orEmpty()
+        }
         val thisText = "${node.ruleName}\t\t$thisTokens"
         val childrenText = node.children.orEmpty()
                 .joinToString("\n") { it.accept(this) }
