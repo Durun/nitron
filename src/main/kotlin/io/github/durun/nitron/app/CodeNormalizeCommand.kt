@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
-import io.github.durun.nitron.core.ast.basic.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import java.io.File
 import java.io.PrintStream

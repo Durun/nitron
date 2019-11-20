@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model.table
 
-import io.github.durun.nitron.core.ast.basic.lineRangeOf
+import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement

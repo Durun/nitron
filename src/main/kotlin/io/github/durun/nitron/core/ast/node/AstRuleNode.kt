@@ -1,6 +1,5 @@
-package io.github.durun.nitron.core.ast.basic
+package io.github.durun.nitron.core.ast.node
 
-import io.github.durun.nitron.core.ast.AstNode
 import io.github.durun.nitron.core.ast.AstVisitor
 
 /**
