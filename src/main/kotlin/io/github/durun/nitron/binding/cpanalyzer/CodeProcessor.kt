@@ -17,6 +17,7 @@ import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
 
 class CodeProcessor(
@@ -115,7 +116,9 @@ private class CodeRecorder(
     private val writer = StructuresWriter(destination)
 
     private fun initTables(db: Database) {
-        SchemaUtils.createMissingTablesAndColumns(NodeTypeSets, Structures)
+        transaction(db) {
+            SchemaUtils.createMissingTablesAndColumns(NodeTypeSets, Structures)
+        }
     }
 
     init {
