@@ -10,9 +10,12 @@ import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
+import io.github.durun.nitron.inout.model.ast.table.Structures
 import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 
 class CodeProcessor(
         config: LangConfig,
@@ -100,6 +103,14 @@ private class CodeRecorder(
         destination: Database
 ) {
     private val writer = StructuresWriter(destination)
+
+    private fun initTables(db: Database) {
+        SchemaUtils.createMissingTablesAndColumns(NodeTypeSets, Structures)
+    }
+
+    init {
+        initTables(destination)
+    }
 
     fun write(ast: AstNode) {
         val structure = ast.toSerializable(nodeTypeSet)
