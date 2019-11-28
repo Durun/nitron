@@ -30,11 +30,11 @@ class StructuresDBTest : FreeSpec() {
     private val db: Database
 
     init {
-        langConfig = LangConfigLoader.load(langPath)
-        processor = CodeProcessor(langConfig)
-        val antlrParser = langConfig.grammar.getParser()    // TODO
-        nodeTypeSet = NodeTypeSet("java", antlrParser)
         db = SQLiteDatabase.connect(path)
+        langConfig = LangConfigLoader.load(langPath)
+        processor = CodeProcessor(langConfig, db = db)
+        val antlrParser = langConfig.grammar.getParser()    // TODO
+        nodeTypeSet = NodeTypeSet(grammarName = langConfig.fileName, parser =  antlrParser)
 
         "prepare" - {
             "Structure is serializable" {
@@ -100,7 +100,36 @@ class StructuresDBTest : FreeSpec() {
             }
             readValues shouldBe values
         }
+
+        "CodeProcessor can recode Structures" {
+            val value = javaCode
+                    .let { processor.parse(it) }
+
+            // init table
+            transaction(db) {
+                SchemaUtils.drop(Structures)
+                SchemaUtils.drop(NodeTypeSets)
+                SchemaUtils.create(Structures)
+                SchemaUtils.create(NodeTypeSets)
+            }
+
+            // write
+            println("writing: $value")
+            processor.write(value)
+            println("wrote: $value")
+
+            // read
+            val reader = StructuresReader(db)
+            val readValues = reader.read().toList()
+            readValues.forEach {
+                println("read: $it")
+            }
+
+            val orig = value.toSerializable(nodeTypeSet)
+            readValues.firstOrNull() shouldBe orig
+        }
     }
+
 
     private val javaCode = """package sample;
         class SampleClass {
