@@ -9,6 +9,7 @@ import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
 import io.github.durun.nitron.inout.model.ast.table.Structures
@@ -16,11 +17,20 @@ import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import java.nio.file.Path
 
 class CodeProcessor(
         config: LangConfig,
         db: Database? = null    // TODO recording feature should be separated
 ) {
+    constructor(
+            config: LangConfig,
+            dbPath: Path
+    ): this(
+            config = config,
+            db = SQLiteDatabase.connect(dbPath)
+    )
+
     private val parser: CommonParser
     private val startRule: String
     private val splitVisitor: AstVisitor<List<AstNode>>
