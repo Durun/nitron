@@ -7,11 +7,17 @@ import kotlinx.serialization.Serializable
 import java.nio.file.Path
 
 abstract class ConfigWithDir {
-    internal lateinit var dir: Path
+    internal lateinit var path: Path
+
+    val dir: Path
+        get() = path.toAbsolutePath().parent
+
+    val fileName: String
+        get() = path.fileName.toString()
 }
 
-fun <C : ConfigWithDir> C.setDir(dir: Path): C {
-    this.dir = dir
+internal fun <C : ConfigWithDir> C.setPath(filePath: Path): C {
+    this.path = filePath
     return this
 }
 
@@ -33,8 +39,7 @@ data class LangConfig(
         private val processConfig: ProcessConfig,
         val extensions: List<String>
 ) : ConfigWithDir() {
-    val grammar: GrammarConfig
-        get() = grammarConfig.setDir(dir)
+    val grammar: GrammarConfig by lazy { grammarConfig.setPath(path) }
     val process: ProcessConfig
         get() = processConfig
 }
