@@ -9,9 +9,14 @@ import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
+import io.github.durun.nitron.inout.model.ast.toSerializable
+import org.jetbrains.exposed.sql.Database
 
 class CodeProcessor(
-        config: LangConfig
+        config: LangConfig,
+        db: Database? = null    // TODO recording feature should be separated
 ) {
     private val parser: CommonParser
     private val startRule: String
@@ -19,6 +24,7 @@ class CodeProcessor(
     private val nonNumberedRuleMap: NormalizingRuleMap
     private val numberedRuleMap: NormalizingRuleMap
     private val ignoreVisitor: AstVisitor<AstNode?>
+    private val recorder: CodeRecorder? // TODO recording feature should be separated
 
     init {
         parser = CommonParser(
@@ -31,6 +37,16 @@ class CodeProcessor(
         numberedRuleMap = config.process.normalizeConfig.numberedRuleMap
         ignoreVisitor = AstIgnoreVisitor(config.process.normalizeConfig.ignoreRules)
         println("Parser compiled: config=${config.dir}")   // TODO
+
+        recorder = db?.let {
+            CodeRecorder(
+                    nodeTypeSet = NodeTypeSet(
+                            grammarName = config.fileName,
+                            parser = parser.getAntlrParser()
+                    ),
+                    destination = it
+            )
+        }
     }
 
     fun parse(input: String): AstNode {
@@ -70,5 +86,23 @@ class CodeProcessor(
         return input.map {
             it to proceess(it)
         }
+    }
+
+    fun write(ast: AstNode) {   // TODO recording feature should be separated
+        (recorder ?: throw IllegalStateException("CodeProcessor's db is not set"))
+                .write(ast)
+
+    }
+}
+
+private class CodeRecorder(
+        private val nodeTypeSet: NodeTypeSet,
+        destination: Database
+) {
+    private val writer = StructuresWriter(destination)
+
+    fun write(ast: AstNode) {
+        val structure = ast.toSerializable(nodeTypeSet)
+        writer.write(structure)
     }
 }
