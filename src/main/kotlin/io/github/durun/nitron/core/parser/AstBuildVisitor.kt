@@ -17,7 +17,7 @@ import org.antlr.v4.runtime.tree.*
 class AstBuildVisitor(
         private val parser: Parser
 ) : ParseTreeVisitor<AstNode> {
-    private val tokenTypeMap: Map<Int, String> = parser.tokenTypeMap.entries.map { it.value to it.key }.toMap()
+    private val tokenTypeMap: Map<Int, String> = TokenTypeBiMap(parser).fromIndex
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }

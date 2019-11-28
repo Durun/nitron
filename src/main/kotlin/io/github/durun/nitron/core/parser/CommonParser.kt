@@ -62,6 +62,14 @@ private constructor(
         val parser = pListener.getParser() ?: throw IllegalStateException("couldn't get parser")
         return Pair(tree, parser)
     }
+
+    fun getAntlrParser(): Parser {
+        return pListener.getParser()
+                ?: gParser.let {
+                    kotlin.runCatching { it.parse("") }
+                    pListener.getParser() ?: throw IllegalStateException("couldn't get parser")
+                }
+    }
 }
 
 private class ParserListener : DefaultListener() {
