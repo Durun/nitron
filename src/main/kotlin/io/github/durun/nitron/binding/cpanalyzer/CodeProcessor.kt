@@ -115,8 +115,8 @@ private class JsonCodeRecorder(
 
     fun write(ast: AstNode) {
         val structure = ast.toSerializable(nodeTypeSet)
-        writer.use {
-            it.write(structure)
+        writer.write(structure)
+    }
         }
     }
 }
