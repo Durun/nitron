@@ -9,8 +9,11 @@ import org.antlr.v4.runtime.Parser
  * 文法[grammar]が持つtokenType, ruleNameの集合
  */
 class NodeTypeSet internal constructor(
+        @JsonProperty
         val grammar: String,
+        @JsonProperty
         val tokenTypes: ArrayMap<String>,
+        @JsonProperty
         val ruleNames: ArrayMap<String>
 ) {
     constructor(grammarName: String, parser: Parser) : this(
