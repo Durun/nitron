@@ -145,20 +145,20 @@ class StructuresDBTest : FreeSpec() {
 
                 // write
                 println("writing: $values")
-                StructuresJsonWriter(file, nodeTypeSet).use {
-                    it.write(values)
-                }
+                StructuresJsonWriter(file, nodeTypeSet)
+                        .write(values)
                 println("wrote.")
 
                 // check
                 val text = file.readText()
                 println("file:")
                 val expected = jacksonObjectMapper().writeValueAsString(nodeTypeSet) + "\n" +
-                        values.joinToString("\n") { "{${encodeByteArray(it.hash)}:${jacksonObjectMapper().writeValueAsString(it.ast)}}" }
+                        values.joinToString("\n") { "{${encodeByteArray(it.hash)}:${jacksonObjectMapper().writeValueAsString(it.ast)}}" } + "\n"
                 text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->
                     print(it)
                     it shouldBe other
                 }
+                text shouldBe expected
             }
 
             "CodeProcessor can write Structures" {
