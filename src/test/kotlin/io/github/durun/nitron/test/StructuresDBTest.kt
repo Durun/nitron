@@ -164,11 +164,13 @@ class StructuresDBTest : FreeSpec() {
             "CodeProcessor can write Structures" {
                 val value = javaCode
                         .let { processor.parse(it) }
+                val n = 4
+                val values = (1..n).map { value }
 
                 // write
-                println("writing: $value")
-                processor.write(value)
-                println("wrote: $value")
+                println("writing: $values")
+                processor.write(values)
+                println("wrote.")
             }
         }
     }
