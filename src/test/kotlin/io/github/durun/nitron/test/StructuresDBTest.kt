@@ -1,16 +1,15 @@
 package io.github.durun.nitron.test
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
+import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.core.parser.CommonParser
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
-import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
-import io.github.durun.nitron.inout.model.ast.table.Structures
-import io.github.durun.nitron.inout.model.ast.table.StructuresReader
-import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
+import io.github.durun.nitron.inout.model.ast.table.*
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.shouldBe
@@ -127,6 +126,50 @@ class StructuresDBTest : FreeSpec() {
 
             val orig = value.toSerializable(nodeTypeSet)
             readValues.firstOrNull() shouldBe orig
+        }
+
+        "Test faster writer" - {
+            "StructuresJsonWriter can record Structure" {
+                val value = javaCode
+                        .let {
+                            val ast = processor.parse(it)
+                            processor.proceess(ast)!!
+                        }
+                        .toSerializable(nodeTypeSet)
+                val n = 4
+                val values = (1..n).map { value }
+
+                // create file
+                val file = createTempFile(directory = path.parent.toFile(), prefix = "ast", suffix = ".structures.jsons")
+                file.deleteOnExit()
+
+                // write
+                println("writing: $values")
+                StructuresJsonWriter(file, nodeTypeSet).use {
+                    it.write(values)
+                }
+                println("wrote.")
+
+                // check
+                val text = file.readText()
+                println("file:")
+                val expected = jacksonObjectMapper().writeValueAsString(nodeTypeSet) + "\n" +
+                        values.joinToString("\n") { "{${encodeByteArray(it.hash)}:${jacksonObjectMapper().writeValueAsString(it.ast)}}" }
+                text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->
+                    print(it)
+                    it shouldBe other
+                }
+            }
+
+            "CodeProcessor can write Structures" {
+                val value = javaCode
+                        .let { processor.parse(it) }
+
+                // write
+                println("writing: $value")
+                processor.write(value)
+                println("wrote: $value")
+            }
         }
     }
 
