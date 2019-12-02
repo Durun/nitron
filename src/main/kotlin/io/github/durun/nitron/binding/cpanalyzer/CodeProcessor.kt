@@ -98,7 +98,11 @@ class CodeProcessor(
     fun write(ast: AstNode) {   // TODO recording feature should be separated
         (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
                 .write(ast)
+    }
 
+    fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated
+        (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
+                .write(asts)
     }
 }
 
@@ -117,7 +121,12 @@ private class JsonCodeRecorder(
         val structure = ast.toSerializable(nodeTypeSet)
         writer.write(structure)
     }
+
+    fun write(asts: Iterable<AstNode>) {
+        val structures = asts.map {
+            it.toSerializable(nodeTypeSet)
         }
+        writer.write(structures)
     }
 }
 
