@@ -15,9 +15,11 @@ class AstTerminalNode(
          * 終端規則
          */
         val tokenType: String,
-        override val children: List<AstNode>? = null,
         override val range: TextRange
 ) : AstNode {
+    override val children: List<AstNode>?
+        get() = null
+
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
 }
