@@ -10,6 +10,7 @@ import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
 import io.github.durun.nitron.inout.model.ast.table.Structures
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -126,7 +127,8 @@ private class JsonCodeRecorder(
         val structures = asts.map {
             it.toSerializable(nodeTypeSet)
         }
-        writer.write(structures)
+        merge(structures)
+                ?.let { writer.write(it) }
     }
 }
 
