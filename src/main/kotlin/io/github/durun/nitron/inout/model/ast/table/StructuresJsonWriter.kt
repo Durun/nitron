@@ -47,7 +47,7 @@ class StructuresJsonWriter(
     private fun writeAsString(value: Structure): String {
         val hash = encodeByteArray(value.hash)
         val ast = mapper.writeValueAsString(value.ast)
-        return "{$hash:$ast}"
+        return """{"$hash":$ast}"""
     }
 
     override fun write(value: Structure) {

@@ -1,14 +1,19 @@
 package io.github.durun.nitron.test
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
+import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
+import io.github.durun.nitron.core.decodeByteArray
 import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.inout.model.ast.SerializableAst
 import io.github.durun.nitron.inout.model.ast.table.*
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.kotlintest.matchers.types.shouldNotBeNull
@@ -153,7 +158,8 @@ class StructuresDBTest : FreeSpec() {
                 val text = file.readText()
                 println("file:")
                 val expected = jacksonObjectMapper().writeValueAsString(nodeTypeSet) + "\n" +
-                        values.joinToString("\n") { "{${encodeByteArray(it.hash)}:${jacksonObjectMapper().writeValueAsString(it.ast)}}" } + "\n"
+                        values.joinToString("\n") { """{"${encodeByteArray(it.hash)}":${jacksonObjectMapper().writeValueAsString(it.ast)}}""" } + "\n"
+
                 text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->
                     print(it)
                     it shouldBe other
@@ -171,6 +177,38 @@ class StructuresDBTest : FreeSpec() {
                 println("writing: $values")
                 processor.write(values)
                 println("wrote.")
+            }
+
+            "recorded Structures are readable" {
+                val ast = processor.parse(javaCode)
+                val value = processor.proceess(ast)!!
+
+                // create file
+                val file = createTempFile(directory = path.parent.toFile(), prefix = "ast", suffix = ".structures.jsons")
+                        .let {
+                            it.delete()
+                            it.toPath()
+                        }
+
+                // write
+                println("writing: $value")
+                JsonCodeRecorder(nodeTypeSet, file)
+                        .write(value)
+                println(value.getText())
+                println("wrote.")
+
+                // read
+                val text = file.toFile().readLines().drop(1).first()
+                println("parsing:")
+                val objs = jacksonObjectMapper().readValue<Map<String, SerializableAst.Node>>(text)
+                val (hash, node) = objs.entries.first()
+                println("hash=$hash")
+                println(node.text)
+                println("parsed.")
+
+                // check
+                node.text shouldBe value.getText()
+                decodeByteArray(hash) shouldBe value.toHash()
             }
         }
     }

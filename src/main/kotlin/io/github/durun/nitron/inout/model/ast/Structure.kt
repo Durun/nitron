@@ -1,5 +1,7 @@
 package io.github.durun.nitron.inout.model.ast
 
+import io.github.durun.nitron.core.codeHashOf
+
 /**
  * コード片の構文木情報.
  * エクスポート可能
@@ -20,6 +22,23 @@ class Structure internal constructor(
          */
         val hash: ByteArray
 ) {
+    constructor(nodeTypeSet: NodeTypeSet, ast: SerializableAst.Node) : this(
+            nodeTypeSet = nodeTypeSet,
+            ast = ast,
+            hash = codeHashOf(ast.text)
+    )
+
+    fun merge(others: List<Structure>): Structure {
+        val nodes = others.map { it.ast }
+                .toMutableList()
+        nodes.add(0, this.ast)
+        val newAst = SerializableAst.NodeList(nodes)
+        return Structure(
+                nodeTypeSet = nodeTypeSet,
+                ast = newAst
+        )
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -39,4 +58,11 @@ class Structure internal constructor(
         result = 31 * result + hash.contentHashCode()
         return result
     }
+}
+
+
+fun merge(structures: Iterable<Structure>): Structure? {
+    val first = structures.firstOrNull()
+    val remain = structures.drop(1)
+    return first?.merge(remain)
 }
