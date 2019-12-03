@@ -19,11 +19,15 @@ class SerializableAst {
     interface Node {
         @get:JsonIgnore
         val type: Int
+        @get:JsonIgnore
+        val text: String
     }
 
     interface NonTerminalNode : Node {
         @get:JsonIgnore
         val children: List<Node>
+        override val text: String
+            get() = this.children.joinToString(" ") { it.text }
     }
 
     class TerminalNode(
@@ -36,8 +40,8 @@ class SerializableAst {
 
         override val type: Int
             get() = data.key
-        val text: String
-            @JsonIgnore get() = data.value
+        override val text: String
+            get() = data.value
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -94,8 +98,8 @@ class SerializableAst {
 
         override val type: Int
             get() = data.key
-        val text: String
-            @JsonIgnore get() = data.value
+        override val text: String
+            get() = data.value
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
