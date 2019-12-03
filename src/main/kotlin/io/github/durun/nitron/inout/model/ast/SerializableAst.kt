@@ -3,6 +3,7 @@ package io.github.durun.nitron.inout.model.ast
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import io.github.durun.nitron.util.entryOf
 
 class SerializableAst {
 
@@ -64,7 +65,7 @@ class SerializableAst {
             Node,
             Map.Entry<Int, String> by data {
 
-        constructor(type: Int, text: String) : this(Entry(type, text))
+        constructor(type: Int, text: String) : this(entryOf(type, text))
 
         override val type: Int
             get() = data.key
@@ -93,7 +94,7 @@ class SerializableAst {
             NonTerminalNode,
             Map.Entry<Int, List<Node>> by data {
 
-        constructor(type: Int, children: List<Node>) : this(Entry(type, children))
+        constructor(type: Int, children: List<Node>) : this(entryOf(type, children))
 
         override val type: Int
             get() = data.key
@@ -122,7 +123,7 @@ class SerializableAst {
             Node,
             Map.Entry<Int, String> by data {
 
-        constructor(type: Int, text: String) : this(Entry(type, text))
+        constructor(type: Int, text: String) : this(entryOf(type, text))
 
         override val type: Int
             get() = data.key
@@ -144,10 +145,4 @@ class SerializableAst {
             return data.hashCode()
         }
     }
-
-
-    private class Entry<K, V>(
-            override val key: K,
-            override val value: V
-    ) : Map.Entry<K, V>
 }
