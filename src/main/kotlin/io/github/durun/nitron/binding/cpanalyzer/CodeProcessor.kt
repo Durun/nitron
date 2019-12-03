@@ -107,7 +107,7 @@ class CodeProcessor(
     }
 }
 
-private class JsonCodeRecorder(
+internal class JsonCodeRecorder(
         private val nodeTypeSet: NodeTypeSet,
         destination: Path
 ) {
