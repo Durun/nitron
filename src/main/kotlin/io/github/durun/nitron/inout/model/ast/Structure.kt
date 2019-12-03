@@ -59,3 +59,10 @@ class Structure internal constructor(
         return result
     }
 }
+
+
+fun merge(structures: Iterable<Structure>): Structure? {
+    val first = structures.firstOrNull()
+    val remain = structures.drop(1)
+    return first?.merge(remain)
+}
