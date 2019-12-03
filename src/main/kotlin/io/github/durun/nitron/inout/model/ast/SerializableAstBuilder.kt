@@ -5,13 +5,11 @@ import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
-import io.github.durun.nitron.core.toHash
 
 fun AstNode.toSerializable(nodeTypeSet: NodeTypeSet): Structure {
     return Structure(
             nodeTypeSet = nodeTypeSet,
-            ast = this.accept(SerializableAstBuildVisitor(nodeTypeSet)),
-            hash = this.toHash()
+            ast = this.accept(SerializableAstBuildVisitor(nodeTypeSet))
     )
 }
 
