@@ -153,7 +153,8 @@ class StructuresDBTest : FreeSpec() {
                 val text = file.readText()
                 println("file:")
                 val expected = jacksonObjectMapper().writeValueAsString(nodeTypeSet) + "\n" +
-                        values.joinToString("\n") { "{${encodeByteArray(it.hash)}:${jacksonObjectMapper().writeValueAsString(it.ast)}}" } + "\n"
+                        values.joinToString("\n") { """{"${encodeByteArray(it.hash)}":${jacksonObjectMapper().writeValueAsString(it.ast)}}""" } + "\n"
+
                 text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->
                     print(it)
                     it shouldBe other
