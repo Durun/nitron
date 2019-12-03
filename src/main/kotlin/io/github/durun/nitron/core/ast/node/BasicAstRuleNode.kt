@@ -1,19 +1,10 @@
 package io.github.durun.nitron.core.ast.node
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-
 class BasicAstRuleNode
 private constructor(
-        @JsonProperty("ruleName")
         override val ruleName: String,
-
-        @JsonProperty("children")
         override val children: List<AstNode>,
-
-        @JsonProperty("range")
         override val range: TextRange?
-
 ) : AstRuleNode {
     constructor(
             ruleName: String,
@@ -34,7 +25,6 @@ private constructor(
                     }
     )
 
-    @JsonIgnore
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
     }
