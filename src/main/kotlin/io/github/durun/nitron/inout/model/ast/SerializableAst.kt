@@ -21,6 +21,11 @@ class SerializableAst {
         val type: Int
     }
 
+    interface NonTerminalNode : Node {
+        @get:JsonIgnore
+        val children: List<Node>
+    }
+
     class TerminalNode(
             private val data: Map.Entry<Int, String>
     ) :
