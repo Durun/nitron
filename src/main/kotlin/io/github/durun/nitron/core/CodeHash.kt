@@ -21,8 +21,12 @@ internal fun Blob.toBytes(): ByteArray {
 }
 
 private val md5: MessageDigest = MessageDigest.getInstance("MD5")
+internal fun codeHashOf(code: String): ByteArray {
+    return md5.digest(code.toByteArray())
+}
+
 internal fun AstNode.toHash(): ByteArray {
-    return md5.digest(this.getText().toByteArray())
+    return codeHashOf(this.getText())
 }
 
 internal fun encodeByteArray(bytes: ByteArray): String {
