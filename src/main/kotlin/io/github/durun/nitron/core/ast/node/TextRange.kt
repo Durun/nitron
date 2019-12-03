@@ -1,6 +1,5 @@
 package io.github.durun.nitron.core.ast.node
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import kotlin.math.max
 import kotlin.math.min
 
@@ -11,12 +10,11 @@ class TextRange internal constructor(
         /**
          * 文字単位
          */
-        @JsonProperty("char")
         val char: IntRange?,
+
         /**
          * 行単位
          */
-        @JsonProperty("line")
         val line: IntRange
 ) {
     /**

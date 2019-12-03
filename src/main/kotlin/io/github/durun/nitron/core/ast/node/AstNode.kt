@@ -1,19 +1,7 @@
 package io.github.durun.nitron.core.ast.node
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "type"
-)
-@JsonSubTypes(
-        JsonSubTypes.Type(name = "Rule", value = BasicAstRuleNode::class),
-        JsonSubTypes.Type(name = "Terminal", value = AstTerminalNode::class),
-        JsonSubTypes.Type(name = "NormalizedRule", value = NormalAstRuleNode::class)
-)
 /**
  * 構文木
  */
