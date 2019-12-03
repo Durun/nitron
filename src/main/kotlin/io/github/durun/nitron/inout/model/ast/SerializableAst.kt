@@ -58,15 +58,15 @@ class SerializableAst {
     class RuleNode(
             private val data: Map.Entry<Int, List<Node>>
     ) :
-            Node,
+            NonTerminalNode,
             Map.Entry<Int, List<Node>> by data {
 
         constructor(type: Int, children: List<Node>) : this(Entry(type, children))
 
         override val type: Int
             get() = data.key
-        val children: List<Node>
-            @JsonIgnore get() = data.value
+        override val children: List<Node>
+            get() = data.value
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
