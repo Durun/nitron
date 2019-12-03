@@ -12,6 +12,7 @@ class SerializableAst {
             property = "t"
     )
     @JsonSubTypes(
+            JsonSubTypes.Type(name = "l", value = NodeList::class),
             JsonSubTypes.Type(name = "t", value = TerminalNode::class),
             JsonSubTypes.Type(name = "r", value = RuleNode::class),
             JsonSubTypes.Type(name = "R", value = NormalizedRuleNode::class)
@@ -28,6 +29,34 @@ class SerializableAst {
         val children: List<Node>
         override val text: String
             get() = this.children.joinToString(" ") { it.text }
+    }
+
+    class NodeList(
+            private val data: List<Node>
+    ) :
+            NonTerminalNode,
+            List<Node> by data {
+
+        override val type: Int
+            get() = -1  // TODO
+
+        override val children: List<Node>
+            get() = data
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as NodeList
+
+            if (data != other.data) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
     }
 
     class TerminalNode(
