@@ -1,5 +1,7 @@
 package io.github.durun.nitron.inout.model.ast
 
+import io.github.durun.nitron.core.codeHashOf
+
 /**
  * コード片の構文木情報.
  * エクスポート可能
@@ -20,6 +22,11 @@ class Structure internal constructor(
          */
         val hash: ByteArray
 ) {
+    constructor(nodeTypeSet: NodeTypeSet, ast: SerializableAst.Node) : this(
+            nodeTypeSet = nodeTypeSet,
+            ast = ast,
+            hash = codeHashOf(ast.text)
+    )
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
