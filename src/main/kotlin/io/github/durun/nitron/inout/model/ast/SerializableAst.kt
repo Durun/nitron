@@ -8,8 +8,7 @@ class SerializableAst {
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
-            include = JsonTypeInfo.As.WRAPPER_OBJECT,
-            property = "t"
+            include = JsonTypeInfo.As.WRAPPER_OBJECT
     )
     @JsonSubTypes(
             JsonSubTypes.Type(name = "l", value = NodeList::class),
