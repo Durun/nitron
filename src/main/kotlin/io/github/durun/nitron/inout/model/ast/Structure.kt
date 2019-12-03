@@ -27,6 +27,18 @@ class Structure internal constructor(
             ast = ast,
             hash = codeHashOf(ast.text)
     )
+
+    fun merge(others: List<Structure>): Structure {
+        val nodes = others.map { it.ast }
+                .toMutableList()
+        nodes.add(0, this.ast)
+        val newAst = SerializableAst.NodeList(nodes)
+        return Structure(
+                nodeTypeSet = nodeTypeSet,
+                ast = newAst
+        )
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
