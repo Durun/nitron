@@ -32,6 +32,7 @@ private class AstJsonImporter(
             reader = AstJsonReader(input, bufferSize = 100000, progressOutput = System.out),
             writer = AstTableWriter(output, bufferSize = 1000)
     )
+
     constructor(input: File, output: File) : this(input.toPath(), output.toPath())
 
     fun run() {
