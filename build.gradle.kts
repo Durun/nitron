@@ -19,6 +19,9 @@ plugins {
 
     id("org.jetbrains.dokka") version "0.10.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.3.50"
+
+    // for making fatJar
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
 repositories {
