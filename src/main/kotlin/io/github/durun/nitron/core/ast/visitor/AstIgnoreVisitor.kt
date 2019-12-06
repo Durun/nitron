@@ -18,7 +18,7 @@ class AstIgnoreVisitor(
         else {
             val children = node.children?.mapNotNull { it.accept(this) }
             if (children.isNullOrEmpty()) null
-            else BasicAstRuleNode(node.ruleName, children)
+            else node.replaceChildren(children)
         }
     }
 

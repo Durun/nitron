@@ -3,7 +3,6 @@ package io.github.durun.nitron.core.ast.visitor
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 
 class AstSplitVisitor(
         private val splitRules: List<String>
@@ -24,7 +23,7 @@ class AstSplitVisitor(
                 .filter { it.isNotEmpty() }
                 .map {
                     if (hasSplitRule(it.firstOrNull())) it.first()
-                    else BasicAstRuleNode(node.ruleName, it)
+                    else node.replaceChildren(it)
                 }
     }
 

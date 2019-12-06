@@ -33,7 +33,7 @@ class AstNormalizeVisitor(
                 }
                 ?: node.let {
                     val children = node.children.orEmpty().map { it.accept(this) }
-                    BasicAstRuleNode(ruleName = it.ruleName, children = children)
+                    node.replaceChildren(children)
                 }
         visitedRuleStack.pop()                  // leave
         return newNode
