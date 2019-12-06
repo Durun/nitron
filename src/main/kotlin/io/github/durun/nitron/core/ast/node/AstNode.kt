@@ -7,11 +7,6 @@ import io.github.durun.nitron.core.ast.visitor.AstVisitor
  */
 interface AstNode {
     /**
-     * 元のソースコードとの対応位置
-     */
-    val range: TextRange?
-
-    /**
      * 子ノード
      */
     val children: List<AstNode>?

@@ -9,14 +9,26 @@ class AstTerminalNode(
         /**
          * トークン
          */
-        val token: String,
+        token: String,
 
         /**
          * 終端規則
          */
         val tokenType: String,
-        override val range: TextRange
+
+        /**
+         * 元のソースコードとの対応位置
+         */
+        val line: Int
 ) : AstNode {
+    var token: String = token
+        private set
+
+    fun replaceToken(newToken: String): AstTerminalNode {
+        this.token = newToken
+        return this
+    }
+
     override val children: List<AstNode>?
         get() = null
 

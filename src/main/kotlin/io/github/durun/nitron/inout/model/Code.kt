@@ -1,6 +1,5 @@
 package io.github.durun.nitron.inout.model
 
-import io.github.durun.nitron.core.ast.node.TextRange
 import java.security.MessageDigest
 
 
@@ -8,7 +7,7 @@ class Code(
         val softwareName: String,
         val rawText: String,
         val normalizedText: String,
-        val range: TextRange,
+        val range: IntRange,
         val id: Int? = null
 ) {
     companion object {

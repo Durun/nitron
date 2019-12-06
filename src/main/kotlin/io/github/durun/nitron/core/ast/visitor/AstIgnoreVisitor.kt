@@ -3,7 +3,6 @@ package io.github.durun.nitron.core.ast.visitor
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 
 class AstIgnoreVisitor(
         private val ignoreRules: List<String>
@@ -18,7 +17,7 @@ class AstIgnoreVisitor(
         else {
             val children = node.children?.mapNotNull { it.accept(this) }
             if (children.isNullOrEmpty()) null
-            else BasicAstRuleNode(node.ruleName, children)
+            else node.replaceChildren(children)
         }
     }
 

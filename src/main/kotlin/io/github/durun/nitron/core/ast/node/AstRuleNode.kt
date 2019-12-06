@@ -11,5 +11,7 @@ interface AstRuleNode : AstNode {
      */
     val ruleName: String
 
+    fun replaceChildren(newChildren: List<AstNode>): AstRuleNode
+
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitRule(this)
 }

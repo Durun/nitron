@@ -1,6 +1,9 @@
 package io.github.durun.nitron.core.ast.visitor.normalizing
 
-import io.github.durun.nitron.core.ast.node.*
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
 import kotlin.collections.HashMap
@@ -33,7 +36,7 @@ class AstNormalizeVisitor(
                 }
                 ?: node.let {
                     val children = node.children.orEmpty().map { it.accept(this) }
-                    BasicAstRuleNode(ruleName = it.ruleName, children = children)
+                    node.replaceChildren(children)
                 }
         visitedRuleStack.pop()                  // leave
         return newNode
@@ -43,9 +46,7 @@ class AstNormalizeVisitor(
         visitedRuleStack.push(node.tokenType)   //  enter
         val newToken = node.normalizeIfNeeded(visitedRuleStack)
         val newNode = newToken
-                ?.let {
-                    AstTerminalNode(token = it, tokenType = node.tokenType, range = node.range)
-                }
+                ?.let { node.replaceToken(it) }
                 ?: node
         visitedRuleStack.pop()                  // leave
         return newNode

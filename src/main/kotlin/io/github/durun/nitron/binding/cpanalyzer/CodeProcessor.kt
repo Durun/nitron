@@ -27,6 +27,7 @@ class CodeProcessor(
 ) {
 
     private val parser: CommonParser
+    private val nodeBuilder: AstBuildVisitor
     private val startRule: String
     private val splitVisitor: AstVisitor<List<AstNode>>
     private val nonNumberedRuleMap: NormalizingRuleMap
@@ -39,6 +40,7 @@ class CodeProcessor(
                 grammarFiles = config.grammar.grammarFilePaths,
                 utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
+        nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
         startRule = config.grammar.startRule
         splitVisitor = AstSplitVisitor(config.process.splitConfig.splitRules)
         nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap
@@ -58,8 +60,8 @@ class CodeProcessor(
     }
 
     fun parse(input: String): AstNode {
-        val (tree, antlrParser) = parser.parse(input, startRule)
-        return tree.accept(AstBuildVisitor(antlrParser))
+        val tree = parser.parse(input, startRule)
+        return tree.accept(nodeBuilder)
     }
 
     fun split(input: AstNode): List<AstNode> {

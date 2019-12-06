@@ -43,14 +43,12 @@ private constructor(
         gParser.compile()
     }
 
-    fun parse(input: String, startRuleName: String?): Pair<ParserRuleContext, Parser> {
-        val tree = gParser.parse(
+    fun parse(input: String, startRuleName: String?): ParserRuleContext {
+        return gParser.parse(
                 input,
                 startRuleName,
                 GenericParser.CaseSensitiveType.NONE
         )
-        val parser = pListener.getParser() ?: throw IllegalStateException("couldn't get parser")
-        return Pair(tree, parser)
     }
 
     fun parse(input: Path, startRuleName: String?): Pair<ParserRuleContext, Parser> {

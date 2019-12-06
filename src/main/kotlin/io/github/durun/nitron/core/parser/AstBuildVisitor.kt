@@ -4,7 +4,6 @@ import io.github.durun.nitron.core.antlr4util.children
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.node.textRangeOf
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 
@@ -15,9 +14,10 @@ import org.antlr.v4.runtime.tree.*
  * @param [parser] 文法規則の情報を持つ[Parser].
  */
 class AstBuildVisitor(
-        private val parser: Parser
+        parser: Parser
 ) : ParseTreeVisitor<AstNode> {
     private val tokenTypeMap: Map<Int, String> = TokenTypeBiMap(parser).fromIndex
+    private val ruleNames: Array<String> = parser.ruleNames
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
@@ -25,8 +25,7 @@ class AstBuildVisitor(
 
         val ruleIndex = node.ruleContext?.ruleIndex
                 ?: throw Exception("Rulenode has no ruleIndex")
-        val ruleName = parser.ruleNames[ruleIndex]
-                ?: throw Exception("can't get ruleName")
+        val ruleName = ruleNames[ruleIndex]
         return BasicAstRuleNode(
                 ruleName = ruleName,
                 children = children
@@ -41,12 +40,7 @@ class AstBuildVisitor(
         return AstTerminalNode(
                 token = token,
                 tokenType = tokenType,
-                range = textRangeOf(
-                        charStart = symbol.startIndex,
-                        charStop = symbol.stopIndex,
-                        lineStart = symbol.line,
-                        lineStop = symbol.line
-                )
+                line = symbol.line
         )
     }
 
