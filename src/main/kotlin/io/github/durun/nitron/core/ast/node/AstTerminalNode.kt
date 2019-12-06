@@ -15,7 +15,11 @@ class AstTerminalNode(
          * 終端規則
          */
         val tokenType: String,
-        override val range: TextRange
+
+        /**
+         * 元のソースコードとの対応位置
+         */
+        val range: TextRange
 ) : AstNode {
     override val children: List<AstNode>?
         get() = null

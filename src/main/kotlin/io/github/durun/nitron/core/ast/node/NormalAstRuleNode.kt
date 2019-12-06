@@ -5,7 +5,6 @@ package io.github.durun.nitron.core.ast.node
  */
 class NormalAstRuleNode(
         override val ruleName: String,
-        override val range: TextRange?,
         private val text: String? = null
 ) : AstRuleNode {
     /**
@@ -13,7 +12,6 @@ class NormalAstRuleNode(
      */
     constructor(originalNode: AstRuleNode, text: String? = null) : this(
             ruleName = originalNode.ruleName,
-            range = originalNode.range,
             text = text
     )
 
