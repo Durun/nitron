@@ -8,7 +8,7 @@ class Code(
         val softwareName: String,
         val rawText: String,
         val normalizedText: String,
-        val range: TextRange,
+        val range: IntRange,
         val id: Int? = null
 ) {
     companion object {
