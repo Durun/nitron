@@ -223,8 +223,6 @@ class StructuresDBTest : FreeSpec() {
     """.trimIndent()
 
     private fun GrammarConfig.getParser(): Parser {
-        val (_, parser) = CommonParser(grammarFilePaths, utilJavaFilePaths)
-                .parse(input = "package sample;", startRuleName = startRule)
-        return parser
+        return CommonParser(grammarFilePaths, utilJavaFilePaths).getAntlrParser()
     }
 }
