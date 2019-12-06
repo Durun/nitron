@@ -3,7 +3,6 @@
  *
  * This generated file contains a sample Kotlin application project to get you started.
  */
-import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 group = "io.github.durun"
@@ -70,27 +69,6 @@ val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
 }
 
-
-/**
- * Creates fat-jar/uber-jar.
- */
-val fatJar by tasks.register<Jar>("fatJar") {
-    baseName = "${project.name}-fatJar"
-    manifest {
-        attributes(
-                "Implementation-Title" to project.name,
-                "Implementation-Version" to project.version,
-                "Main-Class" to project.application.mainClassName
-        )
-    }
-    from(
-            configurations.runtimeClasspath.get().map{
-                if (it.isDirectory) it else zipTree(it)
-            }
-    )
-    with(tasks.jar.get() as CopySpec)
-}
-build.dependsOn(fatJar)
 
 /**
  * Generate KDoc
