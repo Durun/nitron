@@ -43,9 +43,7 @@ class AstNormalizeVisitor(
         visitedRuleStack.push(node.tokenType)   //  enter
         val newToken = node.normalizeIfNeeded(visitedRuleStack)
         val newNode = newToken
-                ?.let {
-                    AstTerminalNode(token = it, tokenType = node.tokenType, line = node.line)
-                }
+                ?.let { node.replaceToken(it) }
                 ?: node
         visitedRuleStack.pop()                  // leave
         return newNode
