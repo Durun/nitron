@@ -15,9 +15,10 @@ import org.antlr.v4.runtime.tree.*
  * @param [parser] 文法規則の情報を持つ[Parser].
  */
 class AstBuildVisitor(
-        private val parser: Parser
+        parser: Parser
 ) : ParseTreeVisitor<AstNode> {
     private val tokenTypeMap: Map<Int, String> = TokenTypeBiMap(parser).fromIndex
+    private val ruleNames: Array<String> = parser.ruleNames
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
@@ -25,7 +26,7 @@ class AstBuildVisitor(
 
         val ruleIndex = node.ruleContext?.ruleIndex
                 ?: throw Exception("Rulenode has no ruleIndex")
-        val ruleName = parser.ruleNames[ruleIndex]
+        val ruleName = ruleNames[ruleIndex]
                 ?: throw Exception("can't get ruleName")
         return BasicAstRuleNode(
                 ruleName = ruleName,
