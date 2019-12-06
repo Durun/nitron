@@ -19,7 +19,7 @@ class AstTerminalNode(
         /**
          * 元のソースコードとの対応位置
          */
-        val range: TextRange
+        val line: Int
 ) : AstNode {
     override val children: List<AstNode>?
         get() = null

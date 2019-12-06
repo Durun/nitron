@@ -39,10 +39,7 @@ class AstBuildVisitor(
         return AstTerminalNode(
                 token = token,
                 tokenType = tokenType,
-                range = lineRangeOf(
-                        start = symbol.line,
-                        stop = symbol.line
-                )
+                line = symbol.line
         )
     }
 
