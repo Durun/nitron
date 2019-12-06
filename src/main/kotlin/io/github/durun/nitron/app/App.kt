@@ -11,5 +11,6 @@ class App : CliktCommand() {
 
 fun main(args: Array<String>) = App().subcommands(
         AstPrintCommand(),
-        CodeNormalizeCommand()
+        CodeNormalizeCommand(),
+        AstJsonImportCommand()
 ).main(args)

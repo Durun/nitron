@@ -3,6 +3,7 @@ package io.github.durun.nitron.inout.model.ast
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import io.github.durun.nitron.core.codeHashOf
 import io.github.durun.nitron.util.entryOf
 
 class SerializableAst {
@@ -22,6 +23,8 @@ class SerializableAst {
         val type: Int
         @get:JsonIgnore
         val text: String
+
+        fun toHash(): ByteArray = codeHashOf(text)
     }
 
     interface NonTerminalNode : Node {
