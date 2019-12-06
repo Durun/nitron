@@ -8,11 +8,6 @@ import kotlin.math.min
  */
 class TextRange internal constructor(
         /**
-         * 文字単位
-         */
-        val char: IntRange?,
-
-        /**
          * 行単位
          */
         val line: IntRange
@@ -22,7 +17,6 @@ class TextRange internal constructor(
      */
     fun include(other: TextRange): TextRange {
         return TextRange(
-                char = other.char?.let { this.char?.include(it) },
                 line = this.line.include(other.line)
         )
     }
@@ -40,29 +34,18 @@ class TextRange internal constructor(
 
         other as TextRange
 
-        if (char != other.char) return false
         if (line != other.line) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = char.hashCode()
-        result = 31 * result + line.hashCode()
-        return result
+        return line.hashCode()
     }
-}
-
-fun textRangeOf(charStart: Int, charStop: Int, lineStart: Int, lineStop: Int): TextRange {
-    return TextRange(
-            char = IntRange(charStart, charStop),
-            line = IntRange(lineStart, lineStop)
-    )
 }
 
 fun lineRangeOf(start: Int, stop: Int): TextRange {
     return TextRange(
-            char = null,
             line = IntRange(start, stop)
     )
 }

@@ -1,10 +1,7 @@
 package io.github.durun.nitron.core.parser
 
 import io.github.durun.nitron.core.antlr4util.children
-import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.node.textRangeOf
+import io.github.durun.nitron.core.ast.node.*
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 
@@ -42,11 +39,9 @@ class AstBuildVisitor(
         return AstTerminalNode(
                 token = token,
                 tokenType = tokenType,
-                range = textRangeOf(
-                        charStart = symbol.startIndex,
-                        charStop = symbol.stopIndex,
-                        lineStart = symbol.line,
-                        lineStop = symbol.line
+                range = lineRangeOf(
+                        start = symbol.line,
+                        stop = symbol.line
                 )
         )
     }
