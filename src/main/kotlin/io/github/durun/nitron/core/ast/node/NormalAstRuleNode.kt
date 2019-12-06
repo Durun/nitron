@@ -11,7 +11,7 @@ class NormalAstRuleNode(
     /**
      *  @param [originalNode] 元の非終端ノード
      */
-    constructor(originalNode: AstRuleNode, text: String? = null): this(
+    constructor(originalNode: AstRuleNode, text: String? = null) : this(
             ruleName = originalNode.ruleName,
             range = originalNode.range,
             text = text
