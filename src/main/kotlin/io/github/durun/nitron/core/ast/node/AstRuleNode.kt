@@ -9,7 +9,11 @@ interface AstRuleNode : AstNode {
     /**
      * 非終端規則
      */
+    @Deprecated("use type", ReplaceWith("type.name"))
     val ruleName: String
+        get() = type.name
+
+    override val type: Rule
 
     fun replaceChildren(newChildren: List<AstNode>): AstRuleNode
 
