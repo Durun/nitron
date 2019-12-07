@@ -9,9 +9,9 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
 }
 
 class NodeTypePool private constructor(
-        private val tokenTypes: List<TokenType?>,
+        private val tokenTypeList: List<TokenType?>,
         private val tokenTypesRemain: Map<Int, TokenType>,
-        private val rules: List<Rule>
+        private val ruleList: List<Rule>
 ) {
     internal constructor(antlrParser: Parser) : this(
             tokenTypeMap = antlrParser.tokenTypeMap,
@@ -33,7 +33,7 @@ class NodeTypePool private constructor(
     )
 
     private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>) : this(
-            tokenTypes = tokenTypeMap
+            tokenTypeList = tokenTypeMap
                     .let { typeMap ->
                         val max = tokenTypeMap.keys.max()
                         val range = max?.let { 0..it }
@@ -41,18 +41,21 @@ class NodeTypePool private constructor(
                                 .orEmpty()
                     },
             tokenTypesRemain = tokenTypeMap.filterKeys { it < 0 },
-            rules = rules
+            ruleList = rules
     )
 
+    val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
+    val rules: Set<Rule> by lazy { ruleList.toSet() }
+    val allTypes: Set<NodeType> by lazy { tokenTypes + ruleList.toSet() }
 
-    fun getTokenType(index: Int): TokenType? = tokenTypes.getOrNull(index) ?: tokenTypesRemain[index]
-    fun getRule(index: Int): Rule? = rules.getOrNull(index)
+    fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
+    fun getRule(index: Int): Rule? = ruleList.getOrNull(index)
 
     fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
         return NodeTypePool(
-                tokenTypes = tokenTypes.map { if (remainRules.contains(it?.name)) it else null },
+                tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
                 tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
-                rules = rules.filter { remainRules.contains(it.name) }
+                ruleList = ruleList.filter { remainRules.contains(it.name) }
         )
     }
 }
