@@ -4,6 +4,7 @@ package io.github.durun.nitron.core.ast.visitor.normalizing
  * (正規化対象の規則, 正規化後の記号)の対応関係
  * @param [ruleMap] key=正規化対象の構造を 親->子孫 の順に格納したリスト, value=正帰化後の記号
  */
+@Deprecated("", ReplaceWith("Map<List<String>, String>"))
 class NormalizingRuleMap(
         private val ruleMap: Map<List<String>, String>
 ) : Map<List<String>, String> {
