@@ -79,7 +79,7 @@ class CodeProcessor(
     }
 
     private fun normalize(input: AstNode): AstNode {
-        val visitor = astNormalizeVisitorOf(nonNumberedRuleMap, numberedRuleMap)
+        val visitor = astNormalizeVisitorOf(nonNumberedRuleMap, numberedRuleMap, nodeBuilder.nodeTypes)
         return input.accept(visitor)
     }
 
