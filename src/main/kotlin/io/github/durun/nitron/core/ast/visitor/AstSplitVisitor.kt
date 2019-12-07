@@ -21,9 +21,9 @@ class AstSplitVisitor(
         }
         return buf
                 .filter { it.isNotEmpty() }
-                .map {
-                    if (hasSplitRule(it.firstOrNull())) it.first()
-                    else node.replaceChildren(it)
+                .map { newChildren ->
+                    if (hasSplitRule(newChildren.firstOrNull())) newChildren.first()
+                    else node.copyWithChildren(newChildren)
                 }
     }
 
