@@ -18,7 +18,7 @@ object AstPrintVisitor
                     .joinToString(" ") +
                     if (n < it.size) " ..." else ""
         }
-        val thisText = "${node.ruleName}\t\t$thisTokens"
+        val thisText = "${node.type.name}\t\t$thisTokens"
         val childrenText = node.children.orEmpty()
                 .joinToString("\n") { it.accept(this) }
                 .prependIndent("\t")
@@ -26,6 +26,6 @@ object AstPrintVisitor
     }
 
     override fun visitTerminal(node: AstTerminalNode): String {
-        return "${node.tokenType} ${node.getText()}"
+        return "${node.type.name} ${node.getText()}"
     }
 }

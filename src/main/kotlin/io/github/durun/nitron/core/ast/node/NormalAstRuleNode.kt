@@ -18,7 +18,7 @@ class NormalAstRuleNode(
     override val children: List<AstNode>?
         get() = null
 
-    override fun getText(): String = text ?: ruleName.toUpperCase()
+    override fun getText(): String = text ?: type.name.toUpperCase()
 
     override fun replaceChildren(newChildren: List<AstNode>): AstRuleNode {
         return this
