@@ -8,35 +8,40 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
     return NodeTypePool(antlrParser)
 }
 
-class NodeTypePool private constructor(tokenTypes: Map<String, Int>, ruleNames: Iterable<String>) {
+class NodeTypePool private constructor(
+        private val tokenTypes: List<TokenType?>,
+        private val tokenTypesRemain: Map<Int, TokenType>,
+        private val rules: List<Rule>
+) {
     internal constructor(antlrParser: Parser) : this(
-            tokenTypes = antlrParser.tokenTypeMap,
+            tokenTypeMap = antlrParser.tokenTypeMap,
             ruleNames = antlrParser.ruleNames.asList()
     )
+    private constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>): this(
+            tokenTypeMap = tokenTypeMap
+                    .entries
+                    .groupBy { it.value }
+                    .mapValues { (_, entries) -> entries.map { it.key } }
+                    .mapValues { (_, synonyms) ->
+                        synonyms.filterNot { it.contains('\'') }
+                                .firstOrNull()
+                                ?: synonyms.first()
+                    }
+                    .mapValues { (index, name) -> TokenType(index, name) },
+            rules = ruleNames.mapIndexed { index, name -> Rule(index, name) }
+    )
+    private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>): this(
+            tokenTypes = tokenTypeMap
+                    .let { typeMap ->
+                        val max = tokenTypeMap.keys.max()
+                        val range = max?.let { 0..it }
+                        range?.map { index -> typeMap[index] }
+                                .orEmpty()
+                    },
+            tokenTypesRemain = tokenTypeMap.filterKeys { it < 0 },
+            rules = rules
+    )
 
-    private val tokenTypes: List<TokenType?>
-    private val tokenTypesRemain: Map<Int, TokenType>
-    private val rules: List<Rule> = ruleNames.mapIndexed { index, name -> Rule(index, name) }
-
-    init {
-        val types = tokenTypes.entries
-                .groupBy { it.value }
-                .mapValues { (_, entries) -> entries.map { it.key } }
-                .mapValues { (_, synonims) ->
-                    synonims.filterNot { it.contains('\'') }
-                            .firstOrNull()
-                            ?: synonims.first()
-                }.toMutableMap()
-        val max = tokenTypes.values.max()
-        val range = max?.let { 0..it }
-        this.tokenTypes = range?.map { index ->
-            types[index]?.let { name ->
-                types.remove(index)
-                TokenType(index, name)
-            }
-        }.orEmpty()
-        this.tokenTypesRemain = types.mapValues { TokenType(index = it.key, name = it.value) }
-    }
 
     fun getTokenType(index: Int): TokenType? = tokenTypes.getOrNull(index) ?: tokenTypesRemain[index]
     fun getRule(index: Int): Rule? = rules.getOrNull(index)
