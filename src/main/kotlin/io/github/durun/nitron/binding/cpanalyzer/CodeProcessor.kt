@@ -42,10 +42,10 @@ class CodeProcessor(
         )
         nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
         startRule = config.grammar.startRule
-        splitVisitor = astSplitVisitorOf(config.process.splitConfig.splitRules)
+        splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitRules = config.process.splitConfig.splitRules)
         nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap
         numberedRuleMap = config.process.normalizeConfig.numberedRuleMap
-        ignoreVisitor = astIgnoreVisitorOf(config.process.normalizeConfig.ignoreRules)
+        ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)
         println("Parser compiled: config=${config.dir}")   // TODO
 
         recorder = outputPath?.let {
