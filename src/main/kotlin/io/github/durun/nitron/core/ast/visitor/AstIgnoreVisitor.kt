@@ -6,6 +6,10 @@ fun astIgnoreVisitorOf(ignoreRules: List<String>): AstIgnoreVisitor {
     return StringAstIgnoreVisitor(ignoreRules)
 }
 
+fun astIgnoreVisitorOf(types: NodeTypePool, ignoreTypes: List<String>): AstIgnoreVisitor {
+    return FastAstIgnoreVisitor(types, ignoreTypes)
+}
+
 abstract class AstIgnoreVisitor : AstVisitor<AstNode?> {
     protected abstract fun shouldIgnore(node: AstRuleNode): Boolean
     protected abstract fun shouldIgnore(node: AstTerminalNode): Boolean
@@ -35,4 +39,14 @@ private class StringAstIgnoreVisitor(
 ) : AstIgnoreVisitor() {
     override fun shouldIgnore(node: AstRuleNode) = ignoreRules.contains(node.type.name)
     override fun shouldIgnore(node: AstTerminalNode) = ignoreRules.contains(node.type.name)
+}
+
+private class FastAstIgnoreVisitor(
+        private val ignoreRules: Set<NodeType>
+) : AstIgnoreVisitor() {
+    constructor(types: NodeTypePool, ignoreTypes: List<String>) : this(types.filterRulesAndTokenTypes(ignoreTypes))
+    constructor(types: NodeTypePool) : this(types.allTypes)
+
+    override fun shouldIgnore(node: AstRuleNode) = ignoreRules.contains(node.type)
+    override fun shouldIgnore(node: AstTerminalNode) = ignoreRules.contains(node.type)
 }
