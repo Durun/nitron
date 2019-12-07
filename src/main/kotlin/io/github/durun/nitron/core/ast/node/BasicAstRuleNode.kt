@@ -21,4 +21,8 @@ class BasicAstRuleNode (
         this.children = newChildren
         return this
     }
+
+    override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
+        return BasicAstRuleNode(type, children)
+    }
 }

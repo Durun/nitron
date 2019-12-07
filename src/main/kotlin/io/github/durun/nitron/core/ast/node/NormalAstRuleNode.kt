@@ -23,5 +23,9 @@ class NormalAstRuleNode(
     override fun replaceChildren(newChildren: List<AstNode>): AstRuleNode {
         return this
     }
+
+    override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
+        return this
+    }
 }
 
