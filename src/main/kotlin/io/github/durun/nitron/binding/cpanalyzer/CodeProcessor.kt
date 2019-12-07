@@ -1,9 +1,9 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.visitor.AstIgnoreVisitor
 import io.github.durun.nitron.core.ast.visitor.AstSplitVisitor
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
+import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
 import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.LangConfig
@@ -45,7 +45,7 @@ class CodeProcessor(
         splitVisitor = AstSplitVisitor(config.process.splitConfig.splitRules)
         nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap
         numberedRuleMap = config.process.normalizeConfig.numberedRuleMap
-        ignoreVisitor = AstIgnoreVisitor(config.process.normalizeConfig.ignoreRules)
+        ignoreVisitor = astIgnoreVisitorOf(config.process.normalizeConfig.ignoreRules)
         println("Parser compiled: config=${config.dir}")   // TODO
 
         recorder = outputPath?.let {
