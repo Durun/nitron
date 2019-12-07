@@ -1,11 +1,11 @@
 package io.github.durun.nitron.core.ast.node
 
-class BasicAstRuleNode (
+class BasicAstRuleNode(
         override val type: Rule,
         children: List<AstNode>
 ) : AstRuleNode {
     @Deprecated("may cause hash conflict", ReplaceWith("this(type = , children = children)"))
-    constructor(ruleName: String, children: List<AstNode>): this(
+    constructor(ruleName: String, children: List<AstNode>) : this(
             type = Rule(ruleName.hashCode(), ruleName),
             children = children
     )

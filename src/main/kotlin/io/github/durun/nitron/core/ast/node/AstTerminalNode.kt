@@ -22,7 +22,7 @@ class AstTerminalNode(
         val line: Int
 ) : AstNode {
     @Deprecated("may cause hash conflict", ReplaceWith("this(token = token, type = , line = line)"))
-    constructor(token: String, tokenType: String, line: Int): this(
+    constructor(token: String, tokenType: String, line: Int) : this(
             token,
             type = TokenType(tokenType.hashCode(), tokenType),
             line = line
