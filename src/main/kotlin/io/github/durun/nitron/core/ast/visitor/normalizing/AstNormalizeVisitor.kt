@@ -9,27 +9,38 @@ import java.util.*
 import kotlin.collections.HashMap
 
 /**
- * [AstNode]にacceptさせるとトークンを正規化された[AstNode]を返すビジター
- *
  * @param [nonNumberedRuleMap] 番号を付けない正規化対応付け
  * @param [numberedRuleMap] 番号を付ける正規化対応付け
  */
-class AstNormalizeVisitor(
-        private val nonNumberedRuleMap: NormalizingRuleMap,
-        private val numberedRuleMap: NormalizingRuleMap
-) : AstVisitor<AstNode> {
-    // Map: (normalizedRuleName -> (id -> count))
-    private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
+fun astNormalizeVisitorOf(
+        nonNumberedRuleMap: NormalizingRuleMap,
+        numberedRuleMap: NormalizingRuleMap): AstNormalizeVisitor {
+    return StringAstNormalizeVisitor(nonNumberedRuleMap, numberedRuleMap)
+}
 
-    private val visitedRuleStack: Stack<String> = Stack()
+
+/**
+ * [AstNode]にacceptさせるとトークンを正規化された[AstNode]を返すビジター
+ */
+abstract class AstNormalizeVisitor : AstVisitor<AstNode> {
+    protected abstract fun enterTree(node: AstNode)
+    protected abstract fun leaveTree(node: AstNode)
+    protected abstract fun normalizeIfNeeded(node: AstNode): String?
+
+    fun normalize(node: AstNode): AstNode {
+        reset()
+        return node.accept(this)
+    }
+
+    abstract fun reset()
 
     override fun visit(node: AstNode): AstNode {
         return node
     }
 
     override fun visitRule(node: AstRuleNode): AstNode {
-        visitedRuleStack.push(node.ruleName)    //  enter
-        val newText = node.normalizeIfNeeded(visitedRuleStack)
+        enterTree(node)
+        val newText = normalizeIfNeeded(node)
         val newNode = newText
                 ?.let {
                     NormalAstRuleNode(originalNode = node, text = newText)
@@ -38,24 +49,46 @@ class AstNormalizeVisitor(
                     val children = node.children.orEmpty().map { it.accept(this) }
                     node.replaceChildren(children)
                 }
-        visitedRuleStack.pop()                  // leave
+        leaveTree(node)
         return newNode
     }
 
     override fun visitTerminal(node: AstTerminalNode): AstNode {
-        visitedRuleStack.push(node.tokenType)   //  enter
-        val newToken = node.normalizeIfNeeded(visitedRuleStack)
+        enterTree(node)
+        val newToken = normalizeIfNeeded(node)
         val newNode = newToken
                 ?.let { node.replaceToken(it) }
                 ?: node
-        visitedRuleStack.pop()                  // leave
+        leaveTree(node)
         return newNode
     }
+}
 
-    private fun AstNode.normalizeIfNeeded(visitingStack: Stack<String>): String? {
-        val id = this.getText().orEmpty()
-        val nonNumbered = nonNumberedRuleMap[visitingStack]
-        val numbered = numberedRuleMap[visitingStack]?.let { "${it}${getAndUpdateRuleCount(it, id)}" }
+private class StringAstNormalizeVisitor(
+        private val nonNumberedRuleMap: NormalizingRuleMap,
+        private val numberedRuleMap: NormalizingRuleMap
+) : AstNormalizeVisitor() {
+    // Map: (normalizedRuleName -> (id -> count))
+    private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
+
+    private val visitedRuleStack: Stack<String> = Stack()
+
+    override fun enterTree(node: AstNode) {
+        visitedRuleStack.push(node.type.name)
+    }
+
+    override fun leaveTree(node: AstNode) {
+        visitedRuleStack.pop()
+    }
+
+    override fun reset() {
+        visitedRuleStack.clear()
+    }
+
+    override fun normalizeIfNeeded(node: AstNode): String? {
+        val id = node.getText().orEmpty()
+        val nonNumbered = nonNumberedRuleMap[visitedRuleStack]
+        val numbered = numberedRuleMap[visitedRuleStack]?.let { "${it}${getAndUpdateRuleCount(it, id)}" }
         return nonNumbered ?: numbered
     }
 
