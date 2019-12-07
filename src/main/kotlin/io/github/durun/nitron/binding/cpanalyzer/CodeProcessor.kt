@@ -93,6 +93,7 @@ class CodeProcessor(
         return input.mapNotNull { proceess(it) }
     }
 
+    @Deprecated("This method can return incorrect result.")
     fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
         return input.map {
             it to proceess(it)
