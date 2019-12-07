@@ -86,6 +86,7 @@ private class StringAstNormalizeVisitor(
     }
 
     override fun reset() {
+        nameTables.forEach { (_, map) -> map.clear() }
         visitedRuleStack.clear()
     }
 
@@ -132,6 +133,7 @@ private class FastAstNormalizeVisitor private constructor(
     }
 
     override fun reset() {
+        nameTables.forEach { (_, map) -> map.clear() }
         stack.clear()
     }
 
