@@ -6,6 +6,10 @@ fun astSplitVisitorOf(splitRules: List<String>): AstSplitVisitor {
     return StringAstSplitVisitor(splitRules)
 }
 
+fun astSplitVisitorOf(types: NodeTypePool, splitRules: List<String>): AstSplitVisitor {
+    return FastAstSplitVisitor(types, splitRules)
+}
+
 abstract class AstSplitVisitor : AstVisitor<List<AstNode>> {
     protected abstract fun hasSplitRule(node: AstNode?): Boolean
 
@@ -40,5 +44,17 @@ private class StringAstSplitVisitor(
     override fun hasSplitRule(node: AstNode?): Boolean {
         return node is AstRuleNode &&
                 splitRules.contains(node.type.name)
+    }
+}
+
+private class FastAstSplitVisitor(
+        private val splitRules: Set<NodeType>
+) : AstSplitVisitor() {
+    constructor(types: NodeTypePool, splitRules: List<String>) : this(types.filterRulesAndTokenTypes(splitRules))
+    constructor(types: NodeTypePool) : this(types.allTypes)
+
+    override fun hasSplitRule(node: AstNode?): Boolean {
+        return node is AstRuleNode &&
+                splitRules.contains(node.type)
     }
 }
