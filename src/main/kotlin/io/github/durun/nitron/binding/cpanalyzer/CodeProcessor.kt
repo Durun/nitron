@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
+import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
 import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
@@ -30,9 +31,8 @@ class CodeProcessor(
     private val nodeBuilder: AstBuildVisitor
     private val startRule: String
     private val splitVisitor: AstVisitor<List<AstNode>>
-    private val nonNumberedRuleMap: NormalizingRuleMap
-    private val numberedRuleMap: NormalizingRuleMap
     private val ignoreVisitor: AstVisitor<AstNode?>
+    private val normalizer: AstNormalizeVisitor
     private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
 
     init {
@@ -43,9 +43,11 @@ class CodeProcessor(
         nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
         startRule = config.grammar.startRule
         splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitRules = config.process.splitConfig.splitRules)
-        nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap
-        numberedRuleMap = config.process.normalizeConfig.numberedRuleMap
         ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)
+        normalizer = astNormalizeVisitorOf(
+                nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
+                numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
+                types = nodeBuilder.nodeTypes)
         println("Parser compiled: config=${config.dir}")   // TODO
 
         recorder = outputPath?.let {
@@ -79,8 +81,7 @@ class CodeProcessor(
     }
 
     private fun normalize(input: AstNode): AstNode {
-        val visitor = astNormalizeVisitorOf(nonNumberedRuleMap, numberedRuleMap, nodeBuilder.nodeTypes)
-        return input.accept(visitor)
+        return normalizer.normalize(input)
     }
 
     fun proceess(input: AstNode): AstNode? {
