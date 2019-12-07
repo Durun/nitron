@@ -2,8 +2,8 @@ package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.ast.node.*
 
-fun astIgnoreVisitorOf(ignoreRules: List<String>): AstIgnoreVisitor {
-    return StringAstIgnoreVisitor(ignoreRules)
+fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {
+    return StringAstIgnoreVisitor(ignoreTypes)
 }
 
 fun astIgnoreVisitorOf(types: NodeTypePool, ignoreTypes: List<String>): AstIgnoreVisitor {

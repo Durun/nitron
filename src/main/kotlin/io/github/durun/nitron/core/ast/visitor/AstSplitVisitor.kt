@@ -2,12 +2,12 @@ package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.ast.node.*
 
-fun astSplitVisitorOf(splitRules: List<String>): AstSplitVisitor {
-    return StringAstSplitVisitor(splitRules)
+fun astSplitVisitorOf(splitTypes: List<String>): AstSplitVisitor {
+    return StringAstSplitVisitor(splitTypes)
 }
 
-fun astSplitVisitorOf(types: NodeTypePool, splitRules: List<String>): AstSplitVisitor {
-    return FastAstSplitVisitor(types, splitRules)
+fun astSplitVisitorOf(types: NodeTypePool, splitTypes: List<String>): AstSplitVisitor {
+    return FastAstSplitVisitor(types, splitTypes)
 }
 
 abstract class AstSplitVisitor : AstVisitor<List<AstNode>> {
