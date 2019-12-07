@@ -17,7 +17,8 @@ class NodeTypePool private constructor(
             tokenTypeMap = antlrParser.tokenTypeMap,
             ruleNames = antlrParser.ruleNames.asList()
     )
-    private constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>): this(
+
+    private constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>) : this(
             tokenTypeMap = tokenTypeMap
                     .entries
                     .groupBy { it.value }
@@ -30,7 +31,8 @@ class NodeTypePool private constructor(
                     .mapValues { (index, name) -> TokenType(index, name) },
             rules = ruleNames.mapIndexed { index, name -> Rule(index, name) }
     )
-    private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>): this(
+
+    private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>) : this(
             tokenTypes = tokenTypeMap
                     .let { typeMap ->
                         val max = tokenTypeMap.keys.max()
@@ -45,6 +47,14 @@ class NodeTypePool private constructor(
 
     fun getTokenType(index: Int): TokenType? = tokenTypes.getOrNull(index) ?: tokenTypesRemain[index]
     fun getRule(index: Int): Rule? = rules.getOrNull(index)
+
+    fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
+        return NodeTypePool(
+                tokenTypes = tokenTypes.map { if (remainRules.contains(it?.name)) it else null },
+                tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
+                rules = rules.filter { remainRules.contains(it.name) }
+        )
+    }
 }
 
 
