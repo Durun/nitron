@@ -2,8 +2,13 @@ package io.github.durun.nitron.inout.model.ast
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.durun.nitron.core.ast.node.NodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
+
+fun NodeTypePool.toSerializable(grammarName: String): NodeTypeSet {
+    return NodeTypeSet(grammarName, types = this)
+}
 
 /**
  * 文法[grammar]が持つtokenType, ruleNameの集合
@@ -16,10 +21,22 @@ class NodeTypeSet internal constructor(
         @JsonProperty
         val ruleNames: ArrayMap<String>
 ) {
+    @Deprecated("use NodeTypePool", ReplaceWith("this(grammarName = grammarName, types = NodeTypePool(parser))"))
     constructor(grammarName: String, parser: Parser) : this(
             tokenTypes = parser.toTokenTypeMap(),
             ruleNames = ArrayMap(parser.ruleNames),
             grammar = grammarName
+    )
+
+    constructor(grammarName: String, types: NodeTypePool) : this(
+            grammar = grammarName,
+            tokenTypes = ArrayMap(types.tokenTypes.map { it.name }.toTypedArray()),
+            ruleNames = ArrayMap(types.rules.map { it.name }.toTypedArray())
+    )
+
+    fun toNodeTypePool(): NodeTypePool = NodeTypePool(
+            tokenTypes = tokenTypes.array.asIterable(),
+            ruleNames = ruleNames.array.asIterable()
     )
 
     /**
