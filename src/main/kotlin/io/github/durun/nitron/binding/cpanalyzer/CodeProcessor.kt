@@ -42,7 +42,7 @@ class CodeProcessor(
         )
         nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
         startRule = config.grammar.startRule
-        splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitRules = config.process.splitConfig.splitRules)
+        splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitTypes = config.process.splitConfig.splitRules)
         ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)
         normalizer = astNormalizeVisitorOf(
                 nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
