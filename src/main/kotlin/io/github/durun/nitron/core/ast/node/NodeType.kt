@@ -32,6 +32,12 @@ class NodeTypePool private constructor(
             rules = ruleNames.mapIndexed { index, name -> Rule(index, name) }
     )
 
+    constructor(tokenTypes: Iterable<String>, ruleNames: Iterable<String>) : this(
+            tokenTypeList = tokenTypes.mapIndexed { index, it -> TokenType(index, it) }.toList(),
+            tokenTypesRemain = emptyMap(),
+            ruleList = ruleNames.mapIndexed { index, it -> Rule(index, it) }.toList()
+    )
+
     private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>) : this(
             tokenTypeList = tokenTypeMap
                     .let { typeMap ->
