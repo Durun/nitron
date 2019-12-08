@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.antlr4util.children
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
+import io.github.durun.nitron.core.ast.node.nodeTypePoolOf
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 
@@ -16,8 +17,7 @@ import org.antlr.v4.runtime.tree.*
 class AstBuildVisitor(
         parser: Parser
 ) : ParseTreeVisitor<AstNode> {
-    private val tokenTypeMap: Map<Int, String> = TokenTypeBiMap(parser).fromIndex
-    private val ruleNames: Array<String> = parser.ruleNames
+    val nodeTypes = nodeTypePoolOf(parser)
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
@@ -25,9 +25,9 @@ class AstBuildVisitor(
 
         val ruleIndex = node.ruleContext?.ruleIndex
                 ?: throw Exception("Rulenode has no ruleIndex")
-        val ruleName = ruleNames[ruleIndex]
+        val rule = nodeTypes.getRule(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
         return BasicAstRuleNode(
-                ruleName = ruleName,
+                type = rule,
                 children = children
         )
     }
@@ -36,10 +36,11 @@ class AstBuildVisitor(
         val token = node?.text
                 ?: throw Exception("TerminalNode has no text")
         val symbol = node.symbol
-        val tokenType = tokenTypeMap[symbol.type] ?: throw NoSuchElementException("No such tokenType.")
+        val tokenType = nodeTypes.getTokenType(symbol.type)
+                ?: throw NoSuchElementException("No such tokenType: index=${symbol.type}")
         return AstTerminalNode(
+                type = tokenType,
                 token = token,
-                tokenType = tokenType,
                 line = symbol.line
         )
     }

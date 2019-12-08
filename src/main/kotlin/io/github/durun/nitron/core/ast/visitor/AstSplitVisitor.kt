@@ -1,12 +1,18 @@
 package io.github.durun.nitron.core.ast.visitor
 
-import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.node.AstRuleNode
-import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.*
 
-class AstSplitVisitor(
-        private val splitRules: List<String>
-) : AstVisitor<List<AstNode>> {
+fun astSplitVisitorOf(splitTypes: List<String>): AstSplitVisitor {
+    return StringAstSplitVisitor(splitTypes)
+}
+
+fun astSplitVisitorOf(types: NodeTypePool, splitTypes: List<String>): AstSplitVisitor {
+    return FastAstSplitVisitor(types, splitTypes)
+}
+
+abstract class AstSplitVisitor : AstVisitor<List<AstNode>> {
+    protected abstract fun hasSplitRule(node: AstNode?): Boolean
+
     override fun visit(node: AstNode): List<AstNode> {
         return listOf(node)
     }
@@ -21,18 +27,34 @@ class AstSplitVisitor(
         }
         return buf
                 .filter { it.isNotEmpty() }
-                .map {
-                    if (hasSplitRule(it.firstOrNull())) it.first()
-                    else node.replaceChildren(it)
+                .map { newChildren ->
+                    if (hasSplitRule(newChildren.firstOrNull())) newChildren.first()
+                    else node.copyWithChildren(newChildren)
                 }
     }
 
     override fun visitTerminal(node: AstTerminalNode): List<AstNode> {
         return listOf(node)
     }
+}
 
-    private fun hasSplitRule(node: AstNode?): Boolean {
+private class StringAstSplitVisitor(
+        private val splitRules: List<String>
+) : AstSplitVisitor() {
+    override fun hasSplitRule(node: AstNode?): Boolean {
         return node is AstRuleNode &&
-                splitRules.contains(node.ruleName)
+                splitRules.contains(node.type.name)
+    }
+}
+
+private class FastAstSplitVisitor(
+        private val splitRules: Set<NodeType>
+) : AstSplitVisitor() {
+    constructor(types: NodeTypePool, splitRules: List<String>) : this(types.filterRulesAndTokenTypes(splitRules))
+    constructor(types: NodeTypePool) : this(types.allTypes)
+
+    override fun hasSplitRule(node: AstNode?): Boolean {
+        return node is AstRuleNode &&
+                splitRules.contains(node.type)
     }
 }

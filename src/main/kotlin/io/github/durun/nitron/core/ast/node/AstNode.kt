@@ -6,6 +6,9 @@ import io.github.durun.nitron.core.ast.visitor.AstVisitor
  * 構文木
  */
 interface AstNode {
+
+    val type: NodeType
+
     /**
      * 子ノード
      */

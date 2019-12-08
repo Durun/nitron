@@ -14,13 +14,24 @@ class AstTerminalNode(
         /**
          * 終端規則
          */
-        val tokenType: String,
+        override val type: TokenType,
 
         /**
          * 元のソースコードとの対応位置
          */
         val line: Int
 ) : AstNode {
+    @Deprecated("may cause hash conflict", ReplaceWith("this(token = token, type = , line = line)"))
+    constructor(token: String, tokenType: String, line: Int) : this(
+            token,
+            type = TokenType(tokenType.hashCode(), tokenType),
+            line = line
+    )
+
+    @Deprecated("use type", ReplaceWith("type.name"))
+    val tokenType: String
+        get() = type.name
+
     var token: String = token
         private set
 
