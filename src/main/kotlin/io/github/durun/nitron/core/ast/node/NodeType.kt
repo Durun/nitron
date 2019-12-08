@@ -46,7 +46,7 @@ class NodeTypePool private constructor(
 
     val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
     val rules: Set<Rule> by lazy { ruleList.toSet() }
-    val allTypes: Set<NodeType> by lazy { tokenTypes + ruleList.toSet() }
+    val allTypes: Set<NodeType> by lazy { tokenTypes + rules }
 
     fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
     fun getRule(index: Int): Rule? = ruleList.getOrNull(index)
