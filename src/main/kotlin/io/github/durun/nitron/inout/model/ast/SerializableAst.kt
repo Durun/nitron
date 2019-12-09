@@ -46,6 +46,9 @@ class SerializableAst {
         override val children: List<Node>
             get() = data
 
+        override val text: String
+            get() = this.children.joinToString("\n") { it.text }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false

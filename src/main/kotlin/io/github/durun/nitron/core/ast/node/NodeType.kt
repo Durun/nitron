@@ -32,6 +32,12 @@ class NodeTypePool private constructor(
             rules = ruleNames.mapIndexed { index, name -> Rule(index, name) }
     )
 
+    constructor(tokenTypes: Iterable<String>, ruleNames: Iterable<String>) : this(
+            tokenTypeList = tokenTypes.mapIndexed { index, it -> TokenType(index, it) }.toList(),
+            tokenTypesRemain = emptyMap(),
+            ruleList = ruleNames.mapIndexed { index, it -> Rule(index, it) }.toList()
+    )
+
     private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>) : this(
             tokenTypeList = tokenTypeMap
                     .let { typeMap ->
@@ -46,10 +52,13 @@ class NodeTypePool private constructor(
 
     val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
     val rules: Set<Rule> by lazy { ruleList.toSet() }
-    val allTypes: Set<NodeType> by lazy { tokenTypes + ruleList.toSet() }
+    val allTypes: Set<NodeType> by lazy { tokenTypes + rules }
 
     fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
     fun getRule(index: Int): Rule? = ruleList.getOrNull(index)
+    fun getTokenType(name: String): TokenType? = tokenTypes.find { it.name == name }
+    fun getRule(name: String): Rule? = rules.find { it.name == name }
+    fun getType(name: String): NodeType? = getRule(name) ?: getTokenType(name)
 
     fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
         return NodeTypePool(

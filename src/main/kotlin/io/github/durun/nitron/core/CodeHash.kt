@@ -1,7 +1,6 @@
 package io.github.durun.nitron.core
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.core.ast.node.AstNode
 import java.security.MessageDigest
 import java.sql.Blob
@@ -21,8 +20,8 @@ internal fun Blob.toBytes(): ByteArray {
 }
 
 private val md5: MessageDigest = MessageDigest.getInstance("MD5")
-internal fun codeHashOf(code: String): ByteArray {
-    return md5.digest(code.toByteArray())
+fun codeHashOf(code: String): ByteArray {
+    return md5.digest(code.toByteArray(Charsets.UTF_8))
 }
 
 internal fun AstNode.toHash(): ByteArray {
@@ -30,12 +29,12 @@ internal fun AstNode.toHash(): ByteArray {
 }
 
 internal fun encodeByteArray(bytes: ByteArray): String {
-    val contents = bytes.joinToString(",")
-    return "[$contents]"
+    return bytes.joinToString("") { String.format("%02x", it) }
 }
 
 internal fun decodeByteArray(str: String): ByteArray {
-    return mapper.readValue<List<Int>>(str)
+    return str.chunked(2)
+            .map { Integer.decode("0x$it") }
             .map { it.toByte() }
             .toByteArray()
 }
