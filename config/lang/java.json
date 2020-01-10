@@ -14,7 +14,7 @@
 		"splitConfig": {
 			"splitRules": [
 				"statement",
-				"blockStatement",
+				"ELSE",
 				"catchClause",
 				"typeDeclaration",
 				"methodDeclaration"
@@ -45,6 +45,12 @@
 						"FloatingPointLiteral"
 					],
 					"toSymbol": "N"
+				},
+				{
+					"fromRules": [
+						"BooleanLiteral"
+					],
+					"toSymbol": "$L"
 				}
 			],
 			"numberedRuleMap": [
@@ -79,7 +85,8 @@
 				"constantModifier",
 				"interfaceMethodModifier",
 				"annotationTypeElementModifier",
-				"EOF"
+				"EOF",
+				"RBRACE"
 			]
 		}
 	}
