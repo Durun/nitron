@@ -23,53 +23,37 @@
 		"normalizeConfig": {
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": [
-						"StringLiteral"
-					],
+					"fromRules": ["StringLiteral"],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": [
-						"CharacterLiteral"
-					],
+					"fromRules": ["CharacterLiteral"],
 					"toSymbol": "'C'"
 				},
 				{
-					"fromRules": [
-						"IntegerLiteral"
-					],
+					"fromRules": ["IntegerLiteral"],
 					"toSymbol": "N"
 				},
 				{
-					"fromRules": [
-						"FloatingPointLiteral"
-					],
+					"fromRules": ["FloatingPointLiteral"],
 					"toSymbol": "N"
 				},
 				{
-					"fromRules": [
-						"BooleanLiteral"
-					],
+					"fromRules": ["BooleanLiteral"],
 					"toSymbol": "$L"
 				}
 			],
 			"numberedRuleMap": [
 				{
-					"fromRules": [
-						"expressionName"
-					],
+					"fromRules": ["expressionName"],
 					"toSymbol": "$V"
 				},
 				{
-					"fromRules": [
-						"variableDeclaratorId"
-					],
+					"fromRules": ["variableDeclaratorId"],
 					"toSymbol": "$V"
 				},
 				{
-					"fromRules": [
-						"typeName"
-					],
+					"fromRules": ["typeName"],
 					"toSymbol": "$V"
 				}
 			],
