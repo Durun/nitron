@@ -11,8 +11,8 @@ import kotlin.collections.HashMap
  */
 @Deprecated("", ReplaceWith("astNormalizeVisitorOf(nonNumberedRuleMap = nonNumberedRuleMap, numberedRuleMap = numberedRuleMap, types = )"))
 fun astNormalizeVisitorOf(
-        nonNumberedRuleMap: NormalizingRuleMap,
-        numberedRuleMap: NormalizingRuleMap): AstNormalizeVisitor {
+        nonNumberedRuleMap: Map<List<String>, String>,
+        numberedRuleMap: Map<List<String>, String>): AstNormalizeVisitor {
     return StringAstNormalizeVisitor(nonNumberedRuleMap, numberedRuleMap)
 }
 
@@ -27,7 +27,7 @@ fun astNormalizeVisitorOf(
 /**
  * [AstNode]にacceptさせるとトークンを正規化された[AstNode]を返すビジター
  */
-abstract class AstNormalizeVisitor: AstVisitor<AstNode> {
+abstract class AstNormalizeVisitor : AstVisitor<AstNode> {
     protected abstract fun enterTree(node: AstNode)
     protected abstract fun leaveTree(node: AstNode)
     protected abstract fun normalizeIfNeeded(node: AstNode): String?
@@ -36,6 +36,7 @@ abstract class AstNormalizeVisitor: AstVisitor<AstNode> {
         reset()
         return node.accept(this)
     }
+
     abstract fun reset()
 
     override fun visit(node: AstNode): AstNode {
@@ -69,8 +70,8 @@ abstract class AstNormalizeVisitor: AstVisitor<AstNode> {
 }
 
 private class StringAstNormalizeVisitor(
-        private val nonNumberedRuleMap: NormalizingRuleMap,
-        private val numberedRuleMap: NormalizingRuleMap
+        private val nonNumberedRuleMap: Map<List<String>, String>,
+        private val numberedRuleMap: Map<List<String>, String>
 ) : AstNormalizeVisitor() {
     // Map: (normalizedRuleName -> (id -> count))
     private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
@@ -108,9 +109,9 @@ private class StringAstNormalizeVisitor(
 private class FastAstNormalizeVisitor private constructor(
         private val nonNumberedRuleMap: RuleMap,
         private val numberedRuleMap: RuleMap
-): AstNormalizeVisitor() {
+) : AstNormalizeVisitor() {
     constructor(nonNumberedRuleMap: Map<List<String>, String>,
-                numberedRuleMap: Map<List<String>, String>, types: NodeTypePool): this(
+                numberedRuleMap: Map<List<String>, String>, types: NodeTypePool) : this(
             nonNumberedRuleMap = nonNumberedRuleMap.mapKeys { (names, _) ->
                 names.mapNotNull { name -> types.allTypes.find { it.name == name } }
             }.let { RuleMap(it) },
@@ -156,7 +157,7 @@ private class FastAstNormalizeVisitor private constructor(
      */
     private class RuleMap(
             private val ruleMap: Map<List<NodeType>, String>
-    ): Map<List<NodeType>, String> by ruleMap {
+    ) : Map<List<NodeType>, String> by ruleMap {
         private val keyLengths = ruleMap.keys.map { it.size }.sorted().distinct()
 
         /**
