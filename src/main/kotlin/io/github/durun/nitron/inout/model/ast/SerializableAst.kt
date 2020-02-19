@@ -25,6 +25,7 @@ class SerializableAst {
         val text: String
 
         fun toHash(): ByteArray = codeHashOf(text)
+        fun <R> accept(visitor: Visitor<R>): R
     }
 
     interface NonTerminalNode : Node {
@@ -48,6 +49,8 @@ class SerializableAst {
 
         override val text: String
             get() = this.children.joinToString("\n") { it.text }
+
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitNodeList(this)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -78,6 +81,8 @@ class SerializableAst {
         override val text: String
             get() = data.value
 
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitTerminal(this)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -107,6 +112,8 @@ class SerializableAst {
         override val children: List<Node>
             get() = data.value
 
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitRule(this)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -135,6 +142,8 @@ class SerializableAst {
             get() = data.key
         override val text: String
             get() = data.value
+
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitNormalizedRule(this)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
