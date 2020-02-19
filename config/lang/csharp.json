@@ -1,0 +1,86 @@
+{
+    "extensions": [".cs"],
+	"grammarConfig": {
+		"grammarFiles": [
+			"../grammars/csharp/CSharpLexer.g4",
+			"../grammars/csharp/CSharpParser.g4",
+			"../grammars/csharp/CSharpPreprocessorParser.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "compilation_unit"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"statement",
+				"block",
+				"catch_clause",
+				"type_declaration",
+				"class_member_declaration"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": ["string_literal"],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": ["CHARACTER_LITERAL"],
+					"toSymbol": "'C'"
+				},
+				{
+					"fromRules": ["INTEGER_LITERAL"],
+					"toSymbol": "N"
+				},
+				{
+					"fromRules": ["HEX_INTEGER_LITERAL"],
+					"toSymbol": "N"
+				},
+				{
+					"fromRules": ["REAL_LITERAL"],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": [
+						"primary_expression_start",
+						"identifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"variable_declarator",
+						"identifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"local_variable_declarator",
+						"identifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"constant_declarator",
+						"identifier"
+					],
+					"toSymbol": "$V"
+				}
+			],
+			"ignoreRules": [
+				"global_attribute_section",
+				"extern_alias_directive",
+				"using_directive",
+				"attribute_section",
+				"namespace_declaration",
+				"all_member_modifier",
+				"EOF"
+			]
+		}
+	}
+}

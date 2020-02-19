@@ -2,6 +2,7 @@
     "langConfigFiles": {
         "java": "lang/java.json",
         "kotlin": "lang/kotlin.json",
-        "python": "lang/python.json"
+        "python": "lang/python.json",
+        "C#": "lang/csharp.json"
     }
 }

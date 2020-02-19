@@ -1,7 +1,5 @@
 {
-	"extensions": [
-		".py"
-	],
+	"extensions": [".py"],
 	"grammarConfig": {
 		"grammarFiles": [
 			"../grammars/python3/Python3.g4"
@@ -11,34 +9,24 @@
 	},
 	"processConfig": {
 		"splitConfig": {
-			"splitRules": [
-				"stmt"
-			]
+			"splitRules": ["stmt"]
 		},
 		"normalizeConfig": {
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": [
-						"STRING"
-					],
+					"fromRules": ["STRING"],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": [
-						"NUMBER"
-					],
+					"fromRules": ["NUMBER"],
 					"toSymbol": "N"
 				},
 				{
-					"fromRules": [
-						"INDENT"
-					],
+					"fromRules": ["INDENT"],
 					"toSymbol": "INDENT"
 				},
 				{
-					"fromRules": [
-						"DEDENT"
-					],
+					"fromRules": ["DEDENT"],
 					"toSymbol": "DEDENT"
 				}
 			],
