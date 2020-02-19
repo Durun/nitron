@@ -24,7 +24,7 @@ private class SerializableAstBuildVisitor(
     }
 
     override fun visitRule(node: AstRuleNode): SerializableAst.Node {
-        val type = typeMap.rule(node.ruleName) ?: throw NoSuchElementException()
+        val type = typeMap.rule(node.type.name) ?: throw NoSuchElementException()
         return if (node is NormalAstRuleNode) {
             SerializableAst.NormalizedRuleNode(
                     type,
@@ -40,7 +40,7 @@ private class SerializableAstBuildVisitor(
 
     override fun visitTerminal(node: AstTerminalNode): SerializableAst.Node {
         return SerializableAst.TerminalNode(
-                type = typeMap.token(node.tokenType) ?: throw NoSuchElementException(),
+                type = typeMap.token(node.type.name) ?: throw NoSuchElementException(),
                 text = node.token
         )
     }
