@@ -4,13 +4,14 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
 class App : CliktCommand() {
-    override fun run() {
-        return
-    }
+	override fun run() {
+		return
+	}
 }
 
 fun main(args: Array<String>) = App().subcommands(
-        AstPrintCommand(),
-        CodeNormalizeCommand(),
-        AstJsonImportCommand()
+		AstPrintCommand(),
+		CodeNormalizeCommand(),
+		AstJsonImportCommand(),
+		CaseStudyCommand()
 ).main(args)
