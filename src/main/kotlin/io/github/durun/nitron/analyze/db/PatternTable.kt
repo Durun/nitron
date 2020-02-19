@@ -44,7 +44,7 @@ object Patterns : ReadableTable<Pattern>(name = "patterns") {
 class PatternReader(
         db: Database,
         private val nodeTypeSetId: Int? = null
-) : TableReader<Pattern> by BufferedTableReader(db, Patterns) {
+) : TableReader<Pattern> by BufferedTableReader(db, Patterns, bufferSize = 1000) {
     override fun read(): Sequence<Pattern> = read {
         val query = Patterns
                 .innerJoin(Patterns.beforeStructuresAlias, { beforeHash }, { Patterns.beforeStructuresAlias[Structures.hash] })

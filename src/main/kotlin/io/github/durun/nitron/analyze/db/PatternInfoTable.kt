@@ -25,4 +25,4 @@ object PatternInfos : ReadWritableTable<PatternWithResult>("pattern_info") {
     override fun read(row: ResultRow): PatternWithResult = TODO()
 }
 
-class PatternInfosWriter(db: Database) : TableWriter<PatternWithResult> by BufferedTableWriter(db, PatternInfos, idColumn = PatternInfos.id)
+class PatternInfosWriter(db: Database) : TableWriter<PatternWithResult> by BufferedTableWriter(db, PatternInfos, idColumn = PatternInfos.id, bufferSize = 1000)
