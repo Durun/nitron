@@ -1,22 +1,24 @@
 package io.github.durun.nitron.analyze.db
 
-import io.github.durun.nitron.analyze.AnalyzeQuery
 import io.github.durun.nitron.analyze.Pattern
-import io.github.durun.nitron.analyze.PatternInfo
+import io.github.durun.nitron.analyze.message.PatternResultMessage
+import io.github.durun.nitron.analyze.query.AnalyzeQuery
 
 
 class PatternWithResult(
         val pattern: Pattern,
-        val infos: List<PatternInfo>
+        val results: List<PatternResultMessage>
 ) {
-    fun getInfoString(): String = infos.joinToString { it.getInfoString() }
+    fun getInfoString(): String = results.joinToString { it.toString() }
 }
 
 
-fun <R : PatternInfo> Pattern.analyzeBy(queries: List<AnalyzeQuery<R>>): PatternWithResult {
-    return PatternWithResult(pattern = this, infos = queries.map { it.analyze(this) })
+fun Pattern.analyzeBy(queries: List<AnalyzeQuery<PatternResultMessage?>>): PatternWithResult? {
+    val results = queries.mapNotNull { it.analyze(this) }
+            .takeIf { it.isNotEmpty() }
+    return results?.let { PatternWithResult(pattern = this, results = it) }
 }
 
-fun <R : PatternInfo> Sequence<Pattern>.analyzeBy(queries: List<AnalyzeQuery<R>>): Sequence<PatternWithResult> {
-    return this.map { it.analyzeBy(queries) }
+fun Sequence<Pattern>.analyzeBy(queries: List<AnalyzeQuery<PatternResultMessage?>>): Sequence<PatternWithResult> {
+    return this.mapNotNull { it.analyzeBy(queries) }
 }
