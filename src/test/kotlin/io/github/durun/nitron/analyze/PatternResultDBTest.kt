@@ -4,6 +4,8 @@ import io.github.durun.nitron.analyze.db.PatternInfos
 import io.github.durun.nitron.analyze.db.PatternInfosWriter
 import io.github.durun.nitron.analyze.db.PatternReader
 import io.github.durun.nitron.analyze.db.analyzeBy
+import io.github.durun.nitron.analyze.message.PatternResultMessage
+import io.github.durun.nitron.analyze.query.AnalyzeQuery
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.sequences.shouldBeSameSizeAs
@@ -14,7 +16,7 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Paths
 
-class PatternInfoDBTest : FreeSpec() {
+class PatternResultDBTest : FreeSpec() {
     val dir = Paths.get("testdata/database")
     val dbPath = dir.resolve("test.db")
     val db = SQLiteDatabase.connect(dbPath)
@@ -51,15 +53,14 @@ class PatternInfoDBTest : FreeSpec() {
 }
 
 
-object TestQuery : AnalyzeQuery<TestInfo> {
-    override fun analyze(pattern: Pattern): TestInfo {
-        return TestInfo
+object TestQuery : AnalyzeQuery<TestResult> {
+    override fun analyze(pattern: Pattern): TestResult {
+        return TestResult
     }
 }
 
-object TestInfo : PatternInfo {
-    override val name: String
+object TestResult : PatternResultMessage {
+    private val name: String
         get() = "test"
-
-    override fun getInfoString(): String = name
+    override fun toString(): String = name
 }
