@@ -22,13 +22,13 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class CaseStudyCommand : CliktCommand(name = "casestudy") {
+class CasestudyCommand : CliktCommand(name = "casestudy") {
 	val dbPath by argument("db").path(
 			exists = true, folderOkay = false, writable = true
 	)
-	val db = SQLiteDatabase.connect(dbPath)
 
 	override fun run() {
+		val db = SQLiteDatabase.connect(dbPath)
 		transaction(db) {
 			SchemaUtils.createMissingTablesAndColumns(PatternInfos)
 			PatternInfos.deleteAll()

@@ -13,5 +13,5 @@ fun main(args: Array<String>) = App().subcommands(
 		AstPrintCommand(),
 		CodeNormalizeCommand(),
 		AstJsonImportCommand(),
-		CaseStudyCommand()
+		CasestudyCommand()
 ).main(args)
