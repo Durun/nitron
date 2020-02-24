@@ -1,7 +1,5 @@
 {
-    "extensions": [
-        ".cs"
-    ],
+    "extensions": [".cs"],
 	"grammarConfig": {
 		"grammarFiles": [
 			"../grammars/csharp/CSharpLexer.g4",

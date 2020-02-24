@@ -1,7 +1,5 @@
 {
-    "extensions": [
-        ".java"
-    ],
+    "extensions": [".java"],
 	"grammarConfig": {
 		"grammarFiles": [
 			"../grammars/java8/Java8Lexer.g4",

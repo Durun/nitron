@@ -1,7 +1,5 @@
 {
-	"extensions": [
-		".py"
-	],
+	"extensions": [".py"],
 	"grammarConfig": {
 		"grammarFiles": [
 			"../grammars/python3/Python3.g4"
@@ -11,9 +9,7 @@
 	},
 	"processConfig": {
 		"splitConfig": {
-			"splitRules": [
-				"stmt"
-			]
+			"splitRules": ["stmt"]
 		},
 		"normalizeConfig": {
 			"nonNumberedRuleMap": [

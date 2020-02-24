@@ -1,7 +1,5 @@
 {
-    "extensions": [
-        ".kt"
-    ],
+    "extensions": [".kt"],
 	"grammarConfig": {
 		"grammarFiles": [
 			"../grammars/kotlin/KotlinLexer.g4",
@@ -13,34 +11,24 @@
 	},
 	"processConfig": {
 		"splitConfig": {
-			"splitRules": [
-				"statement"
-			]
+			"splitRules": ["statement"]
 		},
 		"normalizeConfig": {
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": [
-						"stringLiteral"
-					],
+					"fromRules": ["stringLiteral"],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": [
-						"CharacterLiteral"
-					],
+					"fromRules": ["CharacterLiteral"],
 					"toSymbol": "'C'"
 				},
 				{
-					"fromRules": [
-						"IntegerLiteral"
-					],
+					"fromRules": ["IntegerLiteral"],
 					"toSymbol": "N"
 				},
 				{
-					"fromRules": [
-						"RealLiteral"
-					],
+					"fromRules": ["RealLiteral"],
 					"toSymbol": "N"
 				}
 			],
