@@ -59,6 +59,7 @@
 				"annotation",
 				"packageDeclaration",
 				"importDeclaration",
+				"variableModifier",
 				"classModifier",
 				"fieldModifier",
 				"methodModifier",
