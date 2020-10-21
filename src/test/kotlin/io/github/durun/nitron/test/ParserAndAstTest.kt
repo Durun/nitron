@@ -72,6 +72,41 @@ class ParserAndAstTest : FreeSpec() {
             "Swift3" {
                 testDefaultWithUtilFiles("swift3", ".swift", startRule = "top_level")
             }
+            "!R" {
+                testDefault("r", ".txt", startRule = "prog")
+            }
+            "JavaScript" {
+                val dir = baseDir.resolve("javascript")
+                testParsing(
+                        grammarFiles = collectFiles(dir, ".g4"),
+                        utilFiles = collectFiles(dir.resolve("Java"), ".java"),
+                        exampleFiles = collectFiles(dir.resolve("examples"), ".js")
+                                .filterNot {
+                                    // current JS grammar sometimes can't parse "for-of" statement
+                                    val exclude = listOf(
+                                            "MapSetAndWeakMapWeakSet.js",
+                                            "Generators.js",
+                                            "Scoping.js",
+                                            "Iterators.js",
+                                            "ExtendedLiterals.js",
+                                            "Misc.js",
+                                            "EnhancedRegularExpression.js"
+                                    )
+                                    exclude.contains(it.toFile().name)
+                                },
+                        startRule = "program"
+                )
+            }
+            "Matlab" {
+                testDefault("matlab", ".txt", startRule = "translation_unit")
+            }
+            "Erlang" {
+                testParsing(
+                        grammarFiles = collectFiles(baseDir.resolve("erlang"), ".g4"),
+                        exampleFiles = listOf(baseDir.resolve("erlang/examples/helloword.erl")),
+                        startRule = "forms"
+                )
+            }
         }
     }
 
