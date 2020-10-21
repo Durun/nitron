@@ -72,8 +72,12 @@ class ParserAndAstTest : FreeSpec() {
             "Swift3" {
                 testDefaultWithUtilFiles("swift3", ".swift", startRule = "top_level")
             }
-            "!R" {
-                testDefault("r", ".txt", startRule = "prog")
+            "R" {
+                testParsing(
+                        grammarFiles = listOf(baseDir.resolve("r/R.g4")),
+                        exampleFiles = collectFiles(baseDir.resolve("r/examples"), ".txt"),
+                        startRule = "prog"
+                )
             }
             "JavaScript" {
                 val dir = baseDir.resolve("javascript")
