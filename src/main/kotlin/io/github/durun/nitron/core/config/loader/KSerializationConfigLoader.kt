@@ -14,7 +14,7 @@ class KSerializationConfigLoader<C : ConfigWithDir>(
                 .toFile()
                 .bufferedReader()
                 .readText()
-        val config = Json.parse(serializer, json)
+        val config = Json.decodeFromString(serializer, json)
         return config.setPath(jsonFile)
     }
 }
