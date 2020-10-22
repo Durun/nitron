@@ -36,11 +36,11 @@
           "toSymbol": "N"
         },
         {
-          "fromRules": ["TRUE"],
+          "fromRules": ["'TRUE'"],
           "toSymbol": "$L"
         },
         {
-          "fromRules": ["FALSE"],
+          "fromRules": ["'FALSE'"],
           "toSymbol": "$L"
         }
       ],
