@@ -1,0 +1,73 @@
+{
+    "extensions": [".swift"],
+	"grammarConfig": {
+		"grammarFiles": [
+			"../grammars/swift3/Swift3.g4"
+		],
+		"utilJavaFiles": [
+			"../grammars/swift3/src/main/java/SwiftSupport.java"
+		],
+		"startRule": "top_level"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"declaration",
+				"statement",
+				"where_clause",
+				"catch_clause",
+				"if_directive_clause",
+				"elseif_directive_clause",
+				"else_directive_clause"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": ["string_literal"],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": ["numeric_literal"],
+					"toSymbol": "N"
+				},
+				{
+					"fromRules": ["boolean_literal"],
+					"toSymbol": "$L"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": ["variable_name"],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"postfix_expression",
+						"primary_expression",
+						"declaration_identifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"identifier_pattern",
+						"declaration_identifier"
+					],
+					"toSymbol": "$V"
+				},
+				{
+					"fromRules": [
+						"function_call_argument",
+						"label_identifier"
+					],
+					"toSymbol": "$V"
+				}
+			],
+			"ignoreRules": [
+				"import_declaration",
+				"EOF"
+			]
+		}
+	}
+}
