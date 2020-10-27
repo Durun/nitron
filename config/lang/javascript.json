@@ -1,0 +1,55 @@
+{
+  "extensions": [".js"],
+  "grammarConfig": {
+    "grammarFiles": [
+      "../grammars/javascript/JavaScriptParser.g4",
+      "../grammars/javascript/JavaScriptLexer.g4"
+    ],
+    "utilJavaFiles": [
+      "../grammars/javascript/Java/JavaScriptBaseParser.java",
+      "../grammars/javascript/Java/JavaScriptBaseLexer.java"
+    ],
+    "startRule": "program"
+  },
+  "processConfig": {
+    "splitConfig": {
+      "splitRules": [
+        "statement"
+      ]
+    },
+    "normalizeConfig": {
+      "nonNumberedRuleMap": [
+        {
+          "fromRules": ["StringLiteral"],
+          "toSymbol": "\"S\""
+        },
+        {
+          "fromRules": ["TemplateStringLiteral"],
+          "toSymbol": "\"S\""
+        },
+        {
+          "fromRules": ["numericLiteral"],
+          "toSymbol": "N"
+        },
+        {
+          "fromRules": ["bigintLiteral"],
+          "toSymbol": "N"
+        },
+        {
+          "fromRules": ["BooleanLiteral"],
+          "toSymbol": "$L"
+        }
+      ],
+      "numberedRuleMap": [
+        {
+          "fromRules": ["Identifier"],
+          "toSymbol": "$V"
+        }
+      ],
+      "ignoreRules": [
+        "importStatement",
+        "EOF"
+      ]
+    }
+  }
+}
