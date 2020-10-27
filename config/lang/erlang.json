@@ -1,0 +1,44 @@
+{
+    "extensions": [".erl"],
+	"grammarConfig": {
+		"grammarFiles": [
+			"../grammars/erlang/Erlang.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "forms"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"form",
+				"functionClause",
+				"crClause"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": ["tokString"],
+					"toSymbol": "\"S\""
+				},
+				{
+					"fromRules": ["tokChar"],
+					"toSymbol": "'C'"
+				},
+				{
+					"fromRules": ["tokFloat"],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": ["tokVar"],
+					"toSymbol": "$V"
+				}
+			],
+			"ignoreRules": [
+				"EOF"
+			]
+		}
+	}
+}
