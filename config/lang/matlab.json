@@ -1,0 +1,44 @@
+{
+    "extensions": [".m"],
+	"grammarConfig": {
+		"grammarFiles": [
+			"../grammars/matlab/matlab.g4"
+		],
+		"utilJavaFiles": [],
+		"startRule": "translation_unit"
+	},
+	"processConfig": {
+		"splitConfig": {
+			"splitRules": [
+				"statement",
+				"ELSE",
+				"elseif_clause"
+			]
+		},
+		"normalizeConfig": {
+			"nonNumberedRuleMap": [
+				{
+					"fromRules": ["STRING_LITERAL"],
+					"toSymbol": "'S'"
+				},
+				{
+					"fromRules": ["CONSTANT"],
+					"toSymbol": "N"
+				}
+			],
+			"numberedRuleMap": [
+				{
+					"fromRules": [
+						"postfix_expression",
+						"primary_expression",
+						"IDENTIFIER"
+					],
+					"toSymbol": "$V"
+				}
+			],
+			"ignoreRules": [
+				"EOF"
+			]
+		}
+	}
+}
