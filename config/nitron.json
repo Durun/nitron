@@ -5,8 +5,8 @@
         "python": "lang/python.json",
         "C#": "lang/csharp.json",
         "r":  "lang/r.json",
-        "javascript":  "lang/javascript/javascript.json",
-        "swift":  "lang/swift/swift3.json",
+        "javascript":  "lang/javascript.json",
+        "swift":  "lang/swift3.json",
         "matlab":  "lang/matlab.json",
         "erlang":  "lang/erlang.json"
     }
