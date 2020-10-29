@@ -2,10 +2,10 @@
     "extensions": [".swift"],
 	"grammarConfig": {
 		"grammarFiles": [
-			"../grammars/swift3/Swift3.g4"
+			"../grammars/swift/swift3/Swift3.g4"
 		],
 		"utilJavaFiles": [
-			"../grammars/swift3/src/main/java/SwiftSupport.java"
+			"../grammars/swift/swift3/src/main/java/SwiftSupport.java"
 		],
 		"startRule": "top_level"
 	},

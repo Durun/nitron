@@ -2,12 +2,12 @@
   "extensions": [".js"],
   "grammarConfig": {
     "grammarFiles": [
-      "../grammars/javascript/JavaScriptParser.g4",
-      "../grammars/javascript/JavaScriptLexer.g4"
+      "../grammars/javascript/javascript/JavaScriptParser.g4",
+      "../grammars/javascript/javascript/JavaScriptLexer.g4"
     ],
     "utilJavaFiles": [
-      "../grammars/javascript/Java/JavaScriptBaseParser.java",
-      "../grammars/javascript/Java/JavaScriptBaseLexer.java"
+      "../grammars/javascript/javascript/Java/JavaScriptParserBase.java",
+      "../grammars/javascript/javascript/Java/JavaScriptLexerBase.java"
     ],
     "startRule": "program"
   },
