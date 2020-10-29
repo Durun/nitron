@@ -4,6 +4,10 @@
         "kotlin": "lang/kotlin.json",
         "python": "lang/python.json",
         "C#": "lang/csharp.json",
-        "r":  "lang/r.json"
+        "r":  "lang/r.json",
+        "javascript":  "lang/javascript.json",
+        "swift":  "lang/swift3.json",
+        "matlab":  "lang/matlab.json",
+        "erlang":  "lang/erlang.json"
     }
 }
