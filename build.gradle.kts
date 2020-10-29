@@ -62,6 +62,16 @@ application {
     mainClassName = "io.github.durun.nitron.app.AppKt"
 }
 
+tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "11"
+    }
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 val build = tasks["build"]
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
