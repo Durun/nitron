@@ -1,5 +1,6 @@
 package io.github.durun.nitron.core.ast.visitor.normalizing
 
+import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.*
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
@@ -111,7 +112,14 @@ private class FastAstNormalizeVisitor private constructor(
 ): AstNormalizeVisitor() {
     constructor(nonNumberedRuleMap: Map<List<String>, String>,
                 numberedRuleMap: Map<List<String>, String>, types: NodeTypePool): this(
-            nonNumberedRuleMap = nonNumberedRuleMap.mapKeys { (names, _) ->
+            nonNumberedRuleMap = nonNumberedRuleMap.also{ _ ->
+                val invalidTypes = (nonNumberedRuleMap.keys + numberedRuleMap.keys)
+                        .flatten()
+                        .filter { types.getType(it) == null }
+                if (invalidTypes.isNotEmpty()) {
+                    throw InvalidTypeException(invalidTypes)
+                }
+            }.mapKeys { (names, _) ->
                 names.mapNotNull { name -> types.allTypes.find { it.name == name } }
             }.let { RuleMap(it) },
             numberedRuleMap = numberedRuleMap.mapKeys { (names, _) ->
