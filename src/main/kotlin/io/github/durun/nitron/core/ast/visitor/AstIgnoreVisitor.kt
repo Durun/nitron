@@ -1,5 +1,6 @@
 package io.github.durun.nitron.core.ast.visitor
 
+import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.*
 
 fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {
@@ -44,7 +45,15 @@ private class StringAstIgnoreVisitor(
 private class FastAstIgnoreVisitor(
         private val ignoreRules: Set<NodeType>
 ) : AstIgnoreVisitor() {
-    constructor(types: NodeTypePool, ignoreTypes: List<String>) : this(types.filterRulesAndTokenTypes(ignoreTypes))
+    constructor(types: NodeTypePool, ignoreTypes: List<String>) : this(
+            types.also { _ ->
+                val invalidTypes = ignoreTypes.filter { types.getType(it) == null }
+                if (invalidTypes.isNotEmpty()) {
+                    throw InvalidTypeException(invalidTypes)
+                }
+            }.filterRulesAndTokenTypes(ignoreTypes)
+    )
+
     constructor(types: NodeTypePool) : this(types.allTypes)
 
     override fun shouldIgnore(node: AstRuleNode) = ignoreRules.contains(node.type)

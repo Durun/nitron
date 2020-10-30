@@ -1,5 +1,6 @@
 package io.github.durun.nitron.core.ast.visitor
 
+import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.*
 
 fun astSplitVisitorOf(splitTypes: List<String>): AstSplitVisitor {
@@ -50,7 +51,13 @@ private class StringAstSplitVisitor(
 private class FastAstSplitVisitor(
         private val splitRules: Set<NodeType>
 ) : AstSplitVisitor() {
-    constructor(types: NodeTypePool, splitRules: List<String>) : this(types.filterRulesAndTokenTypes(splitRules))
+    constructor(types: NodeTypePool, splitRules: List<String>) : this(types.let { types ->
+        val invalidTypes = splitRules.filter { types.getType(it) == null }
+        if (invalidTypes.isNotEmpty()) {
+            throw InvalidTypeException(invalidTypes)
+        }
+        types.filterRulesAndTokenTypes(splitRules)
+    })
     constructor(types: NodeTypePool) : this(types.allTypes)
 
     override fun hasSplitRule(node: AstNode?): Boolean {
