@@ -10,14 +10,12 @@ data class AstStats(
 
 object AstCountVisitor: AstVisitor<AstStats> {
 	override fun visit(node: AstNode): AstStats {
-		TODO("Not yet implemented")
+		val children = node.children.orEmpty().map { it.accept(this) }
+		return AstStats(
+				size = children.sumBy { it.size } + 1
+		)
 	}
 
-	override fun visitRule(node: AstRuleNode): AstStats {
-		TODO("Not yet implemented")
-	}
-
-	override fun visitTerminal(node: AstTerminalNode): AstStats {
-		TODO("Not yet implemented")
-	}
+	override fun visitRule(node: AstRuleNode): AstStats = visit(node)
+	override fun visitTerminal(node: AstTerminalNode): AstStats = visit(node)
 }
