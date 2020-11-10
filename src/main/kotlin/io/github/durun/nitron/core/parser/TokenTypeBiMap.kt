@@ -7,11 +7,17 @@ class TokenTypeBiMap(parser: Parser) {
     val fromIndex: Map<Int, String>
 
     init {
-        fromIndex = fromName
-                .filterNot { it.key.contains('\'') }
-                .entries
-                .map { it.value to it.key }
-                .toMap()
+        /* remove overlaps
+             Strategy: Do not prioritize the name not having single quotation (')
+             ex) { "'None'": 28, "NONE": 28 } -> { "NONE": 28 }
+        * */
+        fromIndex = fromName.entries.groupBy { it.value }
+                .map { (index, entries) ->
+                    val names = entries.map { it.key }
+                    val name = names.firstOrNull { !it.contains('\'') } // try to remove the name not having single quotation (')
+                            ?: names.first()
+                    index to name
+                }.toMap()
         assert(fromIndex.keys.size == fromIndex.values.size)
     }
 }
