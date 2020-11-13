@@ -32,16 +32,16 @@ class ParserAndAstTest : FreeSpec() {
                 testDefault("golang", ".go", startRule = "sourceFile")
             }
             "Java" {
-                testDefault("java", ".java", startRule = "compilationUnit")
+                testDefault("java/java", ".java", startRule = "compilationUnit")
             }
             "Java8" {
-                testDefault("java8", ".java", startRule = "compilationUnit")
+                testDefault("java/java8", ".java", startRule = "compilationUnit")
             }
             "Java9" {
-                testDefault("java9", ".java", startRule = "compilationUnit")
+                testDefault("java/java9", ".java", startRule = "compilationUnit")
             }
             "Kotlin" {
-                testDefault("kotlin-formal", ".kt", startRule = "kotlinFile")
+                testDefault("kotlin/kotlin-formal", ".kt", startRule = "kotlinFile")
             }
             "Scala" {
                 testDefault("scala", ".txt", startRule = "compilationUnit")
@@ -64,13 +64,13 @@ class ParserAndAstTest : FreeSpec() {
                 )
             }
             "Python3" {
-                testDefault("python3", ".py", startRule = "file_input")
+                testDefault("python/python3", ".py", startRule = "file_input")
             }
             "Ruby" {
                 testDefault("ruby", ".rb", startRule = "prog")
             }
             "Swift3" {
-                testDefaultWithUtilFiles("swift3", ".swift", startRule = "top_level")
+                testDefaultWithUtilFiles("swift/swift3", ".swift", startRule = "top_level")
             }
             "R" {
                 testParsing(
@@ -80,7 +80,7 @@ class ParserAndAstTest : FreeSpec() {
                 )
             }
             "JavaScript" {
-                val dir = baseDir.resolve("javascript")
+                val dir = baseDir.resolve("javascript/javascript")
                 testParsing(
                         grammarFiles = collectFiles(dir, ".g4"),
                         utilFiles = collectFiles(dir.resolve("Java"), ".java"),
@@ -157,7 +157,7 @@ class ParserAndAstTest : FreeSpec() {
             exampleFiles = ${exampleFiles.joinToString()}
             utilFiles = ${utilFiles?.joinToString()}
             startRule = $startRule
-            
+
         """.trimIndent())
         // compile
         val parserTester = ParserTester(grammarFiles, startRule, exampleFiles, utilFiles)
