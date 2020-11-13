@@ -12,6 +12,12 @@ jobs:
             git submodule sync
             git submodule update --init
       - run:
+          name: Build
+          command: ./gradlew shadowJar
+      - store_artifacts:
+          path: build/libs/nitron-0.1-SNAPSHOT-all.jar
+          destination: nitron.jar
+      - run:
           name: Install Dependencies
           command: sudo apt-get install -y --fix-missing sqlite3
       - run:
