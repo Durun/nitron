@@ -20,7 +20,7 @@ fun main() = TemporaryTest {
         "C" {
             testDefault("c", ".c", startRule = "compilationUnit")
         }
-        "C++" {
+        "!C++" {
             testDefault("cpp", ".cpp", startRule = "translationunit")
         }
         "C#" {
@@ -43,9 +43,6 @@ fun main() = TemporaryTest {
         }
         "Scala" {
             testDefault("scala", ".txt", startRule = "compilationUnit")
-        }
-        "!JavaScript" {
-            testDefaultWithUtilFiles("javascript", ".js", startRule = "program")
         }
         "!TypeScript" {
             testDefaultWithUtilFiles("typescript", ".ts", startRule = "program")
