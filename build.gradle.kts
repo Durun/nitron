@@ -22,14 +22,14 @@ repositories {
 
 dependencies {
     // Versions
-    val jacksonVersion = "2.10.0"
-    val antlrVersion = "4.7.2"
-    val inmemantlrVersion = "1.6"
+    val jacksonVersion = "2.12.0"
+    val antlrVersion = "4.9"
+    val inmemantlrVersion = "1.7.0"
     val kotestVersion = "4.3.2"
-    val cliktVersion = "2.2.0"
-    val sqliteJdbcVersion = "3.28.0"
-    val exposedVersion = "0.17.6"
-    val kotlinSerializationVersion = "1.0.0"
+    val cliktVersion = "2.4.0"
+    val sqliteJdbcVersion = "3.34.0"
+    val exposedVersion = "0.17.7"
+    val kotlinSerializationVersion = "1.0.1"
 
     // This dependency is used by the application.
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
