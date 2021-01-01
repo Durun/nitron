@@ -1,4 +1,4 @@
-package io.github.durun.nitron.test
+package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.tester.ParserTester
 import io.kotlintest.matchers.collections.shouldHaveAtLeastSize
@@ -9,7 +9,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 
-class ParserAndAstTest : FreeSpec() {
+class grammars : FreeSpec() {
     init {
         "parse and dump" - {
             "calculator" {

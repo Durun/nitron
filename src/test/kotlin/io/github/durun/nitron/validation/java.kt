@@ -1,14 +1,13 @@
-package io.github.durun.nitron.test
+package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
-import io.kotlintest.should
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FreeSpec
 import java.nio.file.Paths
 
-class JavaNormalizeTest : FreeSpec() {
+class java : FreeSpec() {
     private val javaConfig: LangConfig
     private val processor: CodeProcessor
 
