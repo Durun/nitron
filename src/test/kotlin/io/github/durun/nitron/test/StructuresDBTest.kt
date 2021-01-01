@@ -14,15 +14,13 @@ import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.SerializableAst
-import io.github.durun.nitron.inout.model.ast.table.*
+import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
-import io.kotlintest.matchers.types.shouldNotBeNull
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FreeSpec
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.antlr.v4.runtime.Parser
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Paths
 
 class StructuresDBTest : FreeSpec() {

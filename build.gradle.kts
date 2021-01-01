@@ -32,7 +32,7 @@ dependencies {
     val jacksonVersion = "2.10.0"
     val antlrVersion = "4.7.2"
     val inmemantlrVersion = "1.6"
-    val kotlintestVersion = "3.4.2"
+    val kotestVersion = "4.3.2"
     val cliktVersion = "2.2.0"
     val sqliteJdbcVersion = "3.28.0"
     val exposedVersion = "0.17.6"
@@ -54,7 +54,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Use the Kotlin test library.
-    testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintestVersion")
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
 }
 
 application {
@@ -65,6 +66,12 @@ application {
 tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "11"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "11"
+    }
+    test {
+        useJUnitPlatform()
     }
 }
 java {

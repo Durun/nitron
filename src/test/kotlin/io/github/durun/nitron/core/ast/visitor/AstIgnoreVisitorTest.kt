@@ -2,10 +2,9 @@ package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.NitronException
 import io.github.durun.nitron.core.ast.node.NodeTypePool
-import io.kotlintest.matchers.types.shouldBeTypeOf
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldThrow
-import io.kotlintest.specs.FreeSpec
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
 class AstIgnoreVisitorTest : FreeSpec({
 	"Instantiation"- {

@@ -2,16 +2,20 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.*
+import io.github.durun.nitron.inout.model.Change
+import io.github.durun.nitron.inout.model.ChangeType
+import io.github.durun.nitron.inout.model.Code
+import io.github.durun.nitron.inout.model.DiffType
 import io.github.durun.nitron.inout.model.table.Changes
 import io.github.durun.nitron.inout.model.table.Codes
 import io.github.durun.nitron.inout.model.table.reader.ChangesReader
 import io.github.durun.nitron.inout.model.table.reader.CodesReader
 import io.github.durun.nitron.inout.model.table.writer.ChangesWriter
 import io.github.durun.nitron.inout.model.table.writer.CodesWriter
-import io.kotlintest.properties.Gen
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FreeSpec
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -30,7 +34,7 @@ class DBReadWriteTest : FreeSpec() {
             }
             val writer = CodesWriter(db)
             val reader = CodesReader(db)
-            codeGen.random().take(1000).toList().let { writeList ->
+            codeGen.take(1000).toList().let { writeList ->
                 writer.write(writeList)
                 val readList = reader.read().toList()
 
@@ -51,7 +55,7 @@ class DBReadWriteTest : FreeSpec() {
             }
             val writer = ChangesWriter(db)
             val reader = ChangesReader(db)
-            changeGen.random().take(1).toList().let { writeList ->
+            changeGen.take(1).toList().let { writeList ->
                 writer.write(writeList)
                 val readList = reader.read().toList()
 
@@ -66,11 +70,12 @@ class DBReadWriteTest : FreeSpec() {
         }
     }
 
-    val dateGen = Gen.long().map { Date(it) }
-            .map { ammoniaDateFormat.format(it) }
-            .map { ammoniaDateFormat.parse(it) }
-    val codeGen = Gen.bind(
-            Gen.string(), Gen.string(), Gen.int(), Gen.int()
+    val dateGen = Arb.localDateTime()
+            .map {
+                Date(it.year, it.monthValue, it.dayOfMonth, it.hour, it.minute, it.second)
+            }
+    val codeGen = Arb.bind(
+            Arb.string(), Arb.string(), Arb.int(), Arb.int()
     ) { soft, text, start, length ->
         Code(
                 softwareName = soft,
@@ -79,11 +84,11 @@ class DBReadWriteTest : FreeSpec() {
                 range = lineRangeOf(start, start + length)
         )
     }
-    val changeGen = Gen.bind(
-            Gen.string(), Gen.file().map(File::toPath), Gen.string(),
-            Gen.pair(codeGen, codeGen),
-            Gen.string(), dateGen,
-            Gen.bind(Gen.enum<ChangeType>(), Gen.enum<DiffType>(), ::Pair)
+    val changeGen = Arb.bind(
+            Arb.string(), Arb.file().map(File::toPath), Arb.string(),
+            Arb.pair(codeGen, codeGen),
+            Arb.string(), dateGen,
+            Arb.bind(Arb.enum<ChangeType>(), Arb.enum<DiffType>(), ::Pair)
     ) { soft, path, author, code, revision, date, type ->
         val codes = code.toList()
         CodesWriter(db).write(codes)

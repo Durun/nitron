@@ -1,7 +1,7 @@
 package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.tester.ParserTester
-import io.kotlintest.matchers.collections.shouldHaveAtLeastSize
+import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths

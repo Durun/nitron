@@ -2,7 +2,7 @@ package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 
 
