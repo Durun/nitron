@@ -11,9 +11,6 @@ private val javaConfig = NitronConfigLoader.load(configPath).langConfig["java"] 
 private val processor = CodeProcessor(javaConfig)
 
 fun main() = TemporaryTest {
-    val configPath = Paths.get("config/nitron.json")
-    val javaConfig = NitronConfigLoader.load(configPath).langConfig["java"] ?: throw Exception()
-    val processor = CodeProcessor(javaConfig)
     "basic" - {
         "package" {
             "package sample;".toNormStatements() shouldBe emptyList()

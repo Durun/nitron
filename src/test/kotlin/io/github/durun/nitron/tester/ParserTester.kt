@@ -7,10 +7,10 @@ import org.snt.inmemantlr.exceptions.ParsingException
 import java.nio.file.Path
 
 class ParserTester(
-        val grammarFiles: List<Path>,
-        val startRuleName: String,
-        val inputFiles: List<Path>,
-        val utilityJavaFiles: List<Path>? = null
+        private val grammarFiles: List<Path>,
+        private val startRuleName: String,
+        private val inputFiles: List<Path>,
+        private val utilityJavaFiles: List<Path>? = null
 ) {
     private val parser = CommonParser(grammarFiles, utilityJavaFiles)
     fun getAsts(): List<AstNode> {
