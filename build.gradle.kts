@@ -1,18 +1,13 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
-import org.jetbrains.dokka.gradle.DokkaTask
 
 group = "io.github.durun"
 version = "0.1-SNAPSHOT"
 
-val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
-
 plugins {
     `maven-publish`
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
+
     kotlin("jvm") version "1.4.21"
     kotlin("plugin.serialization") version "1.4.21"
 
-    // Apply the application plugin to add support for building a CLI application.
     application
 
     id("org.jetbrains.dokka") version "0.10.0"
@@ -22,8 +17,6 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 
@@ -44,7 +37,7 @@ dependencies {
     implementation("com.github.julianthome:inmemantlr-api:$inmemantlrVersion")
     implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
-    compile("org.jetbrains.exposed:exposed:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
 
     // Align versions of all Kotlin components
@@ -60,7 +53,7 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = "io.github.durun.nitron.app.AppKt"
+    mainClass.set("io.github.durun.nitron.app.AppKt")
 }
 
 tasks {
@@ -79,17 +72,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-val build = tasks["build"]
-val test by tasks.getting(Test::class) {
-    useJUnitPlatform { }
-}
-
 
 /**
  * Generate KDoc
  */
 tasks {
-    val dokka by getting(DokkaTask::class) {
+    dokka {
         outputFormat = "html"
         outputDirectory = "$buildDir/dokka"
     }
@@ -98,10 +86,13 @@ tasks {
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     description = "Assembles Kotlin docs with Dokka"
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     from(tasks.dokka)
 }
 
+/**
+ * Maven Publishing
+ */
 publishing {
     publications {
         create<MavenPublication>("default") {
@@ -115,5 +106,8 @@ publishing {
         }
     }
 }
-val publish = tasks["publish"]
-build.dependsOn(publish)
+tasks {
+    build {
+        dependsOn(publish)
+    }
+}
