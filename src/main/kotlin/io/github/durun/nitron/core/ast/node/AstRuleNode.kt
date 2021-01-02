@@ -13,7 +13,7 @@ interface AstRuleNode : AstNode {
     val ruleName: String
         get() = type.name
 
-    override val type: Rule
+    override val type: RuleType
 
     fun replaceChildren(newChildren: List<AstNode>): AstRuleNode
     fun copyWithChildren(children: List<AstNode>): AstRuleNode

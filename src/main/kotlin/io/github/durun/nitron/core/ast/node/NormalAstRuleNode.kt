@@ -4,7 +4,7 @@ package io.github.durun.nitron.core.ast.node
  * 部分木の情報を除くことで抽象化された非終端ノード.
  */
 class NormalAstRuleNode(
-        override val type: Rule,
+        override val type: RuleType,
         private val text: String? = null
 ) : AstRuleNode {
     /**

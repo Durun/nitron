@@ -11,7 +11,7 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
 class NodeTypePool private constructor(
         private val tokenTypeList: List<TokenType?>,
         private val tokenTypesRemain: Map<Int, TokenType>,
-        private val ruleList: List<Rule>
+        private val ruleTypeList: List<RuleType>
 ) {
     internal constructor(antlrParser: Parser) : this(
             tokenTypeMap = antlrParser.tokenTypeMap,
@@ -29,16 +29,16 @@ class NodeTypePool private constructor(
                                 ?: synonyms.first()
                     }
                     .mapValues { (index, name) -> TokenType(index, name) },
-            rules = ruleNames.mapIndexed { index, name -> Rule(index, name) }
+            ruleTypes = ruleNames.mapIndexed { index, name -> RuleType(index, name) }
     )
 
     constructor(tokenTypes: Iterable<String>, ruleNames: Iterable<String>) : this(
             tokenTypeList = tokenTypes.mapIndexed { index, it -> TokenType(index, it) }.toList(),
             tokenTypesRemain = emptyMap(),
-            ruleList = ruleNames.mapIndexed { index, it -> Rule(index, it) }.toList()
+            ruleTypeList = ruleNames.mapIndexed { index, it -> RuleType(index, it) }.toList()
     )
 
-    private constructor(tokenTypeMap: Map<Int, TokenType>, rules: List<Rule>) : this(
+    private constructor(tokenTypeMap: Map<Int, TokenType>, ruleTypes: List<RuleType>) : this(
             tokenTypeList = tokenTypeMap
                     .let { typeMap ->
                         val max = tokenTypeMap.keys.max()
@@ -47,24 +47,24 @@ class NodeTypePool private constructor(
                                 .orEmpty()
                     },
             tokenTypesRemain = tokenTypeMap.filterKeys { it < 0 },
-            ruleList = rules
+            ruleTypeList = ruleTypes
     )
 
     val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
-    val rules: Set<Rule> by lazy { ruleList.toSet() }
-    val allTypes: Set<NodeType> by lazy { tokenTypes + rules }
+    val ruleTypes: Set<RuleType> by lazy { ruleTypeList.toSet() }
+    val allTypes: Set<NodeType> by lazy { tokenTypes + ruleTypes }
 
     fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
-    fun getRule(index: Int): Rule? = ruleList.getOrNull(index)
+    fun getRule(index: Int): RuleType? = ruleTypeList.getOrNull(index)
     fun getTokenType(name: String): TokenType? = tokenTypes.find { it.name == name }
-    fun getRule(name: String): Rule? = rules.find { it.name == name }
+    fun getRule(name: String): RuleType? = ruleTypes.find { it.name == name }
     fun getType(name: String): NodeType? = getRule(name) ?: getTokenType(name)
 
     fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
         return NodeTypePool(
                 tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
                 tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
-                ruleList = ruleList.filter { remainRules.contains(it.name) }
+                ruleTypeList = ruleTypeList.filter { remainRules.contains(it.name) }
         )
     }
 }
@@ -92,7 +92,7 @@ class TokenType private constructor(
     override fun hashCode(): Int = key
 }
 
-class Rule private constructor(
+class RuleType private constructor(
         private val entry: Map.Entry<Int, String>
 ) : NodeType,
         Map.Entry<Int, String> by entry {
@@ -101,7 +101,7 @@ class Rule private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        return (other is Rule) && (key == other.key)
+        return (other is RuleType) && (key == other.key)
     }
 
     override fun hashCode(): Int = key

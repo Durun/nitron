@@ -31,7 +31,7 @@ class NodeTypeSet internal constructor(
     constructor(grammarName: String, types: NodeTypePool) : this(
             grammar = grammarName,
             tokenTypes = ArrayMap(types.tokenTypes.map { it.name }.toTypedArray()),
-            ruleNames = ArrayMap(types.rules.map { it.name }.toTypedArray())
+            ruleNames = ArrayMap(types.ruleTypes.map { it.name }.toTypedArray())
     )
 
     fun toNodeTypePool(): NodeTypePool = NodeTypePool(
