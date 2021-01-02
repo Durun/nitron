@@ -3,7 +3,6 @@ package io.github.durun.nitron.core.ast.type
 import io.github.durun.nitron.core.ast.node.NodeType
 import io.github.durun.nitron.util.filterIsInstance
 import io.github.durun.nitron.util.toSparseList
-import org.antlr.v4.runtime.Parser
 
 class NodeTypePool private constructor(
 		private val tokenTypeList: List<TokenType?>,
@@ -11,14 +10,22 @@ class NodeTypePool private constructor(
 		private val ruleTypeList: List<RuleType?>
 ) {
 	companion object {
+		fun of(tokenTypes: Map<Int, TokenType>, ruleTypes: Map<Int, RuleType>, secondaryTokenTypes: Map<Int, TokenType> = emptyMap()): NodeTypePool {
+			return NodeTypePool(
+					tokenTypeList = tokenTypes.toSparseList(),
+					tokenTypesRemain = secondaryTokenTypes,
+					ruleTypeList = ruleTypes.toSparseList()
+			)
+		}
+
 		fun of(types: Map<Int, NodeType>, secondaryTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
 			val tokens = types.filterIsInstance<Int, TokenType>()
 			val rules = types.filterIsInstance<Int, RuleType>()
 			val secondaryTokens = secondaryTypes.filterIsInstance<Int, TokenType>()
-			return NodeTypePool(
-					tokenTypeList = tokens.toSparseList(),
-					tokenTypesRemain = secondaryTokens,
-					ruleTypeList = rules.toSparseList()
+			return NodeTypePool.of(
+					tokenTypes = tokens,
+					ruleTypes = rules,
+					secondaryTokenTypes = secondaryTokens
 			)
 		}
 	}
