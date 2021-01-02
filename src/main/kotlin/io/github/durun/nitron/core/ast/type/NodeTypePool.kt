@@ -1,13 +1,28 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
+import io.github.durun.nitron.util.filterIsInstance
+import io.github.durun.nitron.util.toSparseList
 import org.antlr.v4.runtime.Parser
 
 class NodeTypePool private constructor(
 		private val tokenTypeList: List<TokenType?>,
 		private val tokenTypesRemain: Map<Int, TokenType>,
-		private val ruleTypeList: List<RuleType>
+		private val ruleTypeList: List<RuleType?>
 ) {
+	companion object {
+		fun of(types: Map<Int, NodeType>, secondaryTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
+			val tokens = types.filterIsInstance<Int, TokenType>()
+			val rules = types.filterIsInstance<Int, RuleType>()
+			val secondaryTokens = secondaryTypes.filterIsInstance<Int, TokenType>()
+			return NodeTypePool(
+					tokenTypeList = tokens.toSparseList(),
+					tokenTypesRemain = secondaryTokens,
+					ruleTypeList = rules.toSparseList()
+			)
+		}
+	}
+
     internal constructor(antlrParser: Parser) : this(
             tokenTypeMap = antlrParser.tokenTypeMap,
             ruleNames = antlrParser.ruleNames.asList()
@@ -46,7 +61,7 @@ class NodeTypePool private constructor(
     )
 
     val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
-    val ruleTypes: Set<RuleType> by lazy { ruleTypeList.toSet() }
+	val ruleTypes: Set<RuleType> by lazy { ruleTypeList.filterNotNull().toSet() }
     val allTypes: Set<NodeType> by lazy { tokenTypes + ruleTypes }
 
     fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
@@ -59,7 +74,7 @@ class NodeTypePool private constructor(
         return NodeTypePool(
 				tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
 				tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
-				ruleTypeList = ruleTypeList.filter { remainRules.contains(it.name) }
+				ruleTypeList = ruleTypeList.filterNotNull().filter { remainRules.contains(it.name) }
 		)
     }
 }
