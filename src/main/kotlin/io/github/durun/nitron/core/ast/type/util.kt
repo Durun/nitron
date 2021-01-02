@@ -4,5 +4,22 @@ import io.github.durun.nitron.core.parser.AstBuildVisitor
 import org.antlr.v4.runtime.Parser
 
 internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
-    return NodeTypePool(antlrParser.tokenTypeMap, antlrParser.ruleNames.asList())
+    val tokens = antlrParser.tokenTypeMap
+            .entries
+            .groupBy { it.value }
+            .mapValues { (_, entries) -> entries.map { it.key } }
+            .mapValues { (_, synonyms) ->
+                synonyms.filterNot { it.contains('\'') }
+                        .firstOrNull()
+                        ?: synonyms.first()
+            }
+            .mapValues { (index, name) -> TokenType(index, name) }
+    val rules = antlrParser.ruleNames.asList()
+            .mapIndexed { index, name -> RuleType(index, name) }
+            .associateBy { it.index }
+    return NodeTypePool.of(
+            tokenTypes = tokens,
+            ruleTypes = rules,
+            secondaryTokenTypes = tokens.filterKeys { it < 0 }
+    )
 }

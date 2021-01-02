@@ -30,36 +30,10 @@ class NodeTypePool private constructor(
 		}
 	}
 
-	constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>) : this(
-			tokenTypeMap = tokenTypeMap
-					.entries
-					.groupBy { it.value }
-					.mapValues { (_, entries) -> entries.map { it.key } }
-					.mapValues { (_, synonyms) ->
-						synonyms.filterNot { it.contains('\'') }
-								.firstOrNull()
-								?: synonyms.first()
-					}
-					.mapValues { (index, name) -> TokenType(index, name) },
-			ruleTypes = ruleNames.mapIndexed { index, name -> RuleType(index, name) }
-	)
-
 	constructor(tokenTypes: Iterable<String>, ruleNames: Iterable<String>) : this(
 			tokenTypeList = tokenTypes.mapIndexed { index, it -> TokenType(index, it) }.toList(),
 			tokenTypesRemain = emptyMap(),
 			ruleTypeList = ruleNames.mapIndexed { index, it -> RuleType(index, it) }.toList()
-	)
-
-	private constructor(tokenTypeMap: Map<Int, TokenType>, ruleTypes: List<RuleType>) : this(
-			tokenTypeList = tokenTypeMap
-					.let { typeMap ->
-						val max = tokenTypeMap.keys.max()
-						val range = max?.let { 0..it }
-						range?.map { index -> typeMap[index] }
-								.orEmpty()
-					},
-			tokenTypesRemain = tokenTypeMap.filterKeys { it < 0 },
-			ruleTypeList = ruleTypes
 	)
 
 	val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
