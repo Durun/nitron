@@ -23,12 +23,7 @@ class NodeTypePool private constructor(
 		}
 	}
 
-	internal constructor(antlrParser: Parser) : this(
-			tokenTypeMap = antlrParser.tokenTypeMap,
-			ruleNames = antlrParser.ruleNames.asList()
-	)
-
-	private constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>) : this(
+	constructor(tokenTypeMap: Map<String, Int>, ruleNames: Iterable<String>) : this(
 			tokenTypeMap = tokenTypeMap
 					.entries
 					.groupBy { it.value }
