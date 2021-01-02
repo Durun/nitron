@@ -3,8 +3,8 @@ package io.github.durun.nitron.test
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.inout.model.ast.SerializableAst
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FreeSpec
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
 class SerializableAstTest : FreeSpec() {
     private val mapper = jacksonObjectMapper()

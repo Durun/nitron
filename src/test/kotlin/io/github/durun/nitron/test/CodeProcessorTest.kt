@@ -2,8 +2,8 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FreeSpec
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 
 
@@ -62,8 +62,7 @@ private const val javaParsed = """package sample ; import some . Library ; publi
 private const val javaSplitted = """package sample ; import some . Library ;
 public class HelloWorld {
 public static void main ( String [ ] args ) {
-try {
-URL url = null ;
+try { URL url = null ;
 try {
 url = new URL ( source ) ;
 url = url + "test" ;
@@ -87,25 +86,17 @@ System . out . println ( "Hello-B" ) ;
 <EOF>"""
 private const val javaNormalized = """class HelloWorld {
 void main ( String [ ] ${"$"}V0 ) {
-try {
-URL ${"$"}V0 = null ;
+try { URL ${"$"}V0 = null ;
 try {
 ${"$"}V0 = new URL ( ${"$"}V1 ) ;
 ${"$"}V0 = ${"$"}V0 + "S" ;
-}
 catch ( MalformedURLException ${"$"}V0 ) {
 throw new BuildException ( ${"$"}V0 . toString ( ) ) ;
-}
-}
 catch ( Exception ${"$"}V0 ) {
 throw ${"$"}V0 ;
-}
-if ( true ) {
+if ( ${"$"}L ) {
 ${"$"}V0 . println ( "S" ) ;
-} else
-if ( false )
+else
+if ( ${"$"}L )
 {
-${"$"}V0 . println ( "S" ) ;
-}
-}
-}"""
+${"$"}V0 . println ( "S" ) ;"""

@@ -24,15 +24,15 @@ fun codeHashOf(code: String): ByteArray {
     return md5.digest(code.toByteArray(Charsets.UTF_8))
 }
 
-internal fun AstNode.toHash(): ByteArray {
+fun AstNode.toHash(): ByteArray {
     return codeHashOf(this.getText())
 }
 
-internal fun encodeByteArray(bytes: ByteArray): String {
+fun encodeByteArray(bytes: ByteArray): String {
     return bytes.joinToString("") { String.format("%02x", it) }
 }
 
-internal fun decodeByteArray(str: String): ByteArray {
+fun decodeByteArray(str: String): ByteArray {
     return str.chunked(2)
             .map { Integer.decode("0x$it") }
             .map { it.toByte() }

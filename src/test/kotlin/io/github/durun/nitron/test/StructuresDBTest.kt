@@ -14,15 +14,13 @@ import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.SerializableAst
-import io.github.durun.nitron.inout.model.ast.table.*
+import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
-import io.kotlintest.matchers.types.shouldNotBeNull
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FreeSpec
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.antlr.v4.runtime.Parser
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Paths
 
 class StructuresDBTest : FreeSpec() {
@@ -47,90 +45,6 @@ class StructuresDBTest : FreeSpec() {
                         .toSerializable(nodeTypeSet)
                 value.shouldNotBeNull()
             }
-        }
-
-        "a Structure is writable and readable" {
-            val value = javaCode
-                    .let { processor.parse(it) }
-                    .toSerializable(nodeTypeSet)
-
-            // init table
-            transaction(db) {
-                SchemaUtils.drop(Structures)
-                SchemaUtils.drop(NodeTypeSets)
-                SchemaUtils.create(Structures)
-                SchemaUtils.create(NodeTypeSets)
-            }
-
-            // write
-            val writer = StructuresWriter(db)
-            println("writing: $value")
-            writer.write(value)
-            println("wrote: $value")
-
-            // read
-            val reader = StructuresReader(db)
-            val readValue = reader.read().firstOrNull() ?: throw Exception("StructuresReader read nothing.")
-            println("read: $readValue")
-            readValue shouldBe value
-        }
-
-        "many Structure are writable and readable" {
-            val value = javaCode
-                    .let { processor.parse(it) }
-                    .toSerializable(nodeTypeSet)
-            val n = 100
-            val values = (1..n).map { value }
-
-            // init table
-            transaction(db) {
-                SchemaUtils.drop(Structures)
-                SchemaUtils.drop(NodeTypeSets)
-                SchemaUtils.create(Structures)
-                SchemaUtils.create(NodeTypeSets)
-            }
-
-            // write
-            val writer = StructuresWriter(db)
-            println("writing: $values")
-            writer.write(values)
-            println("wrote: $values")
-
-            // read
-            val reader = StructuresReader(db)
-            val readValues = reader.read().toList()
-            readValues.forEach {
-                println("read: $it")
-            }
-            readValues shouldBe values
-        }
-
-        "!CodeProcessor can recode Structures" {
-            val value = javaCode
-                    .let { processor.parse(it) }
-
-            // init table
-            transaction(db) {
-                SchemaUtils.drop(Structures)
-                SchemaUtils.drop(NodeTypeSets)
-                SchemaUtils.create(Structures)
-                SchemaUtils.create(NodeTypeSets)
-            }
-
-            // write
-            println("writing: $value")
-            processor.write(value)
-            println("wrote: $value")
-
-            // read
-            val reader = StructuresReader(db)
-            val readValues = reader.read().toList()
-            readValues.forEach {
-                println("read: $it")
-            }
-
-            val orig = value.toSerializable(nodeTypeSet)
-            readValues.firstOrNull() shouldBe orig
         }
 
         "Test faster writer" - {

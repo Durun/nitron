@@ -1,42 +1,35 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
-import org.jetbrains.dokka.gradle.DokkaTask
 
 group = "io.github.durun"
 version = "0.1-SNAPSHOT"
 
-val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
-
 plugins {
     `maven-publish`
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("jvm") version "1.4.10"
-    kotlin("plugin.serialization") version "1.4.10"
 
-    // Apply the application plugin to add support for building a CLI application.
+    kotlin("jvm") version "1.4.21"
+    kotlin("plugin.serialization") version "1.4.21"
+
     application
 
     id("org.jetbrains.dokka") version "0.10.0"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 
 dependencies {
     // Versions
-    val jacksonVersion = "2.10.0"
-    val antlrVersion = "4.7.2"
-    val inmemantlrVersion = "1.6"
-    val kotlintestVersion = "3.4.2"
-    val cliktVersion = "2.2.0"
-    val sqliteJdbcVersion = "3.28.0"
-    val exposedVersion = "0.17.6"
-    val kotlinSerializationVersion = "1.0.0"
+    val jacksonVersion = "2.12.0"
+    val antlrVersion = "4.9"
+    val inmemantlrVersion = "1.7.0"
+    val kotestVersion = "4.3.2"
+    val cliktVersion = "2.4.0"
+    val sqliteJdbcVersion = "3.34.0"
+    val exposedVersion = "0.17.7"
+    val kotlinSerializationVersion = "1.0.1"
 
     // This dependency is used by the application.
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -44,7 +37,7 @@ dependencies {
     implementation("com.github.julianthome:inmemantlr-api:$inmemantlrVersion")
     implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
-    compile("org.jetbrains.exposed:exposed:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
 
     // Align versions of all Kotlin components
@@ -54,11 +47,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Use the Kotlin test library.
-    testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintestVersion")
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
 }
 
 application {
     // Define the main class for the application
+    mainClass.set("io.github.durun.nitron.app.AppKt")
     mainClassName = "io.github.durun.nitron.app.AppKt"
 }
 
@@ -66,15 +61,16 @@ tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "11"
     }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "11"
+    }
+    test {
+        useJUnitPlatform()
+    }
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-}
-
-val build = tasks["build"]
-val test by tasks.getting(Test::class) {
-    useJUnitPlatform { }
 }
 
 
@@ -82,7 +78,7 @@ val test by tasks.getting(Test::class) {
  * Generate KDoc
  */
 tasks {
-    val dokka by getting(DokkaTask::class) {
+    dokka {
         outputFormat = "html"
         outputDirectory = "$buildDir/dokka"
     }
@@ -91,10 +87,13 @@ tasks {
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     description = "Assembles Kotlin docs with Dokka"
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     from(tasks.dokka)
 }
 
+/**
+ * Maven Publishing
+ */
 publishing {
     publications {
         create<MavenPublication>("default") {
@@ -108,5 +107,8 @@ publishing {
         }
     }
 }
-val publish = tasks["publish"]
-build.dependsOn(publish)
+tasks {
+    build {
+        dependsOn(publish)
+    }
+}
