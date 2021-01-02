@@ -3,6 +3,7 @@ package io.github.durun.nitron.inout.model.ast
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.durun.nitron.core.ast.type.NodeTypePool
+import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
 
@@ -34,9 +35,9 @@ class NodeTypeSet internal constructor(
             ruleNames = ArrayMap(types.ruleTypes.map { it.name }.toTypedArray())
     )
 
-    fun toNodeTypePool(): NodeTypePool = NodeTypePool(
+    fun toNodeTypePool(): NodeTypePool = createNodeTypePool(
             tokenTypes = tokenTypes.array.asIterable(),
-            ruleNames = ruleNames.array.asIterable()
+            ruleTypes = ruleNames.array.asIterable()
     )
 
     /**

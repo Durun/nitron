@@ -22,19 +22,13 @@ class NodeTypePool private constructor(
 			val tokens = types.filterIsInstance<Int, TokenType>()
 			val rules = types.filterIsInstance<Int, RuleType>()
 			val secondaryTokens = secondaryTypes.filterIsInstance<Int, TokenType>()
-			return NodeTypePool.of(
+			return of(
 					tokenTypes = tokens,
 					ruleTypes = rules,
 					secondaryTokenTypes = secondaryTokens
 			)
 		}
 	}
-
-	constructor(tokenTypes: Iterable<String>, ruleNames: Iterable<String>) : this(
-			tokenTypeList = tokenTypes.mapIndexed { index, it -> TokenType(index, it) }.toList(),
-			tokenTypesRemain = emptyMap(),
-			ruleTypeList = ruleNames.mapIndexed { index, it -> RuleType(index, it) }.toList()
-	)
 
 	val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
 	val ruleTypes: Set<RuleType> by lazy { ruleTypeList.filterNotNull().toSet() }

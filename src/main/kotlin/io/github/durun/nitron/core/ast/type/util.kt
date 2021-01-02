@@ -23,3 +23,16 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
             secondaryTokenTypes = tokens.filterKeys { it < 0 }
     )
 }
+
+fun createNodeTypePool(tokenTypes: Iterable<String>, ruleTypes: Iterable<String>): NodeTypePool {
+    tokenTypes.mapIndexed {index, name -> TokenType(index, name) }
+            .associateBy { it.index }
+    return NodeTypePool.of(
+            tokenTypes = tokenTypes
+                    .mapIndexed {index, name -> TokenType(index, name) }
+                    .associateBy { it.index },
+            ruleTypes = ruleTypes
+                    .mapIndexed { index, name -> RuleType(index, name) }
+                    .associateBy { it.index }
+    )
+}
