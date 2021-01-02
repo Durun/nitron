@@ -2,6 +2,7 @@ package io.github.durun.nitron.core.ast.visitor.normalizing
 
 import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.*
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
 import kotlin.collections.HashMap

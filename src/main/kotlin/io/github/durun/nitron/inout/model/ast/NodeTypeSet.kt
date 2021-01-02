@@ -2,7 +2,7 @@ package io.github.durun.nitron.inout.model.ast
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.durun.nitron.core.ast.node.NodeTypePool
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
 

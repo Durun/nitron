@@ -1,5 +1,7 @@
 package io.github.durun.nitron.core.ast.node
 
+import io.github.durun.nitron.core.ast.type.RuleType
+
 class BasicAstRuleNode(
         override val type: RuleType,
         children: List<AstNode>

@@ -1,17 +1,12 @@
-package io.github.durun.nitron.core.ast.node
+package io.github.durun.nitron.core.ast.type
 
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.util.SimpleEntry
+import io.github.durun.nitron.core.ast.node.NodeType
 import org.antlr.v4.runtime.Parser
 
-internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
-    return NodeTypePool(antlrParser)
-}
-
 class NodeTypePool private constructor(
-        private val tokenTypeList: List<TokenType?>,
-        private val tokenTypesRemain: Map<Int, TokenType>,
-        private val ruleTypeList: List<RuleType>
+		private val tokenTypeList: List<TokenType?>,
+		private val tokenTypesRemain: Map<Int, TokenType>,
+		private val ruleTypeList: List<RuleType>
 ) {
     internal constructor(antlrParser: Parser) : this(
             tokenTypeMap = antlrParser.tokenTypeMap,
@@ -62,47 +57,9 @@ class NodeTypePool private constructor(
 
     fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
         return NodeTypePool(
-                tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
-                tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
-                ruleTypeList = ruleTypeList.filter { remainRules.contains(it.name) }
-        )
+				tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
+				tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
+				ruleTypeList = ruleTypeList.filter { remainRules.contains(it.name) }
+		)
     }
-}
-
-
-interface NodeType : Map.Entry<Int, String> {
-    val index: Int
-        get() = this.key
-    val name: String
-        get() = this.value
-}
-
-class TokenType private constructor(
-        private val entry: Map.Entry<Int, String>
-) : NodeType,
-        Map.Entry<Int, String> by entry {
-
-    constructor(index: Int, name: String) : this(SimpleEntry(index, name))
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return (other is TokenType) && (key == other.key)
-    }
-
-    override fun hashCode(): Int = key
-}
-
-class RuleType private constructor(
-        private val entry: Map.Entry<Int, String>
-) : NodeType,
-        Map.Entry<Int, String> by entry {
-
-    constructor(index: Int, name: String) : this(SimpleEntry(index, name))
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return (other is RuleType) && (key == other.key)
-    }
-
-    override fun hashCode(): Int = key
 }

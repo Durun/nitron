@@ -1,22 +1,23 @@
 package io.github.durun.nitron.core.ast.node
 
+import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 /**
  * 構文木の終端ノード
  */
 class AstTerminalNode(
-        /**
+		/**
          * トークン
          */
         token: String,
 
-        /**
+		/**
          * 終端規則
          */
         override val type: TokenType,
 
-        /**
+		/**
          * 元のソースコードとの対応位置
          */
         val line: Int

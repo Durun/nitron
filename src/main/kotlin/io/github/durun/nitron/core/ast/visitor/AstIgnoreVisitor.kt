@@ -2,6 +2,7 @@ package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.*
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 
 fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {
     return StringAstIgnoreVisitor(ignoreTypes)

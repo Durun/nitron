@@ -1,5 +1,7 @@
 package io.github.durun.nitron.core.ast.node
 
+import io.github.durun.nitron.core.ast.type.RuleType
+
 /**
  * 部分木の情報を除くことで抽象化された非終端ノード.
  */
