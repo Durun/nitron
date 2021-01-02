@@ -25,7 +25,7 @@ class AstBuildVisitor(
 
         val ruleIndex = node.ruleContext?.ruleIndex
                 ?: throw Exception("Rulenode has no ruleIndex")
-        val rule = nodeTypes.getRule(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
+        val rule = nodeTypes.getRuleType(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
         return BasicAstRuleNode(
                 type = rule,
                 children = children
