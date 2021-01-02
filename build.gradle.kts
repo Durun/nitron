@@ -13,7 +13,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.10.0"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 repositories {
@@ -54,6 +54,7 @@ dependencies {
 application {
     // Define the main class for the application
     mainClass.set("io.github.durun.nitron.app.AppKt")
+    mainClassName = "io.github.durun.nitron.app.AppKt"
 }
 
 tasks {
