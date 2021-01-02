@@ -1,7 +1,7 @@
 package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.NitronException
-import io.github.durun.nitron.core.ast.node.NodeTypePool
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.types.shouldBeInstanceOf
