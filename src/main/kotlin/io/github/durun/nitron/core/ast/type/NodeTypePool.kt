@@ -1,9 +1,10 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
+import kotlinx.serialization.Serializable
 
-
-class NodeTypePool private constructor(
+@Serializable
+class NodeTypePool internal constructor(
 		val grammar: String,
 		private val tokenTypeMap: Map<Int, TokenType>,
 		private val ruleTypeMap: Map<Int, RuleType>,

@@ -1,20 +1,15 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
-import io.github.durun.nitron.util.SimpleEntry
+import kotlinx.serialization.Serializable
 
-class RuleType private constructor(
-        private val entry: Map.Entry<Int, String>
-) : NodeType,
-        Map.Entry<Int, String> by entry {
-
-    constructor(index: Int, name: String) : this(SimpleEntry(index, name))
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return (other is RuleType) && (key == other.key)
-    }
-
-    override fun hashCode(): Int = key
-    override fun toString(): String = entry.toString()
+@Serializable
+data class RuleType constructor(
+        override val index: Int,
+        override val name: String
+) : NodeType, Map.Entry<Int, String> {
+    override val key: Int
+        get() = index
+    override val value: String
+        get() = name
 }
