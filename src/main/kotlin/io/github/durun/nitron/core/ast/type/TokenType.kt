@@ -2,7 +2,7 @@ package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
 
-class TokenType internal constructor(
+class TokenType(
         override val index: Int,
         override val name: String
 ) : NodeType, Map.Entry<Int, String> {
