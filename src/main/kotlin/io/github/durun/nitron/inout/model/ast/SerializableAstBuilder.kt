@@ -4,17 +4,18 @@ import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 fun AstNode.toSerializable(nodeTypeSet: NodeTypeSet): Structure {
     return Structure(
             nodeTypeSet = nodeTypeSet,
-            ast = this.accept(SerializableAstBuildVisitor(nodeTypeSet))
+            ast = this.accept(SerializableAstBuildVisitor(nodeTypeSet.toNodeTypePool()))
     )
 }
 
 private class SerializableAstBuildVisitor(
-        private val typeMap: NodeTypeSet
+        private val types: NodeTypePool
 ) : AstVisitor<SerializableAst.Node> {
     override fun visit(node: AstNode): SerializableAst.Node {
         return SerializableAst.TerminalNode(   // TODO
@@ -24,23 +25,24 @@ private class SerializableAstBuildVisitor(
     }
 
     override fun visitRule(node: AstRuleNode): SerializableAst.Node {
-        val type = typeMap.rule(node.ruleName) ?: throw NoSuchElementException()
+        val type = types.getRuleType(node.ruleName) ?: throw NoSuchElementException()
         return if (node is NormalAstRuleNode) {
             SerializableAst.NormalizedRuleNode(
-                    type,
+                    type.index,
                     text = node.getText()
             )
         } else {
             SerializableAst.RuleNode(
-                    type,
+                    type.index,
                     children = node.children?.map { it.accept(this) }.orEmpty()
             )
         }
     }
 
     override fun visitTerminal(node: AstTerminalNode): SerializableAst.Node {
+        val type = types.getTokenType(node.tokenType) ?: throw NoSuchElementException()
         return SerializableAst.TerminalNode(
-                type = typeMap.token(node.tokenType) ?: throw NoSuchElementException(),
+                type = type.index,
                 text = node.token
         )
     }
