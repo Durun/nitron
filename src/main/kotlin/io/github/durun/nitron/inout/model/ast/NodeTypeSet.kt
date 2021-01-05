@@ -7,24 +7,6 @@ import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
 
-@Deprecated("use NodeTypePool")
-fun NodeTypePool.toSerializable(): NodeTypeSet {
-    return NodeTypeSet(
-            this.grammar,
-            tokenTypes = ArrayMap(this.tokenTypes.map { it.name }.toTypedArray()),
-            ruleNames = ArrayMap(this.ruleTypes.map { it.name }.toTypedArray())
-    )
-}
-
-@Deprecated("use NodeTypePool")
-fun NodeTypeSet.toNodeTypePool(): NodeTypePool {
-    return createNodeTypePool(
-            grammarName = grammar,
-            tokenTypes = tokenTypes.array.asList(),
-            ruleTypes = ruleNames.array.asList()
-    )
-}
-
 /**
  * 文法[grammar]が持つtokenType, ruleNameの集合
  */
