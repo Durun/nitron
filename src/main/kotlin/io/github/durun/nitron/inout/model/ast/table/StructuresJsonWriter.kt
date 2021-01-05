@@ -7,6 +7,8 @@ import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.github.durun.nitron.inout.model.table.writer.TableWriter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.Closeable
 import java.io.File
 import java.io.Flushable
@@ -41,7 +43,7 @@ class StructuresJsonWriter(
     }
 
     private fun write(value: NodeTypePool) {
-        val json = mapper.writeValueAsString(value.toSerializable())
+        val json = Json.encodeToString(value)
         out.println(json)
         if (autoFlush) flush()
     }

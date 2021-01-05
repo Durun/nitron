@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
@@ -15,13 +14,14 @@ import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.core.parser.CommonParser
 import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.SerializableAst
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.antlr.v4.runtime.Parser
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Paths
@@ -32,7 +32,6 @@ class StructuresDBTest : FreeSpec() {
     private val langConfig: LangConfig
     private val processor: CodeProcessor
     private val nodeTypePool: NodeTypePool
-    private val nodeTypeSet: NodeTypeSet
     private val db: Database
 
     init {
@@ -41,7 +40,6 @@ class StructuresDBTest : FreeSpec() {
         processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
         val antlrParser = langConfig.grammar.getParser()    // TODO
         nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
-        nodeTypeSet = nodeTypePool.toSerializable()
 
         "prepare" - {
             "Structure is serializable" {
@@ -76,7 +74,7 @@ class StructuresDBTest : FreeSpec() {
                 // check
                 val text = file.readText()
                 println("file:")
-                val expected = jacksonObjectMapper().writeValueAsString(nodeTypeSet) + "\n" +
+                val expected = Json.encodeToString(nodeTypePool) + "\n" +
                         values.joinToString("\n") { """{"${encodeByteArray(it.hash)}":${jacksonObjectMapper().writeValueAsString(it.ast)}}""" } + "\n"
 
                 text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->

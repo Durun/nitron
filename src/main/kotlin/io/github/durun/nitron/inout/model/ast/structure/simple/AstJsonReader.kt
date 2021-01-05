@@ -2,8 +2,11 @@ package io.github.durun.nitron.inout.model.ast.structure.simple
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.decodeByteArray
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Path
@@ -11,8 +14,7 @@ import java.nio.file.Path
 class AstJsonReader(file: File, bufferSize: Int, progressOutput: PrintStream? = null) {
     constructor(path: Path, bufferSize: Int, progressOutput: PrintStream? = null) : this(path.toFile(), bufferSize, progressOutput)
 
-    private val mapper = jacksonObjectMapper()
-    private val nodeTypeSet: NodeTypeSet
+    val nodeTypePool: NodeTypePool
     private val rawSequence: Sequence<String>
     private val hashAndNodeSequence: Sequence<Pair<ByteArray, String>>
 
@@ -21,7 +23,7 @@ class AstJsonReader(file: File, bufferSize: Int, progressOutput: PrintStream? = 
 
     init {
         val reader = file.bufferedReader(bufferSize = bufferSize)
-        nodeTypeSet = mapper.readValue(reader.readLine())
+        nodeTypePool = Json.decodeFromString(reader.readLine())
 
         rawSequence =
                 if (progressOutput == null) reader.lineSequence()
@@ -47,7 +49,5 @@ class AstJsonReader(file: File, bufferSize: Int, progressOutput: PrintStream? = 
                 }
     }
 
-
-    fun readTypeSet(): NodeTypeSet = nodeTypeSet
     fun readHashAndRawNodes(): Sequence<Pair<ByteArray, String>> = hashAndNodeSequence
 }

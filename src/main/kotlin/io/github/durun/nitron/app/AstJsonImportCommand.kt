@@ -36,7 +36,7 @@ private class AstJsonImporter(
     constructor(input: File, output: File) : this(input.toPath(), output.toPath())
 
     fun run() {
-        val typeSet = reader.readTypeSet()
+        val typeSet = reader.nodeTypePool
         val nodes = reader.readHashAndRawNodes()
 
         writer.writeBuffering(typeSet, nodes)

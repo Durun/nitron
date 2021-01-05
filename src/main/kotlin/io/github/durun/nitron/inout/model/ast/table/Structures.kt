@@ -54,4 +54,11 @@ object Structures : ReadWritableTable<Structure>("structures") {
                 }
         it[nodeTypeSet] = newId
     }
+
+    fun batchInsertRawValues(typeSetId: Int, hashAndJsons: Iterable<Pair<ByteArray, String>>): List<ResultRow> =
+            batchInsert(hashAndJsons, ignore = true) { (hashValue, jsonValue) ->
+                this[hash] = hashValue.toBlob()
+                this[json] = jsonValue
+                this[nodeTypeSet] = typeSetId
+            }
 }
