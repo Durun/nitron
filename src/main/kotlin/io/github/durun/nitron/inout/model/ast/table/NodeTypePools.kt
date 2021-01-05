@@ -1,7 +1,6 @@
 package io.github.durun.nitron.inout.model.ast.table
 
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.table.ReadWritableTable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
