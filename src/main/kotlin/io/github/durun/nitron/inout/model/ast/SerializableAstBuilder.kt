@@ -14,6 +14,13 @@ fun AstNode.toSerializable(nodeTypeSet: NodeTypeSet): Structure {
     )
 }
 
+fun AstNode.toSerializable(nodeTypePool: NodeTypePool): Structure {
+    return Structure(
+            nodeTypeSet = nodeTypePool.toSerializable(),
+            ast = this.accept(SerializableAstBuildVisitor(nodeTypePool))
+    )
+}
+
 private class SerializableAstBuildVisitor(
         private val types: NodeTypePool
 ) : AstVisitor<SerializableAst.Node> {

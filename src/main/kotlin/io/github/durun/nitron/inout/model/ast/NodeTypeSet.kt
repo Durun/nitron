@@ -7,8 +7,8 @@ import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
 
-fun NodeTypePool.toSerializable(grammarName: String): NodeTypeSet {
-    return NodeTypeSet(grammarName, types = this)
+fun NodeTypePool.toSerializable(): NodeTypeSet {
+    return NodeTypeSet(this.grammar, types = this)
 }
 
 /**
