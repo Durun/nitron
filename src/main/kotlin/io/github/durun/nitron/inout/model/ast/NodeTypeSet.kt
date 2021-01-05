@@ -36,6 +36,7 @@ class NodeTypeSet internal constructor(
     )
 
     fun toNodeTypePool(): NodeTypePool = createNodeTypePool(
+            grammar,
             tokenTypes = tokenTypes.array.asList(),
             ruleTypes = ruleNames.array.asList()
     )

@@ -2,25 +2,29 @@ package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
 
+
 class NodeTypePool private constructor(
+		val grammar: String,
 		private val tokenTypeMap: Map<Int, TokenType>,
 		private val ruleTypeMap: Map<Int, RuleType>,
 		private val synonymTokenTypes: Map<Int, TokenType>
 ) {
 	companion object {
-		fun of(tokenTypes: Collection<TokenType>, ruleTypes: Collection<RuleType>, synonymTokenTypes: Collection<TokenType> = emptySet()): NodeTypePool {
+		fun of(grammarName: String, tokenTypes: Collection<TokenType>, ruleTypes: Collection<RuleType>, synonymTokenTypes: Collection<TokenType> = emptySet()): NodeTypePool {
 			checkOverlap(tokenTypes)
 			checkOverlap(ruleTypes)
 			checkSynonym(tokenTypes, synonymTokenTypes)
 			return NodeTypePool(
+					grammarName,
 					tokenTypeMap = tokenTypes.associateBy { it.index },
 					synonymTokenTypes = synonymTokenTypes.associateBy { it.index },
 					ruleTypeMap = ruleTypes.associateBy { it.index }
 			)
 		}
 
-		fun of(types: Collection<NodeType>, synonymTypes: Collection<NodeType> = emptySet()): NodeTypePool {
+		fun of(grammarName: String, types: Collection<NodeType>, synonymTypes: Collection<NodeType> = emptySet()): NodeTypePool {
 			return of(
+					grammarName,
 					tokenTypes = types.filterIsInstance<TokenType>(),
 					ruleTypes = types.filterIsInstance<RuleType>(),
 					synonymTokenTypes = synonymTypes.filterIsInstance<TokenType>()
@@ -75,6 +79,7 @@ class NodeTypePool private constructor(
 
 	fun filterTypes(predicate: (NodeType) -> Boolean): NodeTypePool {
 		return NodeTypePool(
+				grammar,
 				tokenTypeMap = tokenTypeMap.filterValues(predicate),
 				ruleTypeMap = ruleTypeMap.filterValues(predicate),
 				synonymTokenTypes = synonymTokenTypes.filterValues(predicate)

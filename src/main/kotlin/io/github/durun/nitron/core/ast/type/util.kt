@@ -16,14 +16,16 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
     val rules = antlrParser.ruleNames.asList()
             .mapIndexed { index, name -> RuleType(index, name) }
     return NodeTypePool.of(
+            grammarName = antlrParser.grammarFileName,
             tokenTypes = tokens,
             ruleTypes = rules,
             synonymTokenTypes = allTokens.filterNot { tokens.any { other -> it === other } }
     )
 }
 
-fun createNodeTypePool(tokenTypes: List<String>, ruleTypes: List<String>): NodeTypePool {
+fun createNodeTypePool(grammarName: String, tokenTypes: List<String>, ruleTypes: List<String>): NodeTypePool {
     return NodeTypePool.of(
+            grammarName,
             tokenTypes = tokenTypes.mapIndexed {index, name -> TokenType(index, name) },
             ruleTypes = ruleTypes.mapIndexed { index, name -> RuleType(index, name) }
     )

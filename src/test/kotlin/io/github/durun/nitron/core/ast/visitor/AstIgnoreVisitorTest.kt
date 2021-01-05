@@ -10,6 +10,7 @@ class AstIgnoreVisitorTest : FreeSpec({
 	"Instantiation"- {
 		"created if given rule is ok" {
 			val types = createNodeTypePool(
+					grammarName = "lang",
 					tokenTypes = listOf("TOKEN_A", "TOKEN_B"),
 					ruleTypes = listOf("rule_a", "rule_b")
 			)
@@ -19,6 +20,7 @@ class AstIgnoreVisitorTest : FreeSpec({
 		}
 		"Should throw if given rule is wrong" {
 			val types = createNodeTypePool(
+					grammarName = "lang",
 					tokenTypes = listOf("TOKEN_A", "TOKEN_B"),
 					ruleTypes = listOf("rule_a", "rule_b")
 			)
