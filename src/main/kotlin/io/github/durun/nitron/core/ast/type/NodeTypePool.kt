@@ -44,4 +44,12 @@ class NodeTypePool private constructor(
 				ruleTypeList = ruleTypeList.filterNotNull().filter { remainRules.contains(it.name) }
 		)
 	}
+
+	fun filterTypes(predicate: (NodeType) -> Boolean): NodeTypePool {
+		return NodeTypePool(
+				tokenTypeList = tokenTypeList.map { if (it != null && predicate(it)) it else null },
+				ruleTypeList = ruleTypeList.map { if (it != null && predicate(it)) it else null },
+				synonymTokenTypes = synonymTokenTypes.filterValues(predicate)
+		)
+	}
 }
