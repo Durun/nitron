@@ -4,8 +4,7 @@ import io.github.durun.nitron.core.parser.AstBuildVisitor
 import org.antlr.v4.runtime.Parser
 
 internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
-    val tokens = antlrParser.tokenTypeMap
-            .entries
+    val tokens = antlrParser.tokenTypeMap.entries
             .groupBy { it.value }
             .mapValues { (_, entries) -> entries.map { it.key } }
             .mapValues { (_, synonyms) ->
@@ -13,26 +12,19 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
                         .firstOrNull()
                         ?: synonyms.first()
             }
-            .mapValues { (index, name) -> TokenType(index, name) }
+            .map { (index, name) -> TokenType(index, name) }
     val rules = antlrParser.ruleNames.asList()
             .mapIndexed { index, name -> RuleType(index, name) }
-            .associateBy { it.index }
     return NodeTypePool.of(
             tokenTypes = tokens,
             ruleTypes = rules,
-            synonymTokenTypes = tokens.filterKeys { it < 0 }
+            synonymTokenTypes = tokens.filter { it.index < 0 }
     )
 }
 
-fun createNodeTypePool(tokenTypes: Iterable<String>, ruleTypes: Iterable<String>): NodeTypePool {
-    tokenTypes.mapIndexed {index, name -> TokenType(index, name) }
-            .associateBy { it.index }
+fun createNodeTypePool(tokenTypes: List<String>, ruleTypes: List<String>): NodeTypePool {
     return NodeTypePool.of(
-            tokenTypes = tokenTypes
-                    .mapIndexed {index, name -> TokenType(index, name) }
-                    .associateBy { it.index },
-            ruleTypes = ruleTypes
-                    .mapIndexed { index, name -> RuleType(index, name) }
-                    .associateBy { it.index }
+            tokenTypes = tokenTypes.mapIndexed {index, name -> TokenType(index, name) },
+            ruleTypes = ruleTypes.mapIndexed { index, name -> RuleType(index, name) }
     )
 }

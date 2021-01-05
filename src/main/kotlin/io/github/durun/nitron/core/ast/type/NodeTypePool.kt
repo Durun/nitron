@@ -1,46 +1,82 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
-import io.github.durun.nitron.util.filterIsInstance
-import io.github.durun.nitron.util.toSparseList
 
 class NodeTypePool private constructor(
-		private val tokenTypeList: List<TokenType?>,
-		private val ruleTypeList: List<RuleType?>,
+		private val tokenTypeMap: Map<Int, TokenType>,
+		private val ruleTypeMap: Map<Int, RuleType>,
 		private val synonymTokenTypes: Map<Int, TokenType>
 ) {
 	companion object {
-		fun of(tokenTypes: Map<Int, TokenType>, ruleTypes: Map<Int, RuleType>, synonymTokenTypes: Map<Int, TokenType> = emptyMap()): NodeTypePool {
+		fun of(tokenTypes: Collection<TokenType>, ruleTypes: Collection<RuleType>, synonymTokenTypes: Collection<TokenType> = emptySet()): NodeTypePool {
+			checkOverlap(tokenTypes)
+			checkOverlap(ruleTypes)
+			checkSynonym(tokenTypes, synonymTokenTypes)
 			return NodeTypePool(
-					tokenTypeList = tokenTypes.toSparseList(),
-					synonymTokenTypes = synonymTokenTypes,
-					ruleTypeList = ruleTypes.toSparseList()
+					tokenTypeMap = tokenTypes.associateBy { it.index },
+					synonymTokenTypes = synonymTokenTypes.associateBy { it.index },
+					ruleTypeMap = ruleTypes.associateBy { it.index }
 			)
 		}
 
-		fun of(types: Map<Int, NodeType>, synonymTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
+		fun of(types: Collection<NodeType>, synonymTypes: Collection<NodeType> = emptySet()): NodeTypePool {
 			return of(
-					tokenTypes = types.filterIsInstance(),
-					ruleTypes = types.filterIsInstance(),
-					synonymTokenTypes = synonymTypes.filterIsInstance()
+					tokenTypes = types.filterIsInstance<TokenType>(),
+					ruleTypes = types.filterIsInstance<RuleType>(),
+					synonymTokenTypes = synonymTypes.filterIsInstance<TokenType>()
 			)
+		}
+
+		/**
+		 * NodeType.indexの重複がないことを確認する
+		 */
+		private fun checkOverlap(types: Collection<NodeType>) {
+			val overlappedTypes = types
+					.groupBy { it.index }
+					.filter { (_, value) -> 2 <= value.size }
+			if (overlappedTypes.isNotEmpty()) {
+				throw IllegalArgumentException("""
+					types overlap: {
+					  ${overlappedTypes.entries.joinToString(",\n") { (index, types) -> "$index: ${types.map { it.name }}" }}
+					}
+				""".trimIndent())
+			}
+		}
+
+		/**
+		 * [synonyms]の全てのindexが、[mainTypes]にも存在していることを確認する
+		 */
+		private fun checkSynonym(mainTypes: Collection<NodeType>, synonyms: Collection<NodeType>) {
+			val mainIndice = mainTypes.map { it.index }
+			val invalidSynonyms = synonyms
+					.groupBy { it.index }
+					.filterNot { mainIndice.contains(it.key) }
+			if (invalidSynonyms.isNotEmpty()) {
+				throw IllegalArgumentException("""
+					only synonyms exist: {
+					  ${invalidSynonyms.entries.joinToString(",\n") { (index, types) -> "$index: ${types.map { it.name }}" }}
+					}
+				""".trimIndent())
+			}
 		}
 	}
 
-	val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + synonymTokenTypes.values }
-	val ruleTypes: Set<RuleType> by lazy { ruleTypeList.filterNotNull().toSet() }
+	val tokenTypes: Set<TokenType> by lazy { tokenTypeMap.values.toSet() + synonymTokenTypes.values }
+	val ruleTypes: Set<RuleType> by lazy { ruleTypeMap.values.toSet() }
 	val allTypes: Set<NodeType> by lazy { tokenTypes + ruleTypes }
 
-	fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: synonymTokenTypes[index]
-	fun getRuleType(index: Int): RuleType? = ruleTypeList.getOrNull(index)
+	fun getTokenType(index: Int): TokenType? = tokenTypeMap[index]
+	fun getRuleType(index: Int): RuleType? = ruleTypeMap[index]
 	fun getTokenType(name: String): TokenType? = tokenTypes.find { it.name == name }
+			?.let { tokenTypeMap[it.index] }
+
 	fun getRuleType(name: String): RuleType? = ruleTypes.find { it.name == name }
 	fun getType(name: String): NodeType? = getRuleType(name) ?: getTokenType(name)
 
 	fun filterTypes(predicate: (NodeType) -> Boolean): NodeTypePool {
 		return NodeTypePool(
-				tokenTypeList = tokenTypeList.map { if (it != null && predicate(it)) it else null },
-				ruleTypeList = ruleTypeList.map { if (it != null && predicate(it)) it else null },
+				tokenTypeMap = tokenTypeMap.filterValues(predicate),
+				ruleTypeMap = ruleTypeMap.filterValues(predicate),
 				synonymTokenTypes = synonymTokenTypes.filterValues(predicate)
 		)
 	}

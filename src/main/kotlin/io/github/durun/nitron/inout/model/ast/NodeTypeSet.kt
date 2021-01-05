@@ -36,8 +36,8 @@ class NodeTypeSet internal constructor(
     )
 
     fun toNodeTypePool(): NodeTypePool = createNodeTypePool(
-            tokenTypes = tokenTypes.array.asIterable(),
-            ruleTypes = ruleNames.array.asIterable()
+            tokenTypes = tokenTypes.array.asList(),
+            ruleTypes = ruleNames.array.asList()
     )
 
     /**
