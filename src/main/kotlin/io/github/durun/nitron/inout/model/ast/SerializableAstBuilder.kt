@@ -9,7 +9,7 @@ import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 fun AstNode.toSerializable(nodeTypePool: NodeTypePool): Structure {
     return Structure(
-            nodeTypeSet = nodeTypePool.toSerializable(),
+            nodeTypePool = nodeTypePool,
             ast = this.accept(SerializableAstBuildVisitor(nodeTypePool))
     )
 }

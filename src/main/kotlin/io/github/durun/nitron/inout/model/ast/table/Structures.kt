@@ -2,11 +2,10 @@ package io.github.durun.nitron.inout.model.ast.table
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.core.toBytes
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
-import io.github.durun.nitron.inout.model.ast.SerializableAst
-import io.github.durun.nitron.inout.model.ast.Structure
+import io.github.durun.nitron.inout.model.ast.*
 import io.github.durun.nitron.inout.model.table.ReadWritableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -26,9 +25,9 @@ object Structures : ReadWritableTable<Structure>("structures") {
     private val mapper = jacksonObjectMapper()
     private fun SerializableAst.Node.writeAsString(): String = mapper.writeValueAsString(this)
 
-    internal fun read(row: ResultRow, nodeTypeSet: NodeTypeSet): Structure {
+    internal fun read(row: ResultRow, nodeTypePool: NodeTypePool): Structure {
         return Structure(
-                nodeTypeSet = nodeTypeSet,
+                nodeTypePool = nodeTypePool,
                 ast = mapper.readValue(row[json]),
                 hash = row[hash].toBytes()
         )
@@ -36,20 +35,20 @@ object Structures : ReadWritableTable<Structure>("structures") {
 
     override fun read(row: ResultRow): Structure {
         assert(row.hasValue(nodeTypeSets[NodeTypeSets.id]))
-        return read(row, NodeTypeSets.read(row, nodeTypeSets))
+        return read(row, NodeTypeSets.read(row, nodeTypeSets).toNodeTypePool())
     }
 
     override fun insert(value: Structure, insertId: Int?): InsertStatement<Number> = insert {
         it[id] = insertId ?: getNextId(idColumn = id)
         it[hash] = value.hash.toBlob()
         it[json] = value.ast.writeAsString()
-        value.nodeTypeSet.grammar
-        val newId = transaction { NodeTypeSets.select { NodeTypeSets.grammar eq value.nodeTypeSet.grammar } }   // TODO refactor
+        value.nodeTypePool.grammar
+        val newId = transaction { NodeTypeSets.select { NodeTypeSets.grammar eq value.nodeTypePool.grammar } }   // TODO refactor
                 .firstOrNull()
                 ?.getOrNull(NodeTypeSets.id)
                 ?: let {
                     val newId = NodeTypeSets.getNextId(NodeTypeSets.id)
-                    NodeTypeSets.insert(value.nodeTypeSet, newId)
+                    NodeTypeSets.insert(value.nodeTypePool.toSerializable(), newId)
                     newId
                 }
         it[nodeTypeSet] = newId

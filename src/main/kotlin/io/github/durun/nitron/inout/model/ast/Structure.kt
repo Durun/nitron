@@ -1,5 +1,6 @@
 package io.github.durun.nitron.inout.model.ast
 
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.codeHashOf
 
 /**
@@ -10,7 +11,7 @@ class Structure internal constructor(
         /**
          * [ast]の文法が持つtokenType, ruleNameの集合
          */
-        val nodeTypeSet: NodeTypeSet,
+        val nodeTypePool: NodeTypePool,
 
         /**
          * 構文木
@@ -22,8 +23,8 @@ class Structure internal constructor(
          */
         val hash: ByteArray
 ) {
-    constructor(nodeTypeSet: NodeTypeSet, ast: SerializableAst.Node) : this(
-            nodeTypeSet = nodeTypeSet,
+    constructor(nodeTypePool: NodeTypePool, ast: SerializableAst.Node) : this(
+            nodeTypePool = nodeTypePool,
             ast = ast,
             hash = codeHashOf(ast.text)
     )
@@ -34,7 +35,7 @@ class Structure internal constructor(
         nodes.add(0, this.ast)
         val newAst = SerializableAst.NodeList(nodes)
         return Structure(
-                nodeTypeSet = nodeTypeSet,
+                nodeTypePool = nodeTypePool,
                 ast = newAst
         )
     }
@@ -45,7 +46,7 @@ class Structure internal constructor(
 
         other as Structure
 
-        if (nodeTypeSet != other.nodeTypeSet) return false
+        if (nodeTypePool != other.nodeTypePool) return false
         if (ast != other.ast) return false
         if (!hash.contentEquals(other.hash)) return false
 
@@ -53,7 +54,7 @@ class Structure internal constructor(
     }
 
     override fun hashCode(): Int {
-        var result = nodeTypeSet.hashCode()
+        var result = nodeTypePool.hashCode()
         result = 31 * result + ast.hashCode()
         result = 31 * result + hash.contentHashCode()
         return result

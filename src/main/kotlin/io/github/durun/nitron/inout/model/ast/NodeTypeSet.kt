@@ -16,6 +16,15 @@ fun NodeTypePool.toSerializable(): NodeTypeSet {
     )
 }
 
+@Deprecated("use NodeTypePool")
+fun NodeTypeSet.toNodeTypePool(): NodeTypePool {
+    return createNodeTypePool(
+            grammarName = grammar,
+            tokenTypes = tokenTypes.array.asList(),
+            ruleTypes = ruleNames.array.asList()
+    )
+}
+
 /**
  * 文法[grammar]が持つtokenType, ruleNameの集合
  */

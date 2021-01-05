@@ -2,6 +2,7 @@ package io.github.durun.nitron.inout.model.ast.table
 
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.Structure
+import io.github.durun.nitron.inout.model.ast.toNodeTypePool
 import io.github.durun.nitron.inout.model.table.reader.BufferedTableReader
 import io.github.durun.nitron.inout.model.table.reader.TableReader
 import org.jetbrains.exposed.sql.*
@@ -24,7 +25,7 @@ class StructuresReader(
                                     .statement()
                                     .andWhere { Structures.nodeTypeSet eq nodeTypeSetId }
                                     .map {
-                                        Structures.read(it, nodeTypeSet)
+                                        Structures.read(it, nodeTypeSet.toNodeTypePool())
                                     }
                         }.asSequence()
                     }
