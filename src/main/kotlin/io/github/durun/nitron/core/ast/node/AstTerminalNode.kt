@@ -2,22 +2,26 @@ package io.github.durun.nitron.core.ast.node
 
 import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Contextual
 
 /**
  * 構文木の終端ノード
  */
+@Serializable
 class AstTerminalNode(
-		/**
+        /**
          * トークン
          */
-        token: String,
+        var token: String,
 
-		/**
+        /**
          * 終端規則
          */
+        @Contextual
         override val type: TokenType,
 
-		/**
+        /**
          * 元のソースコードとの対応位置
          */
         val line: Int
@@ -25,9 +29,6 @@ class AstTerminalNode(
     @Deprecated("use type", ReplaceWith("type.name"))
     val tokenType: String
         get() = type.name
-
-    var token: String = token
-        private set
 
     fun replaceToken(newToken: String): AstTerminalNode {
         this.token = newToken
@@ -39,4 +40,24 @@ class AstTerminalNode(
 
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AstTerminalNode
+
+        if (token != other.token) return false
+        if (type != other.type) return false
+        if (line != other.line) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = token.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + line
+        return result
+    }
 }
