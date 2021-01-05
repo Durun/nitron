@@ -3,8 +3,8 @@ package io.github.durun.nitron.core.ast.type
 import io.github.durun.nitron.core.ast.node.NodeType
 import kotlinx.serialization.Serializable
 
-@Serializable
-class NodeTypePool internal constructor(
+@Serializable(with = NodeTypePoolSerializer::class)
+class NodeTypePool private constructor(
 		val grammar: String,
 		private val tokenTypeMap: Map<Int, TokenType>,
 		private val ruleTypeMap: Map<Int, RuleType>,
@@ -29,6 +29,15 @@ class NodeTypePool internal constructor(
 					tokenTypes = types.filterIsInstance<TokenType>(),
 					ruleTypes = types.filterIsInstance<RuleType>(),
 					synonymTokenTypes = synonymTypes.filterIsInstance<TokenType>()
+			)
+		}
+
+		fun of(grammarName: String, tokenTypes: Map<Int, String>, ruleTypes: Map<Int, String>, synonymTokenTypes: Map<String, Int>): NodeTypePool {
+			return of(
+					grammarName,
+					tokenTypes = tokenTypes.entries.map { (index, name) -> TokenType(index, name) },
+					ruleTypes = ruleTypes.entries.map { (index, name) -> RuleType(index, name) },
+					synonymTokenTypes = synonymTokenTypes.entries.map { (name, index) -> TokenType(index, name) }
 			)
 		}
 
@@ -66,7 +75,8 @@ class NodeTypePool internal constructor(
 		}
 	}
 
-	val tokenTypes: Set<TokenType> by lazy { tokenTypeMap.values.toSet() + synonymTokenTypes.values }
+	val mainTokenTypes: Set<TokenType> by lazy { tokenTypeMap.values.toSet() }
+	val tokenTypes: Set<TokenType> by lazy { mainTokenTypes + synonymTokenTypes.values }
 	val ruleTypes: Set<RuleType> by lazy { ruleTypeMap.values.toSet() }
 	val allTypes: Set<NodeType> by lazy { tokenTypes + ruleTypes }
 
