@@ -6,12 +6,6 @@ class BasicAstRuleNode(
         override val type: RuleType,
         children: List<AstNode>
 ) : AstRuleNode {
-    @Deprecated("may cause hash conflict", ReplaceWith("this(type = , children = children)"))
-    constructor(ruleName: String, children: List<AstNode>) : this(
-            type = RuleType(ruleName.hashCode(), ruleName),
-            children = children
-    )
-
     override var children: List<AstNode> = children
         private set
 
