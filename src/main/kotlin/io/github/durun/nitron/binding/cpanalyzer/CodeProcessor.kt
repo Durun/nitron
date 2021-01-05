@@ -40,7 +40,7 @@ class CodeProcessor(
                 grammarFiles = config.grammar.grammarFilePaths,
                 utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
-        nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
+        nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.getAntlrParser())
         startRule = config.grammar.startRule
         splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitTypes = config.process.splitConfig.splitRules)
         ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)

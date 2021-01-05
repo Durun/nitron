@@ -3,7 +3,7 @@ package io.github.durun.nitron.core.ast.type
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import org.antlr.v4.runtime.Parser
 
-internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
+internal fun AstBuildVisitor.nodeTypePoolOf(grammarName: String?, antlrParser: Parser): NodeTypePool {
     val allTokens = antlrParser.tokenTypeMap.entries
             .map { (name, index) -> TokenType(index, name) }
     val tokens = allTokens
@@ -16,7 +16,7 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
     val rules = antlrParser.ruleNames.asList()
             .mapIndexed { index, name -> RuleType(index, name) }
     return NodeTypePool.of(
-            grammarName = antlrParser.grammarFileName,
+            grammarName = grammarName ?: antlrParser.grammarFileName,
             tokenTypes = tokens,
             ruleTypes = rules,
             synonymTokenTypes = allTokens.filterNot { tokens.any { other -> it === other } }

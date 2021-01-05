@@ -20,7 +20,7 @@ class ParserTester(
                 val result = parser.parse(file, startRuleName)
                 val tree = result.first
                 val parser = result.second
-                tree.accept<AstNode?>(AstBuildVisitor(parser))
+                tree.accept<AstNode?>(AstBuildVisitor(grammarName = null, parser))
             } to file
         }
 

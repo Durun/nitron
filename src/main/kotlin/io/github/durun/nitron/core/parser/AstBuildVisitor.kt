@@ -15,9 +15,10 @@ import org.antlr.v4.runtime.tree.*
  * @param [parser] 文法規則の情報を持つ[Parser].
  */
 class AstBuildVisitor(
+        grammarName: String?,
         parser: Parser
 ) : ParseTreeVisitor<AstNode> {
-    val nodeTypes = nodeTypePoolOf(parser)
+    val nodeTypes = nodeTypePoolOf(grammarName, parser)
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
