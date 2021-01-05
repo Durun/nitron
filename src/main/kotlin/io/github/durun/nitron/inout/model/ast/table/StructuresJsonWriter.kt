@@ -28,7 +28,7 @@ class StructuresJsonWriter(
 
     init {
         // Write header
-        write(nodeTypePool.toSerializable())
+        write(nodeTypePool)
     }
 
     override fun flush() {
@@ -40,8 +40,8 @@ class StructuresJsonWriter(
         out.close()
     }
 
-    private fun write(value: NodeTypeSet) {
-        val json = mapper.writeValueAsString(value)
+    private fun write(value: NodeTypePool) {
+        val json = mapper.writeValueAsString(value.toSerializable())
         out.println(json)
         if (autoFlush) flush()
     }
