@@ -47,7 +47,7 @@ class StructuresDBTest : FreeSpec() {
             "Structure is serializable" {
                 val value = javaCode
                         .let { processor.parse(it) }
-                        .toSerializable(nodeTypeSet)
+                        .toSerializable(nodeTypePool)
                 value.shouldNotBeNull()
             }
         }
@@ -59,7 +59,7 @@ class StructuresDBTest : FreeSpec() {
                             val ast = processor.parse(it)
                             processor.proceess(ast)!!
                         }
-                        .toSerializable(nodeTypeSet)
+                        .toSerializable(nodeTypePool)
                 val n = 4
                 val values = (1..n).map { value }
 

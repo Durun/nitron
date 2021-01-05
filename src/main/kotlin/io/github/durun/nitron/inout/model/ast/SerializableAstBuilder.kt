@@ -7,13 +7,6 @@ import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
-fun AstNode.toSerializable(nodeTypeSet: NodeTypeSet): Structure {
-    return Structure(
-            nodeTypeSet = nodeTypeSet,
-            ast = this.accept(SerializableAstBuildVisitor(nodeTypeSet.toNodeTypePool()))
-    )
-}
-
 fun AstNode.toSerializable(nodeTypePool: NodeTypePool): Structure {
     return Structure(
             nodeTypeSet = nodeTypePool.toSerializable(),
