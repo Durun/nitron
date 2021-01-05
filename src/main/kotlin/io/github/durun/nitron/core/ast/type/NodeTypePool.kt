@@ -10,22 +10,22 @@ class NodeTypePool private constructor(
 		private val ruleTypeList: List<RuleType?>
 ) {
 	companion object {
-		fun of(tokenTypes: Map<Int, TokenType>, ruleTypes: Map<Int, RuleType>, secondaryTokenTypes: Map<Int, TokenType> = emptyMap()): NodeTypePool {
+		fun of(tokenTypes: Map<Int, TokenType>, ruleTypes: Map<Int, RuleType>, synonymTokenTypes: Map<Int, TokenType> = emptyMap()): NodeTypePool {
 			return NodeTypePool(
 					tokenTypeList = tokenTypes.toSparseList(),
-					tokenTypesRemain = secondaryTokenTypes,
+					tokenTypesRemain = synonymTokenTypes,
 					ruleTypeList = ruleTypes.toSparseList()
 			)
 		}
 
-		fun of(types: Map<Int, NodeType>, secondaryTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
+		fun of(types: Map<Int, NodeType>, synonymTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
 			val tokens = types.filterIsInstance<Int, TokenType>()
 			val rules = types.filterIsInstance<Int, RuleType>()
-			val secondaryTokens = secondaryTypes.filterIsInstance<Int, TokenType>()
+			val synonymTokens = synonymTypes.filterIsInstance<Int, TokenType>()
 			return of(
 					tokenTypes = tokens,
 					ruleTypes = rules,
-					secondaryTokenTypes = secondaryTokens
+					synonymTokenTypes = synonymTokens
 			)
 		}
 	}

@@ -20,7 +20,7 @@ internal fun AstBuildVisitor.nodeTypePoolOf(antlrParser: Parser): NodeTypePool {
     return NodeTypePool.of(
             tokenTypes = tokens,
             ruleTypes = rules,
-            secondaryTokenTypes = tokens.filterKeys { it < 0 }
+            synonymTokenTypes = tokens.filterKeys { it < 0 }
     )
 }
 
