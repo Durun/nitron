@@ -9,7 +9,11 @@ import org.antlr.v4.runtime.Parser
 
 @Deprecated("use NodeTypePool")
 fun NodeTypePool.toSerializable(): NodeTypeSet {
-    return NodeTypeSet(this.grammar, types = this)
+    return NodeTypeSet(
+            this.grammar,
+            tokenTypes = ArrayMap(this.tokenTypes.map { it.name }.toTypedArray()),
+            ruleNames = ArrayMap(this.ruleTypes.map { it.name }.toTypedArray())
+    )
 }
 
 /**
@@ -24,25 +28,6 @@ class NodeTypeSet internal constructor(
         @JsonProperty
         val ruleNames: ArrayMap<String>
 ) {
-    @Deprecated("use NodeTypePool", ReplaceWith("this(grammarName = grammarName, types = NodeTypePool(parser))"))
-    constructor(grammarName: String, parser: Parser) : this(
-            tokenTypes = parser.toTokenTypeMap(),
-            ruleNames = ArrayMap(parser.ruleNames),
-            grammar = grammarName
-    )
-
-    constructor(grammarName: String, types: NodeTypePool) : this(
-            grammar = grammarName,
-            tokenTypes = ArrayMap(types.tokenTypes.map { it.name }.toTypedArray()),
-            ruleNames = ArrayMap(types.ruleTypes.map { it.name }.toTypedArray())
-    )
-
-    fun toNodeTypePool(): NodeTypePool = createNodeTypePool(
-            grammar,
-            tokenTypes = tokenTypes.array.asList(),
-            ruleTypes = ruleNames.array.asList()
-    )
-
     /**
      * @return 添字[index]に対応するtokenType
      */
