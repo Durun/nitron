@@ -6,21 +6,13 @@ import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
 import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
-import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.merge
-import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
-import io.github.durun.nitron.inout.model.ast.table.Structures
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
-import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
 import io.github.durun.nitron.inout.model.ast.toSerializable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
 
 class CodeProcessor(
