@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.InsertStatement
 
+@Deprecated("use NodeTypePool")
 object NodeTypeSets : ReadWritableTable<NodeTypeSet>("node_type_sets") {
 
     val id: Column<Int> = integer("id")
