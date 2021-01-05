@@ -16,4 +16,5 @@ class RuleType private constructor(
     }
 
     override fun hashCode(): Int = key
+    override fun toString(): String = entry.toString()
 }
