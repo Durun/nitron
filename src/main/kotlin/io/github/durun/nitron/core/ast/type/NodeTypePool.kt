@@ -19,13 +19,10 @@ class NodeTypePool private constructor(
 		}
 
 		fun of(types: Map<Int, NodeType>, synonymTypes: Map<Int, NodeType> = emptyMap()): NodeTypePool {
-			val tokens = types.filterIsInstance<Int, TokenType>()
-			val rules = types.filterIsInstance<Int, RuleType>()
-			val synonymTokens = synonymTypes.filterIsInstance<Int, TokenType>()
 			return of(
-					tokenTypes = tokens,
-					ruleTypes = rules,
-					synonymTokenTypes = synonymTokens
+					tokenTypes = types.filterIsInstance(),
+					ruleTypes = types.filterIsInstance(),
+					synonymTokenTypes = synonymTypes.filterIsInstance()
 			)
 		}
 	}
