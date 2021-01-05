@@ -5,7 +5,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.core.toBytes
-import io.github.durun.nitron.inout.model.ast.*
+import io.github.durun.nitron.inout.model.ast.SerializableAst
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.ReadWritableTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -19,8 +20,8 @@ object Structures : ReadWritableTable<Structure>("structures") {
             .primaryKey()
     val json: Column<String> = text("json")
 
-    val nodeTypeSets = NodeTypeSets.alias("t")
-    val nodeTypeSet = reference("nodeTypeSet", NodeTypeSets.id)
+    val nodeTypePools = NodeTypePools.alias("t")
+    val nodeTypeSet = reference("node_type_pool", NodeTypePools.id)
 
     private val mapper = jacksonObjectMapper()
     private fun SerializableAst.Node.writeAsString(): String = mapper.writeValueAsString(this)
@@ -34,8 +35,8 @@ object Structures : ReadWritableTable<Structure>("structures") {
     }
 
     override fun read(row: ResultRow): Structure {
-        assert(row.hasValue(nodeTypeSets[NodeTypeSets.id]))
-        return read(row, NodeTypeSets.read(row, nodeTypeSets).toNodeTypePool())
+        assert(row.hasValue(nodeTypePools[NodeTypePools.id]))
+        return read(row, NodeTypePools.read(row, nodeTypePools))
     }
 
     override fun insert(value: Structure, insertId: Int?): InsertStatement<Number> = insert {
@@ -43,12 +44,12 @@ object Structures : ReadWritableTable<Structure>("structures") {
         it[hash] = value.hash.toBlob()
         it[json] = value.ast.writeAsString()
         value.nodeTypePool.grammar
-        val newId = transaction { NodeTypeSets.select { NodeTypeSets.grammar eq value.nodeTypePool.grammar } }   // TODO refactor
+        val newId = transaction { NodeTypePools.select { NodeTypePools.grammar eq value.nodeTypePool.grammar } }   // TODO refactor
                 .firstOrNull()
-                ?.getOrNull(NodeTypeSets.id)
+                ?.getOrNull(NodeTypePools.id)
                 ?: let {
-                    val newId = NodeTypeSets.getNextId(NodeTypeSets.id)
-                    NodeTypeSets.insert(value.nodeTypePool.toSerializable(), newId)
+                    val newId = NodeTypePools.getNextId(NodeTypePools.id)
+                    NodeTypePools.insert(value.nodeTypePool, newId)
                     newId
                 }
         it[nodeTypeSet] = newId
