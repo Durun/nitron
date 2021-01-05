@@ -133,26 +133,3 @@ class JsonCodeRecorder(
                 ?.let { writer.write(it) }
     }
 }
-
-@Deprecated("CodeRecorder runs very slowly.")
-private class CodeRecorder(
-        private val nodeTypeSet: NodeTypeSet,
-        destination: Database
-) {
-    private val writer = StructuresWriter(destination)
-
-    private fun initTables(db: Database) {
-        transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(NodeTypeSets, Structures)
-        }
-    }
-
-    init {
-        initTables(destination)
-    }
-
-    fun write(ast: AstNode) {
-        val structure = ast.toSerializable(nodeTypeSet)
-        writer.write(structure)
-    }
-}
