@@ -7,6 +7,7 @@ import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.github.durun.nitron.core.parser.TokenTypeBiMap
 import org.antlr.v4.runtime.Parser
 
+@Deprecated("use NodeTypePool")
 fun NodeTypePool.toSerializable(): NodeTypeSet {
     return NodeTypeSet(this.grammar, types = this)
 }
@@ -14,6 +15,7 @@ fun NodeTypePool.toSerializable(): NodeTypeSet {
 /**
  * 文法[grammar]が持つtokenType, ruleNameの集合
  */
+@Deprecated("use NodeTypePool")
 class NodeTypeSet internal constructor(
         @JsonProperty
         val grammar: String,
