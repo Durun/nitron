@@ -37,14 +37,6 @@ class NodeTypePool private constructor(
 	fun getRuleType(name: String): RuleType? = ruleTypes.find { it.name == name }
 	fun getType(name: String): NodeType? = getRuleType(name) ?: getTokenType(name)
 
-	fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
-		return NodeTypePool(
-				tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
-				synonymTokenTypes = synonymTokenTypes.filterValues { remainRules.contains(it.name) },
-				ruleTypeList = ruleTypeList.filterNotNull().filter { remainRules.contains(it.name) }
-		)
-	}
-
 	fun filterTypes(predicate: (NodeType) -> Boolean): NodeTypePool {
 		return NodeTypePool(
 				tokenTypeList = tokenTypeList.map { if (it != null && predicate(it)) it else null },
