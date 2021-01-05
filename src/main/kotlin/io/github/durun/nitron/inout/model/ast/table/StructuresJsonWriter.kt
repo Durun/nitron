@@ -3,9 +3,7 @@ package io.github.durun.nitron.inout.model.ast.table
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.encodeByteArray
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.Structure
-import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.github.durun.nitron.inout.model.table.writer.TableWriter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

@@ -1,17 +1,14 @@
 package io.github.durun.nitron.inout.model.ast.structure.simple
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.table.NodeTypePools
 import io.github.durun.nitron.inout.model.ast.table.Structures
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.Statement
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
-import java.sql.Blob
 
 const val defaultBufferSize = 10000
 
