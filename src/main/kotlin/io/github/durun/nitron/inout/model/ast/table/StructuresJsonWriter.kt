@@ -1,9 +1,11 @@
 package io.github.durun.nitron.inout.model.ast.table
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.inout.model.ast.NodeTypeSet
 import io.github.durun.nitron.inout.model.ast.Structure
+import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.github.durun.nitron.inout.model.table.writer.TableWriter
 import java.io.Closeable
 import java.io.File
@@ -12,21 +14,21 @@ import java.io.PrintWriter
 
 class StructuresJsonWriter(
         private val out: PrintWriter,
-        nodeTypeSet: NodeTypeSet,
+        nodeTypePool: NodeTypePool,
         private val autoFlush: Boolean = true
 ) : TableWriter<Structure>, Flushable, Closeable {
     companion object {
         private val mapper = jacksonObjectMapper()
     }
 
-    constructor(file: File, nodeTypeSet: NodeTypeSet) : this(
+    constructor(file: File, nodeTypePool: NodeTypePool) : this(
             out = file.printWriter(),
-            nodeTypeSet = nodeTypeSet
+            nodeTypePool = nodeTypePool
     )
 
     init {
         // Write header
-        write(nodeTypeSet)
+        write(nodeTypePool.toSerializable())
     }
 
     override fun flush() {

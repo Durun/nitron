@@ -41,7 +41,7 @@ class StructuresDBTest : FreeSpec() {
         processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
         val antlrParser = langConfig.grammar.getParser()    // TODO
         nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
-        nodeTypeSet = NodeTypeSet(grammarName = langConfig.fileName, parser = antlrParser)
+        nodeTypeSet = nodeTypePool.toSerializable()
 
         "prepare" - {
             "Structure is serializable" {
@@ -69,7 +69,7 @@ class StructuresDBTest : FreeSpec() {
 
                 // write
                 println("writing: $values")
-                StructuresJsonWriter(file, nodeTypeSet)
+                StructuresJsonWriter(file, nodeTypePool)
                         .write(values)
                 println("wrote.")
 

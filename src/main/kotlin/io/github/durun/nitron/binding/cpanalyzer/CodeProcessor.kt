@@ -117,7 +117,7 @@ class JsonCodeRecorder(
 
     init {
         val file = destination.toFile()
-        writer = StructuresJsonWriter(file, nodeTypePool.toSerializable())
+        writer = StructuresJsonWriter(file, nodeTypePool)
     }
 
     fun write(ast: AstNode) {
