@@ -6,14 +6,14 @@ import io.github.durun.nitron.util.toSparseList
 
 class NodeTypePool private constructor(
 		private val tokenTypeList: List<TokenType?>,
-		private val tokenTypesRemain: Map<Int, TokenType>,
-		private val ruleTypeList: List<RuleType?>
+		private val ruleTypeList: List<RuleType?>,
+		private val synonymTokenTypes: Map<Int, TokenType>
 ) {
 	companion object {
 		fun of(tokenTypes: Map<Int, TokenType>, ruleTypes: Map<Int, RuleType>, synonymTokenTypes: Map<Int, TokenType> = emptyMap()): NodeTypePool {
 			return NodeTypePool(
 					tokenTypeList = tokenTypes.toSparseList(),
-					tokenTypesRemain = synonymTokenTypes,
+					synonymTokenTypes = synonymTokenTypes,
 					ruleTypeList = ruleTypes.toSparseList()
 			)
 		}
@@ -27,11 +27,11 @@ class NodeTypePool private constructor(
 		}
 	}
 
-	val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + tokenTypesRemain.values }
+	val tokenTypes: Set<TokenType> by lazy { tokenTypeList.filterNotNull().toSet() + synonymTokenTypes.values }
 	val ruleTypes: Set<RuleType> by lazy { ruleTypeList.filterNotNull().toSet() }
 	val allTypes: Set<NodeType> by lazy { tokenTypes + ruleTypes }
 
-	fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: tokenTypesRemain[index]
+	fun getTokenType(index: Int): TokenType? = tokenTypeList.getOrNull(index) ?: synonymTokenTypes[index]
 	fun getRuleType(index: Int): RuleType? = ruleTypeList.getOrNull(index)
 	fun getTokenType(name: String): TokenType? = tokenTypes.find { it.name == name }
 	fun getRuleType(name: String): RuleType? = ruleTypes.find { it.name == name }
@@ -40,7 +40,7 @@ class NodeTypePool private constructor(
 	fun filterRulesAndTokenTypes(remainRules: List<String>): NodeTypePool {
 		return NodeTypePool(
 				tokenTypeList = tokenTypeList.map { if (remainRules.contains(it?.name)) it else null },
-				tokenTypesRemain = tokenTypesRemain.filterValues { remainRules.contains(it.name) },
+				synonymTokenTypes = synonymTokenTypes.filterValues { remainRules.contains(it.name) },
 				ruleTypeList = ruleTypeList.filterNotNull().filter { remainRules.contains(it.name) }
 		)
 	}
