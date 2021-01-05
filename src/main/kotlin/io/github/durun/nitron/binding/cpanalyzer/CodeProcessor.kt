@@ -1,6 +1,7 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
@@ -52,10 +53,7 @@ class CodeProcessor(
 
         recorder = outputPath?.let {
             JsonCodeRecorder(
-                    nodeTypeSet = NodeTypeSet(
-                            grammarName = config.fileName,
-                            parser = parser.getAntlrParser()
-                    ),
+                    nodeTypePool = nodeBuilder.nodeTypes,
                     destination = it
             )
         }
@@ -112,24 +110,24 @@ class CodeProcessor(
 }
 
 class JsonCodeRecorder(
-        private val nodeTypeSet: NodeTypeSet,
+        private val nodeTypePool: NodeTypePool,
         destination: Path
 ) {
     private val writer: StructuresJsonWriter
 
     init {
         val file = destination.toFile()
-        writer = StructuresJsonWriter(file, nodeTypeSet)
+        writer = StructuresJsonWriter(file, nodeTypePool.toSerializable())
     }
 
     fun write(ast: AstNode) {
-        val structure = ast.toSerializable(nodeTypeSet)
+        val structure = ast.toSerializable(nodeTypePool)
         writer.write(structure)
     }
 
     fun write(asts: Iterable<AstNode>) {
         val structures = asts.map {
-            it.toSerializable(nodeTypeSet)
+            it.toSerializable(nodeTypePool)
         }
         merge(structures)
                 ?.let { writer.write(it) }

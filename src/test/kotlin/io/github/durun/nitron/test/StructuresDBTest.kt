@@ -4,6 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
+import io.github.durun.nitron.core.ast.type.NodeTypePool
+import io.github.durun.nitron.core.ast.type.createNodeTypePool
+import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
@@ -28,6 +31,7 @@ class StructuresDBTest : FreeSpec() {
     private val langPath = Paths.get("config/lang/java.json")
     private val langConfig: LangConfig
     private val processor: CodeProcessor
+    private val nodeTypePool: NodeTypePool
     private val nodeTypeSet: NodeTypeSet
     private val db: Database
 
@@ -36,6 +40,7 @@ class StructuresDBTest : FreeSpec() {
         langConfig = LangConfigLoader.load(langPath)
         processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
         val antlrParser = langConfig.grammar.getParser()    // TODO
+        nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
         nodeTypeSet = NodeTypeSet(grammarName = langConfig.fileName, parser = antlrParser)
 
         "prepare" - {
@@ -106,7 +111,7 @@ class StructuresDBTest : FreeSpec() {
 
                 // write
                 println("writing: $value")
-                JsonCodeRecorder(nodeTypeSet, file)
+                JsonCodeRecorder(nodeTypePool, file)
                         .write(value)
                 println(value.getText())
                 println("wrote.")

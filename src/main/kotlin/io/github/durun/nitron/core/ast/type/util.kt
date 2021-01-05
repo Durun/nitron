@@ -1,9 +1,8 @@
 package io.github.durun.nitron.core.ast.type
 
-import io.github.durun.nitron.core.parser.AstBuildVisitor
 import org.antlr.v4.runtime.Parser
 
-internal fun AstBuildVisitor.nodeTypePoolOf(grammarName: String?, antlrParser: Parser): NodeTypePool {
+fun nodeTypePoolOf(grammarName: String?, antlrParser: Parser): NodeTypePool {
     val allTokens = antlrParser.tokenTypeMap.entries
             .map { (name, index) -> TokenType(index, name) }
     val tokens = allTokens
