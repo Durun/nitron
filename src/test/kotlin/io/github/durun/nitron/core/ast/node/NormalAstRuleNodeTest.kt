@@ -41,6 +41,7 @@ class NormalAstRuleNodeTest : FreeSpec({
 			val node = NormalAstRuleNode(types.getRuleType(2)!!, "text")
 
 			val json = format.encodeToString(node)
+			println(json)
 
 			val node2: NormalAstRuleNode = format.decodeFromString(json)
 			node2 shouldNotBeSameInstanceAs node

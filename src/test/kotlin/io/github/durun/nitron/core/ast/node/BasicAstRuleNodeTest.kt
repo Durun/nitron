@@ -89,6 +89,7 @@ class BasicAstRuleNodeTest : FreeSpec({
 			)
 
 			val json = format.encodeToString(tree)
+			println(json)
 
 			val tree2: BasicAstRuleNode = format.decodeFromString(json)
 			tree2 shouldNotBeSameInstanceAs tree

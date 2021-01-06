@@ -46,6 +46,7 @@ class AstTerminalNodeTest : FreeSpec({
 			val node = AstTerminalNode("text", types.getTokenType(1)!!, 3)
 
 			val json = format.encodeToString(node)
+			println(json)
 
 			val node2: AstTerminalNode = format.decodeFromString(json)
 			node2 shouldNotBeSameInstanceAs node
