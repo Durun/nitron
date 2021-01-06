@@ -16,9 +16,12 @@ import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldHaveLength
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.antlr.v4.runtime.Parser
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Paths
@@ -124,6 +127,7 @@ class StructuresDBTest : FreeSpec() {
                 // check
                 node.joinToString { it.getText() } shouldBe value.getText()
                 hash shouldBe value.toHash()
+                Json.parseToJsonElement(text).jsonObject["hash"]?.jsonPrimitive?.content shouldHaveLength 32
             }
         }
     }

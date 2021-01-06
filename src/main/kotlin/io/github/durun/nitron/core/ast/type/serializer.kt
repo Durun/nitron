@@ -7,6 +7,7 @@ import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.inout.model.ast.Structure
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -131,6 +132,21 @@ class StructureSerializer(
 	@Serializable
 	private class Dummy(
 			val asts: List<AstNode>,
+			@Serializable(with = HashSerializer::class)
 			val hash: ByteArray
 	)
+}
+
+object HashSerializer: KSerializer<ByteArray> {
+	override val descriptor: SerialDescriptor= PrimitiveSerialDescriptor("ByteArrayAsHex", PrimitiveKind.STRING)
+	override fun serialize(encoder: Encoder, value: ByteArray) {
+		encoder.encodeString(value.joinToString("") { String.format("%02x", it) })
+	}
+
+	override fun deserialize(decoder: Decoder): ByteArray {
+		return decoder.decodeString()
+				.chunked(2)
+				.map { Integer.decode("0x$it").toByte() }
+				.toByteArray()
+	}
 }

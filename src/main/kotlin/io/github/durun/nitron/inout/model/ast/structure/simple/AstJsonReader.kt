@@ -1,7 +1,6 @@
 package io.github.durun.nitron.inout.model.ast.structure.simple
 
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.decodeByteArray
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -13,7 +12,6 @@ class AstJsonReader(file: File, bufferSize: Int, progressOutput: PrintStream? = 
 
     val nodeTypePool: NodeTypePool
     private val rawSequence: Sequence<String>
-    private val hashAndNodeSequence: Sequence<Pair<ByteArray, String>>
 
     private var readSize: Long = 0
     private val fileSize: Long = file.length()
@@ -32,19 +30,6 @@ class AstJsonReader(file: File, bufferSize: Int, progressOutput: PrintStream? = 
                             val after = 100 * readSize / fileSize
                             if (before != after) progressOutput.print("Progress: $after%\r")
                         }
-
-        hashAndNodeSequence = rawSequence
-                .map {
-                    val hashString = it                 // {"[1,2, ... ,16]":{...}}
-                            .substringBefore(delimiter = ':')   // {"[1,2, ... ,16]"
-                            .drop(n = 2)                        // [1,2, ... ,16]"
-                            .dropLast(n = 1)                    // [1,2, ... ,16]
-                    val nodeString = it
-                            .substringAfter(delimiter = ':')    // {...}}
-                            .dropLast(n = 1)                    // {...}
-                    decodeByteArray(hashString) to nodeString
-                }
     }
-
-    fun readHashAndRawNodes(): Sequence<Pair<ByteArray, String>> = hashAndNodeSequence
+    fun readLine(): Sequence<String> = rawSequence
 }
