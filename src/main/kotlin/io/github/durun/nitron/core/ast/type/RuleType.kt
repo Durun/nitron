@@ -2,7 +2,7 @@ package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
 
-class RuleType internal constructor(
+class RuleType constructor(
         override val index: Int,
         override val name: String
 ) : NodeType, Map.Entry<Int, String> {

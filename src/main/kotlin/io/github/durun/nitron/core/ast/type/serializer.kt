@@ -48,7 +48,7 @@ object NodeTypePoolSerializer : KSerializer<NodeTypePool> {
 class TokenTypeSerializer(
 		private val types: NodeTypePool
 ): KSerializer<TokenType> {
-	override val descriptor = PrimitiveSerialDescriptor("TokenType", PrimitiveKind.STRING)
+	override val descriptor = PrimitiveSerialDescriptor("TokenType", PrimitiveKind.INT)
 	override fun serialize(encoder: Encoder, value: TokenType) {
 		encoder.encodeInt(value.index)
 	}
@@ -56,6 +56,21 @@ class TokenTypeSerializer(
 	override fun deserialize(decoder: Decoder): TokenType {
 		val index = decoder.decodeInt()
 		return types.getTokenType(index)
+				?: throw IllegalStateException("failed to deserialize: type $index")
+	}
+}
+
+class RuleTypeSerializer(
+		private val types: NodeTypePool
+): KSerializer<RuleType> {
+	override val descriptor = PrimitiveSerialDescriptor("RuleType", PrimitiveKind.INT)
+	override fun serialize(encoder: Encoder, value: RuleType) {
+		encoder.encodeInt(value.index)
+	}
+
+	override fun deserialize(decoder: Decoder): RuleType {
+		val index = decoder.decodeInt()
+		return types.getRuleType(index)
 				?: throw IllegalStateException("failed to deserialize: type $index")
 	}
 }
