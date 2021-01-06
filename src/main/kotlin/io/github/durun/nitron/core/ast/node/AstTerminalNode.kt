@@ -4,11 +4,13 @@ import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 
 /**
  * 構文木の終端ノード
  */
 @Serializable
+@SerialName("t")
 class AstTerminalNode(
         /**
          * トークン

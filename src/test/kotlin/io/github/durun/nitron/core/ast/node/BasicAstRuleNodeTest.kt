@@ -11,6 +11,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 class BasicAstRuleNodeTest : FreeSpec({
 	fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toList())
@@ -61,7 +63,13 @@ class BasicAstRuleNodeTest : FreeSpec({
 			serializersModule = SerializersModule {
 				contextual(TokenTypeSerializer(types))
 				contextual(RuleTypeSerializer(types))
+				polymorphic(AstNode::class) {
+					subclass(AstTerminalNode::class)
+					subclass(NormalAstRuleNode::class)
+					subclass(BasicAstRuleNode::class)
+				}
 			}
+			classDiscriminator = "T"
 		}
 		"serialize tree" {
 			val rule = types.getRuleType("Rule")!!
