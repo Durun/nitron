@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.inout.model.ast.Structure
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -19,21 +20,29 @@ import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.serializer
 
 object AstSerializers {
-	fun json(types: NodeTypePool) = Json {
+	fun json(types: NodeTypePool): Json = Json {
 		serializersModule = module(types)
 		classDiscriminator = "T"
 	}
-	
+
 	private fun module(types: NodeTypePool) = SerializersModule {
 		contextual(TokenTypeSerializer(types))
 		contextual(RuleTypeSerializer(types))
+		contextual(StructureSerializer(types))
 		polymorphic(AstNode::class) {
 			subclass(AstTerminalNode::class)
 			subclass(NormalAstRuleNode::class)
 			subclass(BasicAstRuleNode::class)
 		}
 	}
+
+	val encodeOnlyJson: Json = json(emptyTypes)
 }
+
+private val emptyTypes = NodeTypePool.of("", emptySet())
+
+object DefaultTokenTypeSerializer : KSerializer<TokenType> by TokenTypeSerializer(emptyTypes)
+object DefaultRuleTypeSerializer : KSerializer<RuleType> by RuleTypeSerializer(emptyTypes)
 
 object NodeTypePoolSerializer : KSerializer<NodeTypePool> {
 	private val dummySerializer = serializer<Dummy>()
@@ -99,4 +108,29 @@ class RuleTypeSerializer(
 		return types.getRuleType(index)
 				?: throw IllegalStateException("failed to deserialize: type $index")
 	}
+}
+
+class StructureSerializer(
+		private val types: NodeTypePool
+) : KSerializer<Structure> {
+	override val descriptor = PrimitiveSerialDescriptor("Structure", PrimitiveKind.STRING)
+	override fun serialize(encoder: Encoder, value: Structure) {
+		val data = Dummy(asts = value.asts, hash = value.hash)
+		encoder.encodeSerializableValue(dummySerializer, data)
+	}
+
+	override fun deserialize(decoder: Decoder): Structure {
+		val data = decoder.decodeSerializableValue(dummySerializer)
+		return Structure(nodeTypePool = types, asts = data.asts, hash = data.hash)
+	}
+
+	companion object {
+		private val dummySerializer = serializer<Dummy>()
+	}
+
+	@Serializable
+	private class Dummy(
+			val asts: List<AstNode>,
+			val hash: ByteArray
+	)
 }

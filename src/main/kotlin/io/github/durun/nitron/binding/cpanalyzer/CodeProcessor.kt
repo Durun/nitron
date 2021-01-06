@@ -10,9 +10,9 @@ import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
-import io.github.durun.nitron.inout.model.ast.toSerializable
 import java.nio.file.Path
 
 class CodeProcessor(
@@ -113,13 +113,13 @@ class JsonCodeRecorder(
     }
 
     fun write(ast: AstNode) {
-        val structure = ast.toSerializable(nodeTypePool)
+        val structure = Structure(nodeTypePool, ast)
         writer.write(structure)
     }
 
     fun write(asts: Iterable<AstNode>) {
         val structures = asts.map {
-            it.toSerializable(nodeTypePool)
+            Structure(nodeTypePool, it)
         }
         merge(structures)
                 ?.let { writer.write(it) }

@@ -1,12 +1,10 @@
 package io.github.durun.nitron.inout.model.ast.table
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.writer.TableWriter
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.Closeable
 import java.io.File
 import java.io.Flushable
@@ -17,10 +15,6 @@ class StructuresJsonWriter(
         nodeTypePool: NodeTypePool,
         private val autoFlush: Boolean = true
 ) : TableWriter<Structure>, Flushable, Closeable {
-    companion object {
-        private val mapper = jacksonObjectMapper()
-    }
-
     constructor(file: File, nodeTypePool: NodeTypePool) : this(
             out = file.printWriter(),
             nodeTypePool = nodeTypePool
@@ -41,15 +35,13 @@ class StructuresJsonWriter(
     }
 
     private fun write(value: NodeTypePool) {
-        val json = Json.encodeToString(value)
+        val json = AstSerializers.encodeOnlyJson.encodeToString(value)
         out.println(json)
         if (autoFlush) flush()
     }
 
     private fun writeAsString(value: Structure): String {
-        val hash = encodeByteArray(value.hash)
-        val ast = mapper.writeValueAsString(value.ast)
-        return """{"$hash":$ast}"""
+        return AstSerializers.encodeOnlyJson.encodeToString(value)
     }
 
     override fun write(value: Structure) {

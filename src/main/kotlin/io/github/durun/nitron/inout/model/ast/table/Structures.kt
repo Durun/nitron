@@ -1,13 +1,14 @@
 package io.github.durun.nitron.inout.model.ast.table
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.core.toBytes
-import io.github.durun.nitron.inout.model.ast.SerializableAst
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.ReadWritableTable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,13 +24,11 @@ object Structures : ReadWritableTable<Structure>("structures") {
     val nodeTypePools = NodeTypePools.alias("t")
     val nodeTypeSet = reference("node_type_pool", NodeTypePools.id)
 
-    private val mapper = jacksonObjectMapper()
-    private fun SerializableAst.Node.writeAsString(): String = mapper.writeValueAsString(this)
 
     internal fun read(row: ResultRow, nodeTypePool: NodeTypePool): Structure {
         return Structure(
                 nodeTypePool = nodeTypePool,
-                ast = mapper.readValue(row[json]),
+                asts = AstSerializers.json(nodeTypePool).decodeFromString(row[json]),
                 hash = row[hash].toBytes()
         )
     }
@@ -42,7 +41,7 @@ object Structures : ReadWritableTable<Structure>("structures") {
     override fun insert(value: Structure, insertId: Int?): InsertStatement<Number> = insert {
         it[id] = insertId ?: getNextId(idColumn = id)
         it[hash] = value.hash.toBlob()
-        it[json] = value.ast.writeAsString()
+        it[json] = Json.encodeToString(value.asts)
         value.nodeTypePool.grammar
         val newId = transaction { NodeTypePools.select { NodeTypePools.grammar eq value.nodeTypePool.grammar } }   // TODO refactor
                 .firstOrNull()

@@ -1,25 +1,22 @@
 package io.github.durun.nitron.test
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
+import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.github.durun.nitron.core.decodeByteArray
-import io.github.durun.nitron.core.encodeByteArray
 import io.github.durun.nitron.core.parser.CommonParser
 import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.ast.SerializableAst
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
-import io.github.durun.nitron.inout.model.ast.toSerializable
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.antlr.v4.runtime.Parser
@@ -45,7 +42,7 @@ class StructuresDBTest : FreeSpec() {
             "Structure is serializable" {
                 val value = javaCode
                         .let { processor.parse(it) }
-                        .toSerializable(nodeTypePool)
+                        .let { Structure(nodeTypePool, it) }
                 value.shouldNotBeNull()
             }
         }
@@ -57,7 +54,7 @@ class StructuresDBTest : FreeSpec() {
                             val ast = processor.parse(it)
                             processor.proceess(ast)!!
                         }
-                        .toSerializable(nodeTypePool)
+                        .let { Structure(nodeTypePool, it) }
                 val n = 4
                 val values = (1..n).map { value }
 
@@ -75,7 +72,7 @@ class StructuresDBTest : FreeSpec() {
                 val text = file.readText()
                 println("file:")
                 val expected = Json.encodeToString(nodeTypePool) + "\n" +
-                        values.joinToString("\n") { """{"${encodeByteArray(it.hash)}":${jacksonObjectMapper().writeValueAsString(it.ast)}}""" } + "\n"
+                        values.joinToString("\n") { AstSerializers.encodeOnlyJson.encodeToString(it) } + "\n"
 
                 text.asIterable().zip(expected.asIterable()).forEach { (it, other) ->
                     print(it)
@@ -117,15 +114,16 @@ class StructuresDBTest : FreeSpec() {
                 // read
                 val text = file.toFile().readLines().drop(1).first()
                 println("parsing:")
-                val objs = jacksonObjectMapper().readValue<Map<String, SerializableAst.Node>>(text)
-                val (hash, node) = objs.entries.first()
+                val obj: Structure = AstSerializers.json(nodeTypePool).decodeFromString(text)
+                val hash = obj.hash
+                val node = obj.asts
                 println("hash=$hash")
-                println(node.text)
+                println(node.joinToString { it.getText() })
                 println("parsed.")
 
                 // check
-                node.text shouldBe value.getText()
-                decodeByteArray(hash) shouldBe value.toHash()
+                node.joinToString { it.getText() } shouldBe value.getText()
+                hash shouldBe value.toHash()
             }
         }
     }
