@@ -1,6 +1,9 @@
 package io.github.durun.nitron.core.ast.node
 
-import io.github.durun.nitron.core.ast.type.*
+import io.github.durun.nitron.core.ast.type.AstSerializers
+import io.github.durun.nitron.core.ast.type.RuleType
+import io.github.durun.nitron.core.ast.type.TokenType
+import io.github.durun.nitron.core.ast.type.createNodeTypePool
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -8,11 +11,6 @@ import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 
 class BasicAstRuleNodeTest : FreeSpec({
 	fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toList())
@@ -59,18 +57,8 @@ class BasicAstRuleNodeTest : FreeSpec({
 				tokenTypes = listOf("Token"),
 				ruleTypes = listOf("Rule")
 		)
-		val format = Json {
-			serializersModule = SerializersModule {
-				contextual(TokenTypeSerializer(types))
-				contextual(RuleTypeSerializer(types))
-				polymorphic(AstNode::class) {
-					subclass(AstTerminalNode::class)
-					subclass(NormalAstRuleNode::class)
-					subclass(BasicAstRuleNode::class)
-				}
-			}
-			classDiscriminator = "T"
-		}
+		val format = AstSerializers.json(types)
+
 		"serialize tree" {
 			val rule = types.getRuleType("Rule")!!
 			val token = types.getTokenType("Token")!!
