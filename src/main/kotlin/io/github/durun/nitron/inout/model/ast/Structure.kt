@@ -33,6 +33,10 @@ class Structure internal constructor(
         )
     }
 
+    override fun toString(): String {
+        return "Structure(${nodeTypePool.grammar}: $asts)"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

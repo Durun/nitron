@@ -43,6 +43,8 @@ class AstTerminalNode(
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
 
+    override fun toString(): String = getText()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -2,6 +2,8 @@ package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Serializable(with = NodeTypePoolSerializer::class)
 class NodeTypePool private constructor(
@@ -95,5 +97,30 @@ class NodeTypePool private constructor(
 				ruleTypeMap = ruleTypeMap.filterValues(predicate),
 				synonymTokenTypes = synonymTokenTypes.filterValues(predicate)
 		)
+	}
+
+	override fun toString(): String {
+		return "NodeTypePool@${Json.encodeToString(this)}"
+	}
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as NodeTypePool
+
+		if (grammar != other.grammar) return false
+		if (!tokenTypeMap.entries.containsAll(other.tokenTypeMap.entries)) return false
+		if (!other.tokenTypeMap.entries.containsAll(tokenTypeMap.entries)) return false
+		if (!ruleTypeMap.entries.containsAll(other.ruleTypeMap.entries)) return false
+		if (!other.ruleTypeMap.entries.containsAll(ruleTypeMap.entries)) return false
+
+		return true
+	}
+
+	override fun hashCode(): Int {
+		var result = grammar.hashCode()
+		result = 31 * result + tokenTypeMap.hashCode()
+		result = 31 * result + ruleTypeMap.hashCode()
+		return result
 	}
 }

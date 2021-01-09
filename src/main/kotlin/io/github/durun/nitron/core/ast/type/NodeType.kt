@@ -6,4 +6,7 @@ interface NodeType : Map.Entry<Int, String> {
         get() = this.key
     val name: String
         get() = this.value
+
+    override fun equals(other: Any?): Boolean
+    override fun hashCode(): Int
 }

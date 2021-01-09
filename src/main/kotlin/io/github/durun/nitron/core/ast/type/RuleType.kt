@@ -12,4 +12,22 @@ class RuleType constructor(
         get() = index
     override val value: String
         get() = name
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RuleType
+
+        if (index != other.index) return false
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = index
+        result = 31 * result + name.hashCode()
+        return result
+    }
 }
