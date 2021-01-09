@@ -43,20 +43,39 @@ object Changes : ReadWritableTable<Change>("changes") {
     val beforeCodes: Alias<Codes> = Codes.alias("c1")
     val afterCodes: Alias<Codes> = Codes.alias("c2")
 
-    override fun read(row: ResultRow): Change = Change(
-            id = row[id],
-            softwareName = row[software],
-            filePath = Paths.get(row[filePath]),
-            author = row[author],
-            beforeCode = read(row, beforeCodes),
-            afterCode = read(row, afterCodes),
-            commitHash = row[revision],
-            date = LocalDateTime.parse(row[date], ammoniaDateTimeFormatter),
-            changeType = ChangeType.values().first { it.rawValue == row[changeType] },
-            diffType = DiffType.values().first { it.rawValue == row[diffType] }
-    )
+    override fun read(row: ResultRow): Change {
+        val changeType = ChangeType.values().first { it.rawValue == row[changeType] }
+        val code = when(changeType) {
+            ChangeType.CHANGE -> {
+                val before = read(row, beforeCodes) ?: throw IllegalStateException("$row has no beforeCode column")
+                val after = read(row, afterCodes) ?: throw IllegalStateException("$row has no afterCode column")
+                before to after
+            }
+            ChangeType.ADD -> {
+                val after = read(row, afterCodes) ?: throw IllegalStateException("$row has no afterCode column")
+                null to after
+            }
+            ChangeType.DELETE -> {
+                val before = read(row, beforeCodes) ?: throw IllegalStateException("$row has no beforeCode column")
+                before to null
+            }
+        }
+        return Change(
+                id = row[id],
+                softwareName = row[software],
+                filePath = Paths.get(row[filePath]),
+                author = row[author],
+                beforeCode = code.first,
+                afterCode = code.second,
+                commitHash = row[revision],
+                date = LocalDateTime.parse(row[date], ammoniaDateTimeFormatter),
+                changeType = changeType,
+                diffType = DiffType.values().first { it.rawValue == row[diffType] }
+        )
+    }
 
-    private fun read(row: ResultRow, alias: Alias<Codes>): Code {
+    private fun read(row: ResultRow, alias: Alias<Codes>): Code? {
+        val id = row.getOrNull(alias[Codes.id]) ?: return null
         return Code(
                 softwareName = row[alias[Codes.software]],
                 rawText = row[alias[Codes.rText]],
@@ -65,7 +84,7 @@ object Changes : ReadWritableTable<Change>("changes") {
                         start = row[alias[Codes.start]],
                         stop = row[alias[Codes.end]]
                 ),
-                id = row[alias[Codes.id]]
+                id = id
         )
     }
 
@@ -76,11 +95,13 @@ object Changes : ReadWritableTable<Change>("changes") {
         it[software] = value.softwareName
         it[filePath] = value.filePath.toString()
         it[author] = value.author
-        value.beforeCode?.let { code ->
+        if(value.changeType == ChangeType.CHANGE || value.changeType == ChangeType.DELETE) {
+            val code = value.beforeCode ?: throw IllegalArgumentException("Change has no beforeCode: $value")
             it[beforeID] = code.id
             it[beforeHash] = code.hash.toBlob()
         }
-        value.afterCode?.let { code ->
+        if(value.changeType == ChangeType.CHANGE || value.changeType == ChangeType.ADD) {
+            val code = value.afterCode ?: throw IllegalArgumentException("Change has no afterCode: $value")
             it[afterID] = code.id
             it[afterHash] = code.hash.toBlob()
         }
