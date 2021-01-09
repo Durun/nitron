@@ -4,7 +4,6 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import kotlinx.serialization.Serializable
 
 /**
  * コード片の構文木情報.
