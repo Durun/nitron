@@ -4,6 +4,13 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.NodeTypePool
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.serializer
 
 /**
  * コード片の構文木情報.
@@ -56,6 +63,31 @@ class Structure internal constructor(
         result = 31 * result + asts.hashCode()
         result = 31 * result + hash.hashCode()
         return result
+    }
+
+    class Serializer(
+            private val types: NodeTypePool
+    ) : KSerializer<Structure> {
+        override val descriptor = PrimitiveSerialDescriptor("Structure", PrimitiveKind.STRING)
+        override fun serialize(encoder: Encoder, value: Structure) {
+            val data = Dummy(asts = value.asts, hash = value.hash)
+            encoder.encodeSerializableValue(dummySerializer, data)
+        }
+
+        override fun deserialize(decoder: Decoder): Structure {
+            val data = decoder.decodeSerializableValue(dummySerializer)
+            return Structure(nodeTypePool = types, asts = data.asts, hash = data.hash)
+        }
+
+        companion object {
+            private val dummySerializer = serializer<Dummy>()
+        }
+
+        @Serializable
+        private class Dummy(
+                val asts: List<AstNode>,
+                val hash: MD5
+        )
     }
 }
 
