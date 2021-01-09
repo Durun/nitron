@@ -1,6 +1,5 @@
 package io.github.durun.nitron.core
 
-import io.github.durun.nitron.core.ast.node.AstNode
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
