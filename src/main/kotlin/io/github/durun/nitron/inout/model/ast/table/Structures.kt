@@ -1,9 +1,10 @@
 package io.github.durun.nitron.inout.model.ast.table
 
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.toBlob
-import io.github.durun.nitron.core.toBytes
+import io.github.durun.nitron.core.toMD5
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.ReadWritableTable
 import kotlinx.serialization.decodeFromString
@@ -29,7 +30,7 @@ object Structures : ReadWritableTable<Structure>("structures") {
         return Structure(
                 nodeTypePool = nodeTypePool,
                 asts = AstSerializers.json(nodeTypePool).decodeFromString(row[json]),
-                hash = row[hash].toBytes()
+                hash = row[hash].toMD5()
         )
     }
 
@@ -54,7 +55,7 @@ object Structures : ReadWritableTable<Structure>("structures") {
         it[nodeTypeSet] = newId
     }
 
-    fun batchInsertRawValues(typeSetId: Int, hashAndJsons: Iterable<Pair<ByteArray, String>>): List<ResultRow> =
+    fun batchInsertRawValues(typeSetId: Int, hashAndJsons: Iterable<Pair<MD5, String>>): List<ResultRow> =
             batchInsert(hashAndJsons, ignore = true) { (hashValue, jsonValue) ->
                 this[hash] = hashValue.toBlob()
                 this[json] = jsonValue
