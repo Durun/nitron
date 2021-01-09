@@ -8,7 +8,7 @@ class Code(
         val rawText: String,
         val normalizedText: String,
         val range: IntRange,
-        val id: Int? = null
+        var id: Int? = null
 ) {
     companion object {
         private val md5: MessageDigest = MessageDigest.getInstance("MD5")
