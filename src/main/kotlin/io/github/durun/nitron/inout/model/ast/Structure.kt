@@ -24,7 +24,7 @@ class Structure internal constructor(
          */
         val hash: ByteArray = codeHashOf(asts.joinToString(" ") { it.getText() })
 ) {
-    constructor(nodeTypePool: NodeTypePool, ast: AstNode): this(nodeTypePool, listOf(ast))
+    constructor(nodeTypePool: NodeTypePool, ast: AstNode, hash: ByteArray = codeHashOf(ast.getText())) : this(nodeTypePool, listOf(ast))
 
     fun merge(others: List<Structure>): Structure {
         return Structure(

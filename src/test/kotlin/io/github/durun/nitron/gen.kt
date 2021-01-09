@@ -5,6 +5,7 @@ import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.RuleType
 import io.github.durun.nitron.core.ast.type.TokenType
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 
@@ -52,6 +53,17 @@ fun Arb.Companion.ruleNode(typeSet: NodeTypePool, maxDepth: Int = 5, maxWidth: I
 		BasicAstRuleNode(
 				type = typeSet.ruleTypes.random(rs.random),
 				children = list(gen = child, range = 1..maxWidth).sample(rs).value
+		)
+	}
+}
+
+fun Arb.Companion.structure(typeSet: NodeTypePool? = null): Arb<Structure> {
+	return arbitrary { rs ->
+		val typeSet = typeSet ?: nodeTypePool().sample(rs).value
+		Structure(
+				nodeTypePool = typeSet,
+				ast = ruleNode(typeSet).sample(rs).value,
+				hash = byte().take(16, rs).toList().toByteArray()
 		)
 	}
 }
