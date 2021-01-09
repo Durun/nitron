@@ -34,6 +34,9 @@ class DBReadWriteTest : FreeSpec() {
             val writer = ChangesWriter(db)
             val reader = ChangesReader(db)
             Arb.change().take(3).toList().let { writeList ->
+                writeList.forEach {
+                    CodesWriter(db).write(listOfNotNull(it.beforeCode, it.afterCode))
+                }
                 writer.write(writeList)
                 val readList = reader.read().toList()
 
