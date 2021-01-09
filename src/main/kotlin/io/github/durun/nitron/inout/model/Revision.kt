@@ -1,16 +1,16 @@
 package io.github.durun.nitron.inout.model
 
-import java.util.*
+import java.time.LocalDateTime
 
 
 class Revision(
         val softwareName: String,
         val commitHash: String,
-        val date: Date,
+        val date: LocalDateTime,
         val commitMessage: String,
         val author: String
 ) {
     override fun toString(): String {
-        return "[$softwareName ${ammoniaDateFormat.format(date)} $commitHash $author]"
+        return "[$softwareName ${date.format(ammoniaDateTimeFormatter)} $commitHash $author]"
     }
 }
