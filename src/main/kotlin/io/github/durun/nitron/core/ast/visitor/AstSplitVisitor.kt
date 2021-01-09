@@ -7,10 +7,6 @@ import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 
-fun astSplitVisitorOf(splitTypes: List<String>): AstSplitVisitor {
-    return StringAstSplitVisitor(splitTypes)
-}
-
 fun astSplitVisitorOf(types: NodeTypePool, splitTypes: List<String>): AstSplitVisitor {
     return FastAstSplitVisitor(types, splitTypes)
 }
@@ -40,15 +36,6 @@ abstract class AstSplitVisitor : AstVisitor<List<AstNode>> {
 
     override fun visitTerminal(node: AstTerminalNode): List<AstNode> {
         return listOf(node)
-    }
-}
-
-private class StringAstSplitVisitor(
-        private val splitRules: List<String>
-) : AstSplitVisitor() {
-    override fun hasSplitRule(node: AstNode?): Boolean {
-        return node is AstRuleNode &&
-                splitRules.contains(node.type.name)
     }
 }
 

@@ -7,10 +7,6 @@ import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 
-fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {
-    return StringAstIgnoreVisitor(ignoreTypes)
-}
-
 fun astIgnoreVisitorOf(types: NodeTypePool, ignoreTypes: List<String>): AstIgnoreVisitor {
     return FastAstIgnoreVisitor(types, ignoreTypes)
 }
@@ -37,13 +33,6 @@ abstract class AstIgnoreVisitor : AstVisitor<AstNode?> {
         else
             node
     }
-}
-
-private class StringAstIgnoreVisitor(
-        private val ignoreRules: List<String>
-) : AstIgnoreVisitor() {
-    override fun shouldIgnore(node: AstRuleNode) = ignoreRules.contains(node.type.name)
-    override fun shouldIgnore(node: AstTerminalNode) = ignoreRules.contains(node.type.name)
 }
 
 private class FastAstIgnoreVisitor(

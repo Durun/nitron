@@ -90,11 +90,6 @@ class CodeProcessor(
         }
     }
 
-    fun write(ast: AstNode) {   // TODO recording feature should be separated
-        (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
-                .write(ast)
-    }
-
     fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated
         (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
                 .write(asts)
