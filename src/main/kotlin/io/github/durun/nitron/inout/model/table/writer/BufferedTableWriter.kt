@@ -9,13 +9,6 @@ internal class BufferedTableWriter<V>(
         private val idColumn: Column<Int>,
         private val bufferSize: Int = 100
 ) : TableWriter<V> {
-    override fun write(value: V) {
-        transaction {
-            val nextId = getNextId()
-            table.insert(value, insertId = nextId)
-        }
-    }
-
     override fun write(values: List<V>) {
         transaction {
             val nextId = getNextId()
@@ -26,8 +19,9 @@ internal class BufferedTableWriter<V>(
     }
 
     override fun write(values: Sequence<V>) {
-        val buffer = values.take(bufferSize).toList()
-        write(buffer)
+        values.windowed(size = bufferSize, step = bufferSize, partialWindows = true) {
+            write(it)
+        }
     }
 
     private fun getNextId(): Int = table.getNextId(idColumn)
