@@ -1,6 +1,13 @@
 package io.github.durun.nitron.core
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.security.MessageDigest
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
@@ -11,6 +18,7 @@ fun AstNode.toMD5(): MD5 = MD5.digest(this.getText())
 
 fun MD5.toBlob(): Blob = SerialBlob(this.bytes)
 
+@Serializable(with = MD5.Serializer::class)
 class MD5 internal constructor(val bytes: ByteArray) : List<Byte> by bytes.asList() {
 	companion object {
 		const val length: Int = 16
@@ -43,4 +51,19 @@ class MD5 internal constructor(val bytes: ByteArray) : List<Byte> by bytes.asLis
 	}
 
 	override fun hashCode(): Int = bytes.contentHashCode()
+
+	object Serializer : KSerializer<MD5> {
+		override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("MD5", PrimitiveKind.STRING)
+		override fun serialize(encoder: Encoder, value: MD5) {
+			encoder.encodeString(value.toString())
+		}
+
+		override fun deserialize(decoder: Decoder): MD5 {
+			val bytes = decoder.decodeString()
+					.chunked(2)
+					.map { Integer.decode("0x$it").toByte() }
+					.toByteArray()
+			return bytes.toMD5()
+		}
+	}
 }
