@@ -14,7 +14,6 @@ import javax.sql.rowset.serial.SerialBlob
 
 fun ByteArray.toMD5(): MD5 = MD5(this)
 fun Blob.toMD5(): MD5 = this.getBytes(1, MD5.length).toMD5()
-fun AstNode.toMD5(): MD5 = MD5.digest(this.getText())
 
 fun MD5.toBlob(): Blob = SerialBlob(this.bytes)
 
