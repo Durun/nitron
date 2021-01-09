@@ -5,12 +5,6 @@ import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.inout.model.ast.Structure
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
