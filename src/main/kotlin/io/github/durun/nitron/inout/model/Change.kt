@@ -22,13 +22,10 @@ class Change(
         val date: LocalDateTime,
         val changeType: ChangeType,
         val diffType: DiffType = DiffType.TYPE3, // TODO
-        val id: Int? = null
+        var id: Int? = null
 ) {
     override fun toString(): String {
-        return "Change[$softwareName $id] $commitHash $date $author\n" +
-                "$filePath $changeType $diffType\n" +
-                "before:\n${beforeCode.toString().prependIndent("\t")}\n" +
-                "after :\n${afterCode.toString().prependIndent("\t")}\n"
+        return "Change($beforeCode -> $afterCode)"
     }
 
     override fun hashCode(): Int {

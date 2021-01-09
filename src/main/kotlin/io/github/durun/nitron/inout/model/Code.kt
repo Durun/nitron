@@ -20,8 +20,7 @@ class Code(
         get() = hash.toString()
 
     override fun toString(): String {
-        return "Code[$softwareName $id]\nrawText:\n${rawText.prependIndent("\t")}\n" +
-                "normalizedText:\n${normalizedText.prependIndent("\t")}"
+        return "Code($hash)"
     }
 
     override fun hashCode(): Int {
