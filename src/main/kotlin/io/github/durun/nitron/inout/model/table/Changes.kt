@@ -69,8 +69,9 @@ object Changes : ReadWritableTable<Change>("changes") {
     }
 
     override fun insert(value: Change, insertId: Int?): InsertStatement<Number> = insert {
-        val newID = insertId ?: value.id
-        if (newID != null) it[id] = newID
+        val newID = insertId ?: value.id ?: throw IllegalStateException("Change has no ID: $value")
+        value.id = newID
+        it[id] = newID
         it[software] = value.softwareName
         it[filePath] = value.filePath.toString()
         it[author] = value.author
