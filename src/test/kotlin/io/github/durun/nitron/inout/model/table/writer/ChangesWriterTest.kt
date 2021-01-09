@@ -19,9 +19,9 @@ class ChangesWriterTest : FreeSpec({
 		val output = transaction(db) {
 			SchemaUtils.create(Codes, Changes)
 			input.forEach {
-				CodesWriter(db).write(listOfNotNull(it.beforeCode, it.afterCode))
+				CodesWriter.write(listOfNotNull(it.beforeCode, it.afterCode))
 			}
-			ChangesWriter(db).write(input)
+			ChangesWriter.write(input)
 			ChangesReader(db).read().toList()
 		}
 		output shouldContainExactly input
