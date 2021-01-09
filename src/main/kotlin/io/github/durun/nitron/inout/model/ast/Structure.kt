@@ -1,5 +1,7 @@
 package io.github.durun.nitron.inout.model.ast
 
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.codeHashOf
 
 /**
@@ -8,35 +10,31 @@ import io.github.durun.nitron.core.codeHashOf
  */
 class Structure internal constructor(
         /**
-         * [ast]の文法が持つtokenType, ruleNameの集合
+         * [asts]の文法が持つtokenType, ruleNameの集合
          */
-        val nodeTypeSet: NodeTypeSet,
+        val nodeTypePool: NodeTypePool,
 
         /**
          * 構文木
          */
-        val ast: SerializableAst.Node,
+        val asts: List<AstNode>,
 
         /**
          * コード片のMD5ハッシュ
          */
-        val hash: ByteArray
+        val hash: ByteArray = codeHashOf(asts.joinToString(" ") { it.getText() })
 ) {
-    constructor(nodeTypeSet: NodeTypeSet, ast: SerializableAst.Node) : this(
-            nodeTypeSet = nodeTypeSet,
-            ast = ast,
-            hash = codeHashOf(ast.text)
-    )
+    constructor(nodeTypePool: NodeTypePool, ast: AstNode, hash: ByteArray = codeHashOf(ast.getText())) : this(nodeTypePool, listOf(ast))
 
     fun merge(others: List<Structure>): Structure {
-        val nodes = others.map { it.ast }
-                .toMutableList()
-        nodes.add(0, this.ast)
-        val newAst = SerializableAst.NodeList(nodes)
         return Structure(
-                nodeTypeSet = nodeTypeSet,
-                ast = newAst
+                nodeTypePool = this.nodeTypePool,
+                asts = this.asts + others.flatMap { it.asts }
         )
+    }
+
+    override fun toString(): String {
+        return "Structure(${nodeTypePool.grammar}: $asts)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -45,16 +43,16 @@ class Structure internal constructor(
 
         other as Structure
 
-        if (nodeTypeSet != other.nodeTypeSet) return false
-        if (ast != other.ast) return false
+        if (nodeTypePool != other.nodeTypePool) return false
+        if (asts != other.asts) return false
         if (!hash.contentEquals(other.hash)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = nodeTypeSet.hashCode()
-        result = 31 * result + ast.hashCode()
+        var result = nodeTypePool.hashCode()
+        result = 31 * result + asts.hashCode()
         result = 31 * result + hash.contentHashCode()
         return result
     }

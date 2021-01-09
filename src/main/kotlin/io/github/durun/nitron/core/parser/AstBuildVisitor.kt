@@ -4,7 +4,7 @@ import io.github.durun.nitron.core.antlr4util.children
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.node.nodeTypePoolOf
+import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 
@@ -15,9 +15,10 @@ import org.antlr.v4.runtime.tree.*
  * @param [parser] 文法規則の情報を持つ[Parser].
  */
 class AstBuildVisitor(
+        grammarName: String?,
         parser: Parser
 ) : ParseTreeVisitor<AstNode> {
-    val nodeTypes = nodeTypePoolOf(parser)
+    val nodeTypes = nodeTypePoolOf(grammarName, parser)
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
@@ -25,7 +26,7 @@ class AstBuildVisitor(
 
         val ruleIndex = node.ruleContext?.ruleIndex
                 ?: throw Exception("Rulenode has no ruleIndex")
-        val rule = nodeTypes.getRule(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
+        val rule = nodeTypes.getRuleType(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
         return BasicAstRuleNode(
                 type = rule,
                 children = children

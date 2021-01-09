@@ -1,5 +1,6 @@
 package io.github.durun.nitron.core.ast.node
 
+import io.github.durun.nitron.core.ast.type.RuleType
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 
 /**
@@ -13,7 +14,7 @@ interface AstRuleNode : AstNode {
     val ruleName: String
         get() = type.name
 
-    override val type: Rule
+    override val type: RuleType
 
     fun replaceChildren(newChildren: List<AstNode>): AstRuleNode
     fun copyWithChildren(children: List<AstNode>): AstRuleNode

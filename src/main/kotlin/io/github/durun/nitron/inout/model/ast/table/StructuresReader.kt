@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model.ast.table
 
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.reader.BufferedTableReader
 import io.github.durun.nitron.inout.model.table.reader.TableReader
@@ -10,21 +10,21 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class StructuresReader(
         private val db: Database
 ) : TableReader<Structure> {
-    private val nodeTypeSetsReader: TableReader<NodeTypeSet> = BufferedTableReader(db, NodeTypeSets)
+    private val tableReader: TableReader<NodeTypePool> = BufferedTableReader(db, NodeTypePools)
 
     override fun read(statement: Table.() -> Query): Sequence<Structure> {
-        val nodeTypeSets = nodeTypeSetsReader.read()
+        val nodeTypePools = tableReader.read()
 
         return transaction(db) {
-            nodeTypeSets
-                    .mapIndexed { index, it -> index to it }.flatMap { (index, nodeTypeSet) ->
-                        val nodeTypeSetId = index + 1
+            nodeTypePools
+                    .mapIndexed { index, it -> index to it }.flatMap { (index, nodeTypePool) ->
+                        val nodeTypePoolId = index + 1
                         transaction {
                             Structures
                                     .statement()
-                                    .andWhere { Structures.nodeTypeSet eq nodeTypeSetId }
+                                    .andWhere { Structures.nodeTypeSet eq nodeTypePoolId }
                                     .map {
-                                        Structures.read(it, nodeTypeSet)
+                                        Structures.read(it, nodeTypePool)
                                     }
                         }.asSequence()
                     }

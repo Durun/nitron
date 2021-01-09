@@ -1,12 +1,10 @@
 package io.github.durun.nitron.core
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.durun.nitron.core.ast.node.AstNode
 import java.security.MessageDigest
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
-private val mapper = jacksonObjectMapper()
 private const val hashLength = 16
 
 internal fun ByteArray.toBlob(): Blob {
@@ -26,15 +24,4 @@ fun codeHashOf(code: String): ByteArray {
 
 fun AstNode.toHash(): ByteArray {
     return codeHashOf(this.getText())
-}
-
-fun encodeByteArray(bytes: ByteArray): String {
-    return bytes.joinToString("") { String.format("%02x", it) }
-}
-
-fun decodeByteArray(str: String): ByteArray {
-    return str.chunked(2)
-            .map { Integer.decode("0x$it") }
-            .map { it.toByte() }
-            .toByteArray()
 }

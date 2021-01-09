@@ -1,18 +1,17 @@
 package io.github.durun.nitron.core.ast.node
 
+import io.github.durun.nitron.core.ast.type.RuleType
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+@SerialName("r")
 class BasicAstRuleNode(
-        override val type: Rule,
-        children: List<AstNode>
+        @Contextual
+        override val type: RuleType,
+        override var children: List<AstNode>
 ) : AstRuleNode {
-    @Deprecated("may cause hash conflict", ReplaceWith("this(type = , children = children)"))
-    constructor(ruleName: String, children: List<AstNode>) : this(
-            type = Rule(ruleName.hashCode(), ruleName),
-            children = children
-    )
-
-    override var children: List<AstNode> = children
-        private set
-
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
     }
@@ -24,5 +23,25 @@ class BasicAstRuleNode(
 
     override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
         return BasicAstRuleNode(type, children)
+    }
+
+    override fun toString(): String = getText()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BasicAstRuleNode
+
+        if (type != other.type) return false
+        if (children != other.children) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + children.hashCode()
+        return result
     }
 }

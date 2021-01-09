@@ -1,25 +1,18 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
 import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
-import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.CommonParser
-import io.github.durun.nitron.inout.model.ast.NodeTypeSet
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
-import io.github.durun.nitron.inout.model.ast.table.NodeTypeSets
-import io.github.durun.nitron.inout.model.ast.table.Structures
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
-import io.github.durun.nitron.inout.model.ast.table.StructuresWriter
-import io.github.durun.nitron.inout.model.ast.toSerializable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
 
 class CodeProcessor(
@@ -40,7 +33,7 @@ class CodeProcessor(
                 grammarFiles = config.grammar.grammarFilePaths,
                 utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
-        nodeBuilder = AstBuildVisitor(parser.getAntlrParser())
+        nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.getAntlrParser())
         startRule = config.grammar.startRule
         splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitTypes = config.process.splitConfig.splitRules)
         ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)
@@ -52,10 +45,7 @@ class CodeProcessor(
 
         recorder = outputPath?.let {
             JsonCodeRecorder(
-                    nodeTypeSet = NodeTypeSet(
-                            grammarName = config.fileName,
-                            parser = parser.getAntlrParser()
-                    ),
+                    nodeTypePool = nodeBuilder.nodeTypes,
                     destination = it
             )
         }
@@ -112,49 +102,26 @@ class CodeProcessor(
 }
 
 class JsonCodeRecorder(
-        private val nodeTypeSet: NodeTypeSet,
+        private val nodeTypePool: NodeTypePool,
         destination: Path
 ) {
     private val writer: StructuresJsonWriter
 
     init {
         val file = destination.toFile()
-        writer = StructuresJsonWriter(file, nodeTypeSet)
+        writer = StructuresJsonWriter(file, nodeTypePool)
     }
 
     fun write(ast: AstNode) {
-        val structure = ast.toSerializable(nodeTypeSet)
+        val structure = Structure(nodeTypePool, ast)
         writer.write(structure)
     }
 
     fun write(asts: Iterable<AstNode>) {
         val structures = asts.map {
-            it.toSerializable(nodeTypeSet)
+            Structure(nodeTypePool, it)
         }
         merge(structures)
                 ?.let { writer.write(it) }
-    }
-}
-
-@Deprecated("CodeRecorder runs very slowly.")
-private class CodeRecorder(
-        private val nodeTypeSet: NodeTypeSet,
-        destination: Database
-) {
-    private val writer = StructuresWriter(destination)
-
-    private fun initTables(db: Database) {
-        transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(NodeTypeSets, Structures)
-        }
-    }
-
-    init {
-        initTables(destination)
-    }
-
-    fun write(ast: AstNode) {
-        val structure = ast.toSerializable(nodeTypeSet)
-        writer.write(structure)
     }
 }

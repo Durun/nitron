@@ -1,7 +1,11 @@
 package io.github.durun.nitron.core.ast.visitor
 
 import io.github.durun.nitron.core.InvalidTypeException
-import io.github.durun.nitron.core.ast.node.*
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.NodeType
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 
 fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {
     return StringAstIgnoreVisitor(ignoreTypes)
@@ -51,7 +55,7 @@ private class FastAstIgnoreVisitor(
                 if (invalidTypes.isNotEmpty()) {
                     throw InvalidTypeException(invalidTypes)
                 }
-            }.filterRulesAndTokenTypes(ignoreTypes)
+            }.filterTypes { ignoreTypes.contains(it.name) }
     )
 
     constructor(types: NodeTypePool) : this(types.allTypes)
