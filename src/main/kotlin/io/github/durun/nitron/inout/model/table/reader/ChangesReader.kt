@@ -14,8 +14,8 @@ import org.jetbrains.exposed.sql.selectAll
 class ChangesReader(db: Database) : TableReader<Change> by BufferedTableReader(db, Changes) {
     override fun read(): Sequence<Change> = read {
         Changes
-                .innerJoin(beforeCodes, { beforeID }, { beforeCodes[Codes.id] })
-                .leftJoin(afterCodes, { afterID }, { afterCodes[Codes.id] })
+                .leftJoin(otherTable = beforeCodes, onColumn = { beforeID }, otherColumn = { beforeCodes[Codes.id] })
+                .leftJoin(otherTable = afterCodes, onColumn = { afterID }, otherColumn = { afterCodes[Codes.id] })
                 .selectAll()
     }
 }
