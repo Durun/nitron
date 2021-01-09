@@ -2,10 +2,7 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
 import io.github.durun.nitron.inout.database.SQLiteDatabase
-import io.github.durun.nitron.inout.model.Change
-import io.github.durun.nitron.inout.model.ChangeType
-import io.github.durun.nitron.inout.model.Code
-import io.github.durun.nitron.inout.model.DiffType
+import io.github.durun.nitron.inout.model.*
 import io.github.durun.nitron.inout.model.table.Changes
 import io.github.durun.nitron.inout.model.table.Codes
 import io.github.durun.nitron.inout.model.table.reader.ChangesReader
@@ -27,25 +24,6 @@ class DBReadWriteTest : FreeSpec() {
     val db = SQLiteDatabase.connect(path)
 
     init {
-        "Codes" {
-            transaction(db) {
-                SchemaUtils.drop(Codes)
-                SchemaUtils.create(Codes)
-            }
-            val writer = CodesWriter(db)
-            val reader = CodesReader(db)
-            codeGen.take(1000).toList().let { writeList ->
-                writer.write(writeList)
-                val readList = reader.read().toList()
-
-                println("write: ${writeList.joinToString { "[${it.id}] ${it.rawText}" }}")
-                println("read : ${readList.joinToString { "[${it.id}] ${it.rawText}" }}")
-
-                readList.forEach {
-                    writeList.contains(it) shouldBe true
-                }
-            }
-        }
         "Changes" {
             transaction(db) {
                 SchemaUtils.drop(Codes)
@@ -55,7 +33,7 @@ class DBReadWriteTest : FreeSpec() {
             }
             val writer = ChangesWriter(db)
             val reader = ChangesReader(db)
-            changeGen.take(1).toList().let { writeList ->
+            Arb.change().take(3).toList().let { writeList ->
                 writer.write(writeList)
                 val readList = reader.read().toList()
 
