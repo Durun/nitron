@@ -2,6 +2,8 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
+import io.github.durun.nitron.core.MD5
+import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
@@ -9,7 +11,6 @@ import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.CommonParser
-import io.github.durun.nitron.core.toHash
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -126,7 +127,7 @@ class StructuresDBTest : FreeSpec() {
 
                 // check
                 node.joinToString { it.getText() } shouldBe value.getText()
-                hash shouldBe value.toHash()
+                hash shouldBe MD5.digest(value)
                 Json.parseToJsonElement(text).jsonObject["hash"]?.jsonPrimitive?.content shouldHaveLength 32
             }
         }

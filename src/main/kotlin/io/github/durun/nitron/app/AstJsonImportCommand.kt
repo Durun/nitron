@@ -3,13 +3,14 @@ package io.github.durun.nitron.app
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.type.AstSerializers
-import io.github.durun.nitron.core.ast.type.HashSerializer
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.structure.simple.AstTableWriter
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.jetbrains.exposed.sql.Database
 import java.io.BufferedReader
@@ -54,7 +55,7 @@ fun Database.writeAstJson(
             }
             .map {
                 val obj = Json.parseToJsonElement(it).jsonObject
-                val hash: ByteArray = decoder.decodeFromJsonElement(HashSerializer, obj["hash"]!!)
+                val hash: MD5 = decoder.decodeFromJsonElement(obj["hash"]!!)
                 val asts = obj["asts"]!!.toString()
                 hash to asts
             }

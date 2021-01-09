@@ -1,8 +1,10 @@
 package io.github.durun.nitron.inout.model.ast
 
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.codeHashOf
+import kotlinx.serialization.Serializable
 
 /**
  * コード片の構文木情報.
@@ -22,9 +24,9 @@ class Structure internal constructor(
         /**
          * コード片のMD5ハッシュ
          */
-        val hash: ByteArray = codeHashOf(asts.joinToString(" ") { it.getText() })
+        val hash: MD5 = MD5.digest(asts)
 ) {
-    constructor(nodeTypePool: NodeTypePool, ast: AstNode, hash: ByteArray = codeHashOf(ast.getText())) : this(nodeTypePool, listOf(ast))
+    constructor(nodeTypePool: NodeTypePool, ast: AstNode, hash: MD5 = MD5.digest(ast)) : this(nodeTypePool, listOf(ast), hash)
 
     fun merge(others: List<Structure>): Structure {
         return Structure(
@@ -45,7 +47,7 @@ class Structure internal constructor(
 
         if (nodeTypePool != other.nodeTypePool) return false
         if (asts != other.asts) return false
-        if (!hash.contentEquals(other.hash)) return false
+        if (hash != other.hash) return false
 
         return true
     }
@@ -53,7 +55,7 @@ class Structure internal constructor(
     override fun hashCode(): Int {
         var result = nodeTypePool.hashCode()
         result = 31 * result + asts.hashCode()
-        result = 31 * result + hash.contentHashCode()
+        result = 31 * result + hash.hashCode()
         return result
     }
 }

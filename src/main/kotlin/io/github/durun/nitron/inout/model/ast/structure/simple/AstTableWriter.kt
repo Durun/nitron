@@ -1,5 +1,6 @@
 package io.github.durun.nitron.inout.model.ast.structure.simple
 
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.inout.model.ast.table.NodeTypePools
 import io.github.durun.nitron.inout.model.ast.table.Structures
@@ -22,14 +23,14 @@ class AstTableWriter(
         }
     }
 
-    fun writeBuffering(typeSet: NodeTypePool, nodeSequence: Sequence<Pair<ByteArray, String>>) {
+    fun writeBuffering(typeSet: NodeTypePool, nodeSequence: Sequence<Pair<MD5, String>>) {
         writeBuffering(
                 typeSetId = writeIfNotExist(typeSet),
                 nodeSequence = nodeSequence
         )
     }
 
-    private fun writeBuffering(typeSetId: Int, nodeSequence: Sequence<Pair<ByteArray, String>>) {
+    private fun writeBuffering(typeSetId: Int, nodeSequence: Sequence<Pair<MD5, String>>) {
         val buffers = nodeSequence.toListSequence(size = bufferSize)
         buffers.forEach { buffer ->
             transaction(db) {
