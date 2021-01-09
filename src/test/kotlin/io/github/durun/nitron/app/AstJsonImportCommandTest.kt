@@ -2,6 +2,7 @@ package io.github.durun.nitron.app
 
 import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.inout.database.MemoryDatabase
+import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.table.NodeTypePools
 import io.github.durun.nitron.inout.model.ast.table.Structures
 import io.github.durun.nitron.nodeTypePool
@@ -26,7 +27,7 @@ class AstJsonImportCommandTest : FreeSpec({
 				Arb.int(2..10)
 		) { typeSet, size ->
 			val serializer = AstSerializers.json(typeSet)
-			val asts = Arb.structure(typeSet).take(size)
+			val asts = Arb.structure(typeSet).take(size).toList()
 			val ndjson = serializer.encodeToString(typeSet) + "\n" +
 					asts.joinToString("\n") { serializer.encodeToString(it) }
 			val input = ndjson.byteInputStream().bufferedReader()
@@ -45,13 +46,13 @@ class AstJsonImportCommandTest : FreeSpec({
 				}
 				readTypeSet shouldBe typeSet
 
-				val readAsts = transaction {
+				val readAsts: List<Structure> = transaction {
 					Structures.select { Structures.nodeTypeSet eq typesId }
 							.map { row ->
 								Structures.read(row, readTypeSet)
 							}
-				}
-				readAsts.shouldContainExactly(asts)
+				}.toList()
+				readAsts shouldContainExactly asts
 			}
 		}
 	}
