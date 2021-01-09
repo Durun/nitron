@@ -22,7 +22,6 @@ repositories {
 
 dependencies {
     // Versions
-    val jacksonVersion = "2.12.0"
     val antlrVersion = "4.9"
     val inmemantlrVersion = "1.7.0"
     val kotestVersion = "4.3.2"
@@ -32,7 +31,6 @@ dependencies {
     val kotlinSerializationVersion = "1.0.1"
 
     // This dependency is used by the application.
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("org.antlr:antlr4:$antlrVersion")
     implementation("com.github.julianthome:inmemantlr-api:$inmemantlrVersion")
     implementation("com.github.ajalt:clikt:$cliktVersion")
