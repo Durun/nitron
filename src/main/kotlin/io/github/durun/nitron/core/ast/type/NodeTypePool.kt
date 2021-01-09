@@ -1,11 +1,15 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 
-@Serializable(with = NodeTypePoolSerializer::class)
+@Serializable(with = NodeTypePool.Serializer::class)
 class NodeTypePool private constructor(
 		val grammar: String,
 		private val tokenTypeMap: Map<Int, TokenType>,
@@ -123,5 +127,40 @@ class NodeTypePool private constructor(
 		result = 31 * result + tokenTypeMap.hashCode()
 		result = 31 * result + ruleTypeMap.hashCode()
 		return result
+	}
+
+	object Serializer : KSerializer<NodeTypePool> {
+		private val dummySerializer = kotlinx.serialization.serializer<Dummy>()
+
+		override val descriptor: SerialDescriptor = dummySerializer.descriptor
+
+		override fun serialize(encoder: Encoder, value: NodeTypePool) {
+			val data = Dummy(
+					grammar = value.grammar,
+					tokenType = value.mainTokenTypes.associate { it.index to it.name },
+					ruleType = value.ruleTypes.associate { it.index to it.name },
+					synonymTokenType = (value.tokenTypes - value.mainTokenTypes)
+							.associate { it.name to it.index }
+			)
+			dummySerializer.serialize(encoder, data)
+		}
+
+		override fun deserialize(decoder: Decoder): NodeTypePool {
+			val data = dummySerializer.deserialize(decoder)
+			return of(
+					grammarName = data.grammar,
+					tokenTypes = data.tokenType,
+					ruleTypes = data.ruleType,
+					synonymTokenTypes = data.synonymTokenType
+			)
+		}
+
+		@Serializable
+		private class Dummy(
+				val grammar: String,
+				val tokenType: Map<Int, String>,
+				val ruleType: Map<Int, String>,
+				val synonymTokenType: Map<String, Int>
+		)
 	}
 }
