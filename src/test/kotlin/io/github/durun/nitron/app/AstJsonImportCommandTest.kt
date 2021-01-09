@@ -1,12 +1,12 @@
 package io.github.durun.nitron.app
 
 import io.github.durun.nitron.core.ast.type.AstSerializers
+import io.github.durun.nitron.core.ast.type.nodeTypePool
 import io.github.durun.nitron.inout.database.MemoryDatabase
 import io.github.durun.nitron.inout.model.ast.Structure
+import io.github.durun.nitron.inout.model.ast.structure
 import io.github.durun.nitron.inout.model.ast.table.NodeTypePools
 import io.github.durun.nitron.inout.model.ast.table.Structures
-import io.github.durun.nitron.nodeTypePool
-import io.github.durun.nitron.structure
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe

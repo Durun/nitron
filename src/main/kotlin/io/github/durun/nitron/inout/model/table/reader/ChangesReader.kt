@@ -6,16 +6,14 @@ import io.github.durun.nitron.inout.model.table.Changes.afterCodes
 import io.github.durun.nitron.inout.model.table.Changes.afterID
 import io.github.durun.nitron.inout.model.table.Changes.beforeCodes
 import io.github.durun.nitron.inout.model.table.Codes
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.selectAll
 
-class ChangesReader(db: Database) : TableReader<Change> by BufferedTableReader(db, Changes) {
+object ChangesReader : TableReader<Change> by BufferedTableReader(Changes) {
     override fun read(): Sequence<Change> = read {
         Changes
-                .innerJoin(beforeCodes, { beforeID }, { beforeCodes[Codes.id] })
-                .leftJoin(afterCodes, { afterID }, { afterCodes[Codes.id] })
+                .leftJoin(otherTable = beforeCodes, onColumn = { beforeID }, otherColumn = { beforeCodes[Codes.id] })
+                .leftJoin(otherTable = afterCodes, onColumn = { afterID }, otherColumn = { afterCodes[Codes.id] })
                 .selectAll()
     }
 }

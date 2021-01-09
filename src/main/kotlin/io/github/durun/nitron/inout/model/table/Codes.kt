@@ -26,16 +26,16 @@ object Codes : ReadWritableTable<Code>("codes") {
                     start = row[start],
                     stop = row[end]
             )
-
     )
 
     override fun insert(value: Code, insertId: Int?): InsertStatement<Number> = insert {
-        val newID = insertId ?: value.id
-        if (newID != null) it[id] = newID
+        val newID = insertId ?: value.id ?: throw IllegalStateException("Code has no ID: $value")
+        value.id = newID
+        it[id] = newID
         it[software] = value.softwareName
         it[rText] = value.rawText
         it[nText] = value.normalizedText
-        it[hash] = value.hashString
+        it[hash] = value.hash.toString()
         it[start] = value.range.first
         it[end] = value.range.last
     }
