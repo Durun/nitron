@@ -25,7 +25,7 @@ object Structures : ReadWritableTable<Structure>("structures") {
     val nodeTypeSet = reference("node_type_pool", NodeTypePools.id)
 
 
-    internal fun read(row: ResultRow, nodeTypePool: NodeTypePool): Structure {
+    fun read(row: ResultRow, nodeTypePool: NodeTypePool): Structure {
         return Structure(
                 nodeTypePool = nodeTypePool,
                 asts = AstSerializers.json(nodeTypePool).decodeFromString(row[json]),
