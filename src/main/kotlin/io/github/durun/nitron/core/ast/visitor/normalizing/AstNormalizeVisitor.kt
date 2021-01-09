@@ -79,7 +79,7 @@ private class StringAstNormalizeVisitor(
 		private val numberedRuleMap: Map<List<String>, String>
 ) : AstNormalizeVisitor() {
     // Map: (normalizedRuleName -> (id -> count))
-    private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }
+    private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap() }
 
     private val visitedRuleStack: Stack<String> = Stack()
 
@@ -97,7 +97,7 @@ private class StringAstNormalizeVisitor(
     }
 
     override fun normalizeIfNeeded(node: AstNode): String? {
-        val id = node.getText().orEmpty()
+        val id = node
         val nonNumbered = nonNumberedRuleMap[visitedRuleStack]
         val numbered = numberedRuleMap[visitedRuleStack]?.let { "${it}${getAndUpdateRuleCount(it, id)}" }
         return nonNumbered ?: numbered
