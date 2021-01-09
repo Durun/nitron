@@ -1,5 +1,6 @@
 package io.github.durun.nitron.inout.model
 
+import io.github.durun.nitron.core.MD5
 import java.security.MessageDigest
 
 
@@ -14,10 +15,8 @@ class Code(
         private val md5: MessageDigest = MessageDigest.getInstance("MD5")
     }
 
-    val hash: ByteArray
-        get() = md5.digest(normalizedText.toByteArray())
-    val hashString: String
-        get() = hash.toString()
+    val hash: MD5
+        get() = MD5.digest(normalizedText)
 
     override fun toString(): String {
         return "Code($hash)"

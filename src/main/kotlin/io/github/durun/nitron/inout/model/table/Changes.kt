@@ -1,6 +1,7 @@
 package io.github.durun.nitron.inout.model.table
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
+import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.inout.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -77,11 +78,11 @@ object Changes : ReadWritableTable<Change>("changes") {
         it[author] = value.author
         value.beforeCode?.let { code ->
             it[beforeID] = code.id
-            it[beforeHash] = SerialBlob(code.hash)
+            it[beforeHash] = code.hash.toBlob()
         }
         value.afterCode?.let { code ->
             it[afterID] = code.id
-            it[afterHash] = SerialBlob(code.hash)
+            it[afterHash] = code.hash.toBlob()
         }
         it[revision] = value.commitHash
         it[date] = value.date.format(ammoniaDateTimeFormatter)
