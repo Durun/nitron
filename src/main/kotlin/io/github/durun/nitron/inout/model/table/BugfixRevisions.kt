@@ -1,9 +1,10 @@
 package io.github.durun.nitron.inout.model.table
 
 import io.github.durun.nitron.inout.model.Revision
-import io.github.durun.nitron.inout.model.ammoniaDateFormat
+import io.github.durun.nitron.inout.model.ammoniaDateTimeFormatter
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
+import java.time.LocalDateTime
 
 
 object BugfixRevisions : ReadableTable<Revision>("bugfixrevisions") {
@@ -16,7 +17,7 @@ object BugfixRevisions : ReadableTable<Revision>("bugfixrevisions") {
     override fun read(row: ResultRow): Revision = Revision(
             softwareName = row[software],
             commitHash = row[id],
-            date = ammoniaDateFormat.parse(row[date]),
+            date = LocalDateTime.parse(row[date], ammoniaDateTimeFormatter),
             commitMessage = row[message],
             author = row[author]
     )

@@ -1,6 +1,6 @@
 package io.github.durun.nitron.inout.model.ast.table
 
-import io.github.durun.nitron.core.ast.type.AstSerializers
+import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.table.writer.TableWriter

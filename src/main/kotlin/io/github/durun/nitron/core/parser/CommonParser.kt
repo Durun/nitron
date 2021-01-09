@@ -4,14 +4,13 @@ import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.ParserRuleContext
 import org.snt.inmemantlr.GenericParser
 import org.snt.inmemantlr.listener.DefaultListener
-import org.snt.inmemantlr.tool.ToolCustomizer
 import java.io.File
 import java.nio.file.Path
 
 class CommonParser
 private constructor(
         val gParser: GenericParser,
-        val utilityJavaFiles: Array<File>? = null
+        utilityJavaFiles: Array<File>? = null
 ) {
     private val pListener = ParserListener()
 
@@ -28,7 +27,7 @@ private constructor(
             utilityJavaFiles: Array<File>? = null
     ) : this(
             GenericParser(
-                    ToolCustomizer { it },
+                    { it },
                     false,
                     *grammarFiles.map { it.readText() }.toTypedArray()
             ),

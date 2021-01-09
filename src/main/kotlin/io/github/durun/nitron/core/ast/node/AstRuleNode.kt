@@ -7,12 +7,6 @@ import io.github.durun.nitron.core.ast.visitor.AstVisitor
  * 構文木の非終端ノード
  */
 interface AstRuleNode : AstNode {
-    /**
-     * 非終端規則
-     */
-    @Deprecated("use type", ReplaceWith("type.name"))
-    val ruleName: String
-        get() = type.name
 
     override val type: RuleType
 

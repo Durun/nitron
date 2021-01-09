@@ -1,9 +1,12 @@
-package io.github.durun.nitron.core.ast.type
+package io.github.durun.nitron.core
 
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
+import io.github.durun.nitron.core.ast.type.RuleType
+import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.inout.model.ast.Structure
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule

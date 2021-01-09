@@ -1,6 +1,6 @@
 package io.github.durun.nitron.util
 
-public inline fun <reified K, reified V> Map<*, *>.filterIsInstance(): Map<K, V> {
+inline fun <reified K, reified V> Map<*, *>.filterIsInstance(): Map<K, V> {
 	val newMap = mutableMapOf<K, V>()
 	this.entries
 			.filterIsInstance<Map.Entry<K, V>>()
@@ -10,7 +10,7 @@ public inline fun <reified K, reified V> Map<*, *>.filterIsInstance(): Map<K, V>
 	return newMap
 }
 
-public fun <V> Map<Int, V>.toSparseList(): List<V?> {
+fun <V> Map<Int, V>.toSparseList(): List<V?> {
 	val maxIndex = this.keys.maxOrNull() ?: return emptyList()
 	return (0..maxIndex).map { this[it] }
 }

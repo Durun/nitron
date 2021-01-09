@@ -1,7 +1,6 @@
 package io.github.durun.nitron.inout.model
 
 import io.github.durun.nitron.core.MD5
-import java.security.MessageDigest
 
 
 class Code(
@@ -11,9 +10,7 @@ class Code(
         val range: IntRange,
         var id: Int? = null
 ) {
-    companion object {
-        private val md5: MessageDigest = MessageDigest.getInstance("MD5")
-    }
+    companion object
 
     val hash: MD5
         get() = MD5.digest(normalizedText)
