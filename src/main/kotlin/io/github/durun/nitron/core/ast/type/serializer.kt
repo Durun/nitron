@@ -27,7 +27,7 @@ object AstSerializers {
 	}
 
 	private fun module(types: NodeTypePool) = SerializersModule {
-		contextual(TokenTypeSerializer(types))
+		contextual(TokenType.Serializer(types))
 		contextual(RuleTypeSerializer(types))
 		contextual(StructureSerializer(types))
 		polymorphic(AstNode::class) {
@@ -41,7 +41,6 @@ object AstSerializers {
 }
 
 
-object DefaultTokenTypeSerializer : KSerializer<TokenType> by TokenTypeSerializer(NodeTypePool.EMPTY)
 object DefaultRuleTypeSerializer : KSerializer<RuleType> by RuleTypeSerializer(NodeTypePool.EMPTY)
 
 object NodeTypePoolSerializer : KSerializer<NodeTypePool> {
@@ -79,21 +78,6 @@ object NodeTypePoolSerializer : KSerializer<NodeTypePool> {
 	)
 }
 
-
-class TokenTypeSerializer(
-		private val types: NodeTypePool
-): KSerializer<TokenType> {
-	override val descriptor = PrimitiveSerialDescriptor("TokenType", PrimitiveKind.INT)
-	override fun serialize(encoder: Encoder, value: TokenType) {
-		encoder.encodeInt(value.index)
-	}
-
-	override fun deserialize(decoder: Decoder): TokenType {
-		val index = decoder.decodeInt()
-		return types.getTokenType(index)
-				?: throw IllegalStateException("failed to deserialize: type $index")
-	}
-}
 
 class RuleTypeSerializer(
 		private val types: NodeTypePool

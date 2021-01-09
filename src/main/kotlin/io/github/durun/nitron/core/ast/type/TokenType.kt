@@ -1,9 +1,14 @@
 package io.github.durun.nitron.core.ast.type
 
 import io.github.durun.nitron.core.ast.node.NodeType
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
-@Serializable(with = DefaultTokenTypeSerializer::class)
+@Serializable(with = TokenType.Serializer.Default::class)
 class TokenType(
         override val index: Int,
         override val name: String
@@ -29,5 +34,22 @@ class TokenType(
         var result = index
         result = 31 * result + name.hashCode()
         return result
+    }
+
+    class Serializer(
+            private val types: NodeTypePool
+    ) : KSerializer<TokenType> {
+        object Default : KSerializer<TokenType> by TokenType.Serializer(NodeTypePool.EMPTY)
+
+        override val descriptor = PrimitiveSerialDescriptor("TokenType", PrimitiveKind.INT)
+        override fun serialize(encoder: Encoder, value: TokenType) {
+            encoder.encodeInt(value.index)
+        }
+
+        override fun deserialize(decoder: Decoder): TokenType {
+            val index = decoder.decodeInt()
+            return types.getTokenType(index)
+                    ?: throw IllegalStateException("failed to deserialize: type $index")
+        }
     }
 }
