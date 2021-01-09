@@ -36,18 +36,3 @@ object AstSerializers {
 
 	val encodeOnlyJson: Json = json(NodeTypePool.EMPTY)
 }
-
-
-object HashSerializer: KSerializer<ByteArray> {
-	override val descriptor: SerialDescriptor= PrimitiveSerialDescriptor("ByteArrayAsHex", PrimitiveKind.STRING)
-	override fun serialize(encoder: Encoder, value: ByteArray) {
-		encoder.encodeString(value.joinToString("") { String.format("%02x", it) })
-	}
-
-	override fun deserialize(decoder: Decoder): ByteArray {
-		return decoder.decodeString()
-				.chunked(2)
-				.map { Integer.decode("0x$it").toByte() }
-				.toByteArray()
-	}
-}
