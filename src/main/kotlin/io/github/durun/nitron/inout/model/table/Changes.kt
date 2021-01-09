@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.nio.file.Paths
 import java.sql.Blob
+import java.time.LocalDateTime
 import javax.sql.rowset.serial.SerialBlob
 
 
@@ -49,7 +50,7 @@ object Changes : ReadWritableTable<Change>("changes") {
             beforeCode = read(row, beforeCodes),
             afterCode = read(row, afterCodes),
             commitHash = row[revision],
-            date = ammoniaDateFormat.parse(row[date]),
+            date = LocalDateTime.parse(row[date], ammoniaDateTimeFormatter),
             changeType = ChangeType.values().first { it.rawValue == row[changeType] },
             diffType = DiffType.values().first { it.rawValue == row[diffType] }
     )
@@ -82,7 +83,7 @@ object Changes : ReadWritableTable<Change>("changes") {
             it[afterHash] = SerialBlob(code.hash)
         }
         it[revision] = value.commitHash
-        it[date] = ammoniaDateFormat.format(value.date)
+        it[date] = value.date.format(ammoniaDateTimeFormatter)
         it[changeType] = value.changeType.rawValue
         it[diffType] = value.diffType.rawValue
     }

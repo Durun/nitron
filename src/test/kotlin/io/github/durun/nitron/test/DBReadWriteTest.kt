@@ -71,9 +71,6 @@ class DBReadWriteTest : FreeSpec() {
     }
 
     val dateGen = Arb.localDateTime()
-            .map {
-                Date(it.year, it.monthValue, it.dayOfMonth, it.hour, it.minute, it.second)
-            }
     val codeGen = Arb.bind(
             Arb.string(), Arb.string(), Arb.int(), Arb.int()
     ) { soft, text, start, length ->

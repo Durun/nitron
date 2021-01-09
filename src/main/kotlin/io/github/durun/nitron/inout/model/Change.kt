@@ -1,6 +1,7 @@
 package io.github.durun.nitron.inout.model
 
 import java.nio.file.Path
+import java.time.LocalDateTime
 import java.util.*
 
 enum class ChangeType(val rawValue: Int) {
@@ -18,7 +19,7 @@ class Change(
         val beforeCode: Code?,
         val afterCode: Code?,
         val commitHash: String,
-        val date: Date,
+        val date: LocalDateTime,
         val changeType: ChangeType,
         val diffType: DiffType = DiffType.TYPE3, // TODO
         val id: Int? = null
