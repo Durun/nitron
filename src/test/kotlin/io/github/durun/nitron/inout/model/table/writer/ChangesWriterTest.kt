@@ -22,7 +22,7 @@ class ChangesWriterTest : FreeSpec({
 				CodesWriter.write(listOfNotNull(it.beforeCode, it.afterCode))
 			}
 			ChangesWriter.write(input)
-			ChangesReader(db).read().toList()
+			ChangesReader.read().toList()
 		}
 		output shouldContainExactly input
 	}

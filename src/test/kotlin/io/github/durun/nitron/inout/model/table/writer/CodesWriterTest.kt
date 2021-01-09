@@ -18,7 +18,7 @@ class CodesWriterTest : FreeSpec({
 		val output = transaction(db) {
 			SchemaUtils.create(Codes)
 			CodesWriter.write(input)
-			CodesReader(db).read().toList()
+			CodesReader.read().toList()
 		}
 		output shouldContainExactly input
 	}
