@@ -37,13 +37,12 @@ object AstSerializers {
 		}
 	}
 
-	val encodeOnlyJson: Json = json(emptyTypes)
+	val encodeOnlyJson: Json = json(NodeTypePool.EMPTY)
 }
 
-private val emptyTypes = NodeTypePool.of("", emptySet())
 
-object DefaultTokenTypeSerializer : KSerializer<TokenType> by TokenTypeSerializer(emptyTypes)
-object DefaultRuleTypeSerializer : KSerializer<RuleType> by RuleTypeSerializer(emptyTypes)
+object DefaultTokenTypeSerializer : KSerializer<TokenType> by TokenTypeSerializer(NodeTypePool.EMPTY)
+object DefaultRuleTypeSerializer : KSerializer<RuleType> by RuleTypeSerializer(NodeTypePool.EMPTY)
 
 object NodeTypePoolSerializer : KSerializer<NodeTypePool> {
 	private val dummySerializer = serializer<Dummy>()

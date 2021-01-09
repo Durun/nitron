@@ -13,6 +13,7 @@ class NodeTypePool private constructor(
 		private val synonymTokenTypes: Map<Int, TokenType>
 ) {
 	companion object {
+		val EMPTY: NodeTypePool = of("", emptySet())
 		fun of(grammarName: String, tokenTypes: Collection<TokenType>, ruleTypes: Collection<RuleType>, synonymTokenTypes: Collection<TokenType> = emptySet()): NodeTypePool {
 			checkOverlap(tokenTypes)
 			checkOverlap(ruleTypes)
