@@ -2,9 +2,9 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.binding.cpanalyzer.JsonCodeRecorder
+import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.digest
-import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.GrammarConfig

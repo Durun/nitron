@@ -1,6 +1,5 @@
 package io.github.durun.nitron.core.ast.type
 
-import io.github.durun.nitron.core.ast.node.NodeType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -39,7 +38,7 @@ class TokenType(
     class Serializer(
             private val types: NodeTypePool
     ) : KSerializer<TokenType> {
-        object Default : KSerializer<TokenType> by TokenType.Serializer(NodeTypePool.EMPTY)
+        object Default : KSerializer<TokenType> by Serializer(NodeTypePool.EMPTY)
 
         override val descriptor = PrimitiveSerialDescriptor("TokenType", PrimitiveKind.INT)
         override fun serialize(encoder: Encoder, value: TokenType) {

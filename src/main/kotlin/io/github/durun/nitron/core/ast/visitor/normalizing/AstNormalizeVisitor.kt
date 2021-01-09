@@ -1,7 +1,11 @@
 package io.github.durun.nitron.core.ast.visitor.normalizing
 
 import io.github.durun.nitron.core.InvalidTypeException
-import io.github.durun.nitron.core.ast.node.*
+import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
+import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
@@ -13,9 +17,9 @@ import kotlin.collections.HashMap
  */
 @Deprecated("", ReplaceWith("astNormalizeVisitorOf(nonNumberedRuleMap = nonNumberedRuleMap, numberedRuleMap = numberedRuleMap, types = )"))
 fun astNormalizeVisitorOf(
-        nonNumberedRuleMap: NormalizingRuleMap,
-        numberedRuleMap: NormalizingRuleMap): AstNormalizeVisitor {
-    return StringAstNormalizeVisitor(nonNumberedRuleMap, numberedRuleMap)
+		nonNumberedRuleMap: Map<List<String>, String>,
+		numberedRuleMap: Map<List<String>, String>): AstNormalizeVisitor {
+	return StringAstNormalizeVisitor(nonNumberedRuleMap, numberedRuleMap)
 }
 
 
@@ -71,8 +75,8 @@ abstract class AstNormalizeVisitor: AstVisitor<AstNode> {
 }
 
 private class StringAstNormalizeVisitor(
-        private val nonNumberedRuleMap: NormalizingRuleMap,
-        private val numberedRuleMap: NormalizingRuleMap
+		private val nonNumberedRuleMap: Map<List<String>, String>,
+		private val numberedRuleMap: Map<List<String>, String>
 ) : AstNormalizeVisitor() {
     // Map: (normalizedRuleName -> (id -> count))
     private val nameTables: Map<String, MutableMap<String, Int>> = numberedRuleMap.values.associateWith { HashMap<String, Int>() }

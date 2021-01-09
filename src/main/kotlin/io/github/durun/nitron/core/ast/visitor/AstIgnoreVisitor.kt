@@ -4,7 +4,7 @@ import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.NodeType
+import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 
 fun astIgnoreVisitorOf(ignoreTypes: List<String>): AstIgnoreVisitor {

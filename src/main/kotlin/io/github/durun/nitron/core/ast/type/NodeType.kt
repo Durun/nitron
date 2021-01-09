@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.ast.node
+package io.github.durun.nitron.core.ast.type
 
 
 interface NodeType : Map.Entry<Int, String> {

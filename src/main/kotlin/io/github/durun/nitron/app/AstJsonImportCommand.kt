@@ -3,8 +3,8 @@ package io.github.durun.nitron.app
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
+import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.MD5
-import io.github.durun.nitron.core.ast.type.AstSerializers
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.structure.simple.AstTableWriter

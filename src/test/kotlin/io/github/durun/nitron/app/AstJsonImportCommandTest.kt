@@ -1,6 +1,6 @@
 package io.github.durun.nitron.app
 
-import io.github.durun.nitron.core.ast.type.AstSerializers
+import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.ast.type.nodeTypePool
 import io.github.durun.nitron.inout.database.MemoryDatabase
 import io.github.durun.nitron.inout.model.ast.Structure
