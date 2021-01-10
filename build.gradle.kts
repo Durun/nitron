@@ -10,7 +10,7 @@ plugins {
 
     application
 
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "1.4.20"
 
     // for making fatJar
     id("com.github.johnrengelman.shadow") version "6.1.0"
@@ -73,30 +73,12 @@ java {
 
 
 /**
- * Generate KDoc
- */
-tasks {
-    dokka {
-        outputFormat = "html"
-        outputDirectory = "$buildDir/dokka"
-    }
-}
-
-val dokkaJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles Kotlin docs with Dokka"
-    archiveClassifier.set("javadoc")
-    from(tasks.dokka)
-}
-
-/**
  * Maven Publishing
  */
 publishing {
     publications {
         create<MavenPublication>("default") {
             from(components["java"])
-            artifact(dokkaJar)
         }
     }
     repositories {
