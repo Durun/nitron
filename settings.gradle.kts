@@ -11,6 +11,10 @@ rootProject.buildFileName = "build.gradle.kts"
 rootProject.name = "nitron"
 
 pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		jcenter()
+	}
 	resolutionStrategy {
 		eachPlugin {
 			if (requested.id.id == "kotlin-multiplatform") {

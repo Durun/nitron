@@ -73,30 +73,12 @@ java {
 
 
 /**
- * Generate KDoc
- */
-tasks {
-    dokka {
-        outputFormat = "html"
-        outputDirectory = "$buildDir/dokka"
-    }
-}
-
-val dokkaJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles Kotlin docs with Dokka"
-    archiveClassifier.set("javadoc")
-    from(tasks.dokka)
-}
-
-/**
  * Maven Publishing
  */
 publishing {
     publications {
         create<MavenPublication>("default") {
             from(components["java"])
-            artifact(dokkaJar)
         }
     }
     repositories {
