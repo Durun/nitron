@@ -24,9 +24,8 @@ class LangTest : FreeSpec({
 
 
 fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
-	val parser by lazy { ParserStore.getOrNull(config.grammar) }
-
 	"config for $lang (${config.fileName})" - {
+		val parser = ParserStore.getOrNull(config.grammar)
 		"grammar files exist" {
 			val files = config.grammar.grammarFilePaths + config.grammar.utilJavaFilePaths
 			log("${config.fileName}: files=$files")
@@ -55,7 +54,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 					config.process.normalizeConfig.nonNumberedRuleMap.flatMap { it.key } +
 					config.process.normalizeConfig.numberedRuleMap.flatMap { it.key } +
 					config.process.splitConfig.splitRules
-			parser!!.getAntlrParser().ruleNames + parser!!.getAntlrParser().tokenTypeMap.keys shouldContainAll usedRules
+			parser!!.getAntlrParser().ruleNames + parser.getAntlrParser().tokenTypeMap.keys shouldContainAll usedRules
 		}
 	}
 }
