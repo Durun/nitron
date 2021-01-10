@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CodesWriterTest : FreeSpec({
 	"write" {
-		val db = MemoryDatabase.connect("test")
+		val db = MemoryDatabase.connectNew()
 		val input = Arb.code().take(3).toList()
 		val output = transaction(db) {
 			SchemaUtils.create(Codes)

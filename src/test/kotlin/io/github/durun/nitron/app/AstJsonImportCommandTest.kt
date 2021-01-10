@@ -21,7 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class AstJsonImportCommandTest : FreeSpec({
 	"writeAstJson" {
-		val db = MemoryDatabase.connect("test")
+		val db = MemoryDatabase.connectNew()
 		checkAll(iterations = 2,
 				Arb.nodeTypePool(),
 				Arb.int(2..10)

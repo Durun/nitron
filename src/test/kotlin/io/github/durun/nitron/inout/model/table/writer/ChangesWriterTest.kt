@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ChangesWriterTest : FreeSpec({
 	"write" {
-		val db = MemoryDatabase.connect("test")
+		val db = MemoryDatabase.connectNew()
 		val input = Arb.change().take(10).toList()
 		val output = transaction(db) {
 			SchemaUtils.create(Codes, Changes)
