@@ -20,12 +20,12 @@ class Code(
     }
 
     override fun hashCode(): Int {
-        return arrayOf(
-                softwareName,
-                rawText,
-                normalizedText,
-                range
-        ).hashCode()
+        var result = softwareName.hashCode()
+        result = 31 * result + rawText.hashCode()
+        result = 31 * result + normalizedText.hashCode()
+        result = 31 * result + range.hashCode()
+        result = 31 * result + (id ?: 0)
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
