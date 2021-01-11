@@ -11,16 +11,20 @@ import java.security.MessageDigest
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
-fun ByteArray.toMD5(): MD5 = MD5(this)
+fun ByteArray.toMD5(): MD5 = MD5.of(this)
 fun Blob.toMD5(): MD5 = this.getBytes(1, MD5.length).toMD5()
 
-fun MD5.toBlob(): Blob = SerialBlob(this.bytes)
+fun MD5.toBlob(): Blob = SerialBlob(this.toByteArray())
 
 @Serializable(with = MD5.Serializer::class)
-class MD5 internal constructor(val bytes: ByteArray) : List<Byte> by bytes.asList() {
+class MD5 private constructor(
+		private val bytes: ByteArray
+) : List<Byte> by bytes.asList() {
 	companion object {
 		const val length: Int = 16
 		private val md5 = MessageDigest.getInstance("MD5")
+
+		fun of(bytes: ByteArray): MD5 = MD5(bytes.clone())
 
 		fun digest(input: String): MD5 {
 			return md5.digest(input.toByteArray(Charsets.UTF_8)).toMD5()
