@@ -7,6 +7,7 @@ import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.structure
 import io.github.durun.nitron.inout.model.ast.table.NodeTypePools
 import io.github.durun.nitron.inout.model.ast.table.Structures
+import io.kotest.core.spec.DoNotParallelize
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -19,6 +20,7 @@ import kotlinx.serialization.encodeToString
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@DoNotParallelize
 class AstJsonImportCommandTest : FreeSpec({
 	"writeAstJson" {
 		val db = MemoryDatabase.connectNew()
