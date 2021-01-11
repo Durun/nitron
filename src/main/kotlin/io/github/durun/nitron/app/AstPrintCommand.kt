@@ -26,14 +26,14 @@ class AstPrintCommand : CliktCommand(
     ).multiple()
 
     private val configPath: Path by option(
-            names = *arrayOf("--config", "-c"),
+            "--config", "-c",
             help = "config file (.json)"
     ).path(
             readable = true
     ).required()
 
     private val outputPath: Path? by option(
-            names = *arrayOf("--output", "-o"),
+            "--output", "-o",
             help = "output file"
     ).path(
             writable = true
