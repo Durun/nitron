@@ -10,9 +10,11 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
+import java.io.BufferedWriter
 import java.io.File
-import java.io.PrintStream
 import java.nio.file.Path
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.bufferedWriter
 
 class CodeNormalizeCommand : CliktCommand(
         name = "normalize"
@@ -38,19 +40,19 @@ class CodeNormalizeCommand : CliktCommand(
             writable = true
     )
 
-    private val output: PrintStream = PrintStream(
-            outputPath?.toFile()?.outputStream()
-                    ?: System.out
-    )
+    @ExperimentalPathApi
+    private val output: BufferedWriter = outputPath?.bufferedWriter()
+            ?: System.out.bufferedWriter()
 
+    @ExperimentalPathApi
     override fun run() {
         val config = LangConfigLoader.load(configPath)
         val processor = CodeProcessor(config)
         inputs
                 .forEach { input ->
                     val text = processor.processText(input.readText())
-                    output.println("\n@ ${input.path}")
-                    output.println(text)
+                    output.appendLine("\n@ ${input.path}")
+                    output.appendLine(text)
                 }
     }
 
