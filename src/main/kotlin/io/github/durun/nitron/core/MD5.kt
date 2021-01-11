@@ -12,6 +12,7 @@ import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
 fun ByteArray.toMD5(): MD5 = MD5.of(this)
+fun Collection<Byte>.toMD5(): MD5 = MD5.of(this)
 fun Blob.toMD5(): MD5 = this.getBytes(1, MD5.length).toMD5()
 
 fun MD5.toBlob(): Blob = SerialBlob(this.toByteArray())
@@ -25,6 +26,7 @@ class MD5 private constructor(
 		private val md5 = MessageDigest.getInstance("MD5")
 
 		fun of(bytes: ByteArray): MD5 = MD5(bytes.clone())
+		fun of(bytes: Collection<Byte>): MD5 = MD5(bytes.toByteArray())
 
 		fun digest(input: String): MD5 {
 			return md5.digest(input.toByteArray(Charsets.UTF_8)).toMD5()
@@ -64,7 +66,6 @@ class MD5 private constructor(
 			val bytes = decoder.decodeString()
 					.chunked(2)
 					.map { Integer.decode("0x$it").toByte() }
-					.toByteArray()
 			return bytes.toMD5()
 		}
 	}
