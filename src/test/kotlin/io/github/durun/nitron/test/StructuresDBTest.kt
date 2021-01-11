@@ -7,10 +7,9 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
-import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.core.parser.ParserStore
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -23,7 +22,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.antlr.v4.runtime.Parser
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Paths
 
@@ -39,7 +37,7 @@ class StructuresDBTest : FreeSpec() {
         db = SQLiteDatabase.connect(path)
         langConfig = LangConfigLoader.load(langPath)
         processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
-        val antlrParser = langConfig.grammar.getParser()    // TODO
+        val antlrParser = ParserStore.getOrThrow(langConfig.grammar).getAntlrParser()
         nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
 
         "prepare" - {
@@ -141,8 +139,4 @@ class StructuresDBTest : FreeSpec() {
           }
         }
     """.trimIndent()
-
-    private fun GrammarConfig.getParser(): Parser {
-        return CommonParser(grammarFilePaths, utilJavaFilePaths).getAntlrParser()
-    }
 }

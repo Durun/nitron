@@ -14,6 +14,9 @@ abstract class ConfigWithDir {
 
     val fileName: String
         get() = path.fileName.toString()
+
+    val filePath: Path
+        get() = path
 }
 
 internal fun <C : ConfigWithDir> C.setPath(filePath: Path): C {
