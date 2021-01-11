@@ -35,7 +35,7 @@
 			"numberedRuleMap": [
 				{
 					"fromRules": [
-						"primaryExpression",
+						"atomicExpression",
 						"simpleIdentifier"
 					],
 					"toSymbol": "$V"
@@ -46,19 +46,11 @@
 						"simpleIdentifier"
 					],
 					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"directlyAssignableExpression",
-						"simpleIdentifier"
-					],
-					"toSymbol": "$V"
 				}
 			],
 			"ignoreRules": [
 				"annotation",
-				"packageDeclaration",
-				"importDeclaration"
+				"preamble"
 			]
 		}
 	}

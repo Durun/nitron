@@ -14,7 +14,8 @@
 			"splitRules": [
 				"statement",
 				"block",
-				"catch_clause",
+				"general_catch_clause",
+				"specific_catch_clause",
 				"type_declaration",
 				"class_member_declaration"
 			]
