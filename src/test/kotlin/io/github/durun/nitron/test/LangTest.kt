@@ -47,7 +47,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 		"defines start rule" {
 			val startRule = config.grammar.startRule
 			log("${config.fileName}: startRule=$startRule")
-			startRule shouldBeIn parser!!.getAntlrParser().ruleNames
+			startRule shouldBeIn parser!!.antlrParser.ruleNames
 		}
 		"defines at least 1 extension of sourcecode" {
 			val extensions = config.extensions
@@ -59,7 +59,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 					config.process.normalizeConfig.nonNumberedRuleMap.flatMap { it.key } +
 					config.process.normalizeConfig.numberedRuleMap.flatMap { it.key } +
 					config.process.splitConfig.splitRules
-			val antlrParser = parser!!.getAntlrParser()
+			val antlrParser = parser!!.antlrParser
 			val allowedRules = antlrParser.ruleNames + antlrParser.tokenTypeMap.keys
 			runCatching {
 				allowedRules shouldContainAll usedRules

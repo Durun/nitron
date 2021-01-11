@@ -55,8 +55,8 @@ class AstPrintCommand : CliktCommand(
         inputs
                 .forEach { input ->
                     val tree = parser.parse(input.readText(), config.grammar.startRule)
-                    val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.getAntlrParser()))
-                    val text = ast.accept(AstPrintVisitor)
+					val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser))
+					val text = ast.accept(AstPrintVisitor)
                     output.appendLine("\n@ ${input.path}")
                     output.appendLine(text)
                 }
