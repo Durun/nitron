@@ -32,9 +32,9 @@ class GenericParserTest : FreeSpec({
 
 @ExperimentalPathApi
 private fun tests(name: String, config: GrammarConfig, src: String) = freeSpec {
-	val parser: GenericParser by lazy {
-		GenericParser.init(
-				grammarContent = config.grammarFilePaths.map { it.readText() },
+	val parser by lazy {
+		GenericParser.fromFiles(
+				config.grammarFilePaths,
 				utilityJavaFiles = config.utilJavaFilePaths
 		)
 	}
