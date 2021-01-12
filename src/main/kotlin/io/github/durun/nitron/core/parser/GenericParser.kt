@@ -4,6 +4,7 @@ import org.antlr.v4.Tool
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import org.antlr.v4.tool.ast.GrammarRootAST
 import org.slf4j.LoggerFactory
 import org.snt.inmemantlr.comp.CunitProvider
 import org.snt.inmemantlr.comp.DefaultCompilerOptionsProvider
@@ -27,7 +28,7 @@ class GenericParser
 private constructor(
 		private val antlr: InmemantlrTool,
 		utilityJavaFiles: Collection<Path>,
-		private val useCached: Boolean = false
+		private val useCached: Boolean = true
 ) {
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(GenericParser::class.java)
@@ -45,7 +46,9 @@ private constructor(
 			val tool = InmemantlrTool()
 					.apply(toolCustomizer)
 					.apply {
-						sortGrammarByTokenVocab(grammarContent.toSet()).forEach {
+						val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
+						// NOTE: Don't change order of sortGrammarByTokenVocab()
+						sorted.forEach {
 							LOGGER.debug("gast ${it.grammarName}")
 							createPipeline(it)
 						}
@@ -161,7 +164,8 @@ private constructor(
 		LOGGER.debug("load parser $parserName")
 		val tokens: CommonTokenStream = CommonTokenStream(lexer)
 				.apply { fill() }
-		return compiler.instanciateParser(tokens, parserName)
+		return (compiler.instanciateParser(tokens, parserName)
+				?: throw IllegalStateException("failed to instantiate parser"))
 				.apply {
 					removeErrorListeners()
 					interpreter.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION
