@@ -86,7 +86,6 @@ private constructor(
 		}
 	}
 	private val listener = DefaultListener()
-	private val activeParser: String
 	private val activeLexer: String
 
 	init {
@@ -95,7 +94,6 @@ private constructor(
 			LOGGER.debug("${it.name} $it")
 		}
 		val (parser, lexer) = antlr.process()
-		activeParser = parser
 		activeLexer = lexer
 	}
 
@@ -104,10 +102,14 @@ private constructor(
 	 * @see Parser
 	 */
 	val antlrParser: Parser by lazy {
-		loadParser(
-				parserName = activeParser,
-				lexer = loadLexer(input = "".reader(), lexerName = activeLexer)
-		)
+		antlr.pipelines.asSequence().mapNotNull {
+			runCatching {
+				loadParser(
+						parserName = it.parserName,
+						lexer = loadLexer(input = "".reader(), lexerName = activeLexer)
+				)
+			}.getOrNull()
+		}.firstOrNull() ?: throw IllegalStateException("No valid parsers")
 	}
 
 	/**
@@ -115,17 +117,17 @@ private constructor(
 	 * If parsing failed, throws [ParsingException].
 	 * Due to grammar compilation, it takes long time to parse first time.
 	 * @param input a reader of sourcecode to parse
-	 * @param production the rule name to start parsing
+	 * @param entryPoint the rule name to start parsing
 	 * @return parse tree of input in ANTLR format
 	 * @see ParserRuleContext
 	 * @throws ParsingException
 	 */
-	fun parse(input: Reader, production: String? = null): ParserRuleContext {
+	fun parse(input: Reader, entryPoint: String): ParserRuleContext {
 		listener.reset()
 
 		val errorListener = InmemantlrErrorListener()
 		val parser = loadParser(
-				parserName = activeParser,
+				parserName = selectParser(entryPoint),
 				lexer = loadLexer(
 						input,
 						lexerName = activeLexer
@@ -135,8 +137,7 @@ private constructor(
 		listener.setParser(parser)
 
 		val rules = parser.ruleNames
-		require(production == null || rules.contains(production))
-		val entryPoint = production ?: rules.first()
+		require(rules.contains(entryPoint))
 
 		val data: ParserRuleContext = runCatching {
 			val method: Method = parser.javaClass
@@ -153,6 +154,12 @@ private constructor(
 		return data
 	}
 
+	private fun selectParser(ruleName: String): String {
+		val p = antlr.pipelines.find {
+			it.g.ruleNames.contains(ruleName)
+		} ?: throw IllegalArgumentException("rule not exist: $ruleName")
+		return p.parserName
+	}
 
 	private fun loadLexer(input: Reader, lexerName: String): Lexer {
 		LOGGER.debug("load lexer $lexerName")
