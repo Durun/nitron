@@ -6,6 +6,7 @@ import io.github.durun.nitron.core.parser.ParserStore
 import org.snt.inmemantlr.exceptions.ParsingException
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.bufferedReader
 
 @ExperimentalPathApi
 class ParserTester(
@@ -19,7 +20,7 @@ class ParserTester(
 		// Pair<Result, Path>
 		val results = inputFiles.map { file ->
 			runCatching {
-				val tree = parser.parse(file, startRuleName)
+				val tree = parser.parse(file.bufferedReader(), startRuleName)
 				val parser = parser.antlrParser
 				tree.accept(AstBuildVisitor(grammarName = null, parser))
 			} to file

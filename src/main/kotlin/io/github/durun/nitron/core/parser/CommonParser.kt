@@ -6,6 +6,7 @@ import org.snt.inmemantlr.GenericParser
 import org.snt.inmemantlr.listener.DefaultListener
 import java.nio.file.Path
 
+@Deprecated("use GenericParser")
 class CommonParser constructor(
 		grammarFiles: Collection<Path>,
 		utilityJavaFiles: Collection<Path> = emptySet()

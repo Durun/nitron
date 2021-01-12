@@ -9,20 +9,18 @@ import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
 import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.core.parser.GenericParser
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
 
-@ExperimentalPathApi
 class CodeProcessor(
 		config: LangConfig,
 		outputPath: Path? = null    // TODO recording feature should be separated
 ) {
 
-	private val parser: CommonParser
+	private val parser: GenericParser
 	private val nodeBuilder: AstBuildVisitor
 	private val startRule: String
 	private val splitVisitor: AstVisitor<List<AstNode>>
@@ -31,7 +29,7 @@ class CodeProcessor(
 	private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
 
 	init {
-		parser = CommonParser(
+		parser = GenericParser.fromFiles(
 				grammarFiles = config.grammar.grammarFilePaths,
 				utilityJavaFiles = config.grammar.utilJavaFilePaths
 		)
@@ -43,7 +41,6 @@ class CodeProcessor(
 				nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
 				numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
 				types = nodeBuilder.nodeTypes)
-		println("Parser compiled: config=${config.dir}")   // TODO
 
 		recorder = outputPath?.let {
 			JsonCodeRecorder(
@@ -54,7 +51,7 @@ class CodeProcessor(
 	}
 
 	fun parse(input: String): AstNode {
-		val tree = parser.parse(input, startRule)
+		val tree = parser.parse(input.reader(), startRule)
 		return tree.accept(nodeBuilder)
 	}
 
