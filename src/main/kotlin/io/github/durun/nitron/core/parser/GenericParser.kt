@@ -53,6 +53,17 @@ private constructor(
 			check(tool.pipelines.isNotEmpty())
 			return GenericParser(tool, utilityJavaFiles)
 		}
+
+		/**
+		 * Instantiate [GenericParser] with files
+		 * @param grammarFiles paths to grammar(.g4) files
+		 * @param utilityJavaFiles paths to utility(.java) files
+		 */
+		fun fromFiles(
+				grammarFiles: Collection<Path>,
+				utilityJavaFiles: Collection<Path> = emptySet(),
+				toolCustomizer: Tool.() -> Unit = {}
+		): GenericParser = init(grammarFiles.map { it.toFile().readText() }, utilityJavaFiles, toolCustomizer)
 	}
 
 	private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
