@@ -19,6 +19,15 @@ class GenericParserTest : FreeSpec({
 			config.langConfig["javascript"]!!.grammar,
 			src = """console.log("Hello");"""
 	))
+
+	include(tests("C#",
+			config.langConfig["C#"]!!.grammar,
+			src = """
+				class HelloClass {
+				    void hello() { }
+				}
+			""".trimIndent()
+	))
 })
 
 @ExperimentalPathApi
