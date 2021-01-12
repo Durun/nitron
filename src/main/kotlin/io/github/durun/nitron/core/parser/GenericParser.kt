@@ -20,7 +20,9 @@ import java.io.Reader
 import java.lang.reflect.Method
 import java.nio.file.Path
 
-
+/**
+ * [GenericParser] parses sourcecode using given ANTLR grammar files.
+ */
 class GenericParser
 private constructor(
 		private val antlr: InmemantlrTool,
@@ -29,6 +31,12 @@ private constructor(
 ) {
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(GenericParser::class.java)
+
+		/**
+		 * Instantiate [GenericParser]
+		 * @param grammarContent contents of grammar(.g4) files
+		 * @param utilityJavaFiles paths to utility(.java) files
+		 */
 		fun init(
 				grammarContent: Collection<String>,
 				utilityJavaFiles: Collection<Path> = emptySet(),
@@ -77,6 +85,10 @@ private constructor(
 		activeLexer = lexer
 	}
 
+	/**
+	 * internal parser
+	 * @see Parser
+	 */
 	val antlrParser: Parser by lazy {
 		loadParser(
 				parserName = activeParser,
@@ -84,6 +96,16 @@ private constructor(
 		)
 	}
 
+	/**
+	 * Parse given sourcecode.
+	 * If parsing failed, throws [ParsingException].
+	 * Due to grammar compilation, it takes long time to parse first time.
+	 * @param input a reader of sourcecode to parse
+	 * @param production the rule name to start parsing
+	 * @return parse tree of input in ANTLR format
+	 * @see ParserRuleContext
+	 * @throws ParsingException
+	 */
 	fun parse(input: Reader, production: String? = null): ParserRuleContext {
 		listener.reset()
 
