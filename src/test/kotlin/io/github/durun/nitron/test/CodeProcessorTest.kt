@@ -5,31 +5,33 @@ import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
+import kotlin.io.path.ExperimentalPathApi
 
 
+@ExperimentalPathApi
 class CodeProcessorTest : FreeSpec({
-    val processor = CodeProcessor(
-            config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
-    )
-    "sample.java" {
-        println("Parse: ")
-        val ast = processor.parse(javaCode)
-        val parsed = ast.getText()
-        println(parsed)
-        parsed shouldBe javaParsed
+	val processor = CodeProcessor(
+			config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
+	)
+	"sample.java" {
+		println("Parse: ")
+		val ast = processor.parse(javaCode)
+		val parsed = ast.getText()
+		println(parsed)
+		parsed shouldBe javaParsed
 
-        println("\nSplit: ")
-        val astList = processor.split(ast)
-        val splitted = astList.joinToString("\n") { it.getText() }
-        println(splitted)
-        splitted shouldBe javaSplitted
+		println("\nSplit: ")
+		val astList = processor.split(ast)
+		val splitted = astList.joinToString("\n") { it.getText() }
+		println(splitted)
+		splitted shouldBe javaSplitted
 
-        println("\nNormalize: ")
-        val normAstList = astList.mapNotNull { processor.proceess(it) }
-        val normalized = normAstList.joinToString("\n") { it.getText() }
-        println(normalized)
-        normalized shouldBe javaNormalized
-    }
+		println("\nNormalize: ")
+		val normAstList = astList.mapNotNull { processor.proceess(it) }
+		val normalized = normAstList.joinToString("\n") { it.getText() }
+		println(normalized)
+		normalized shouldBe javaNormalized
+	}
 })
 
 

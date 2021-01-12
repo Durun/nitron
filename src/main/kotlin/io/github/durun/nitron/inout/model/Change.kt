@@ -28,17 +28,17 @@ class Change(
     }
 
     override fun hashCode(): Int {
-        return arrayOf(
-                softwareName,
-                filePath,
-                author,
-                beforeCode,
-                afterCode,
-                commitHash,
-                date,
-                changeType,
-                diffType
-        ).hashCode()
+        var result = softwareName.hashCode()
+        result = 31 * result + filePath.hashCode()
+        result = 31 * result + author.hashCode()
+        result = 31 * result + (beforeCode?.hashCode() ?: 0)
+        result = 31 * result + (afterCode?.hashCode() ?: 0)
+        result = 31 * result + commitHash.hashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + changeType.hashCode()
+        result = 31 * result + diffType.hashCode()
+        result = 31 * result + (id ?: 0)
+        return result
     }
 
     override fun equals(other: Any?): Boolean {

@@ -5,27 +5,27 @@ import io.kotest.mpp.log
 import java.nio.file.Path
 
 object ParserStore {
-	private val parsers = mutableMapOf<Pair<Set<Path>, Set<Path>?>, Result<CommonParser>>()
+	private val parsers = mutableMapOf<Pair<Set<Path>, Set<Path>?>, Result<GenericParser>>()
 
-	private val mapping: (Pair<Set<Path>, Set<Path>?>) -> Result<CommonParser> = { (grammarFiles, utilityJavaFiles) ->
+	private val mapping: (Pair<Set<Path>, Set<Path>>) -> Result<GenericParser> = { (grammarFiles, utilityJavaFiles) ->
 		runCatching {
-			val p = CommonParser(grammarFiles.toList(), utilityJavaFiles?.toList())
-			log("Compiled grammar: ${p.getAntlrParser().grammarFileName}")
+			val p = GenericParser.fromFiles(grammarFiles, utilityJavaFiles)
+			log("Compiled grammar: ${p.antlrParser.grammarFileName}")
 			p
 		}
 	}
 
-	fun getOrThrow(config: GrammarConfig): CommonParser = getOrThrow(config.grammarFilePaths, config.utilJavaFilePaths)
-	fun getOrThrow(grammarFiles: Collection<Path>, utilJavaFiles: Collection<Path>? = null): CommonParser {
-		val key = grammarFiles.toSet() to utilJavaFiles?.toSet()
+	fun getOrThrow(config: GrammarConfig): GenericParser = getOrThrow(config.grammarFilePaths, config.utilJavaFilePaths)
+	fun getOrThrow(grammarFiles: Collection<Path>, utilJavaFiles: Collection<Path> = emptySet()): GenericParser {
+		val key = grammarFiles.toSet() to utilJavaFiles.toSet()
 		return synchronized(parsers) {
 			parsers.computeIfAbsent(key) { mapping(key) }
 		}.getOrThrow()
 	}
 
-	fun getOrNull(config: GrammarConfig): CommonParser? = getOrNull(config.grammarFilePaths, config.utilJavaFilePaths)
-	fun getOrNull(grammarFiles: Collection<Path>, utilJavaFiles: Collection<Path>? = null): CommonParser? {
-		val key = grammarFiles.toSet() to utilJavaFiles?.toSet()
+	fun getOrNull(config: GrammarConfig): GenericParser? = getOrNull(config.grammarFilePaths, config.utilJavaFilePaths)
+	fun getOrNull(grammarFiles: Collection<Path>, utilJavaFiles: Collection<Path> = emptySet()): GenericParser? {
+		val key = grammarFiles.toSet() to utilJavaFiles.toSet()
 		return synchronized(parsers) {
 			parsers.computeIfAbsent(key) { mapping(key) }
 		}.getOrNull()

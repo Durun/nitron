@@ -15,7 +15,7 @@ fun Arb.Companion.structure(typeSet: NodeTypePool? = null): Arb<Structure> {
 		Structure(
 				nodeTypePool = typeSet,
 				ast = ruleNode(typeSet).sample(rs).value,
-				hash = byte().take(16, rs).toList().toByteArray().toMD5()
+				hash = byte().take(16, rs).toList().toMD5()
 		)
 	}
 }

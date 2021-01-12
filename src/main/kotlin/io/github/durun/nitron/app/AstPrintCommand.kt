@@ -10,10 +10,12 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.CommonParser
+import io.github.durun.nitron.core.parser.GenericParser
+import java.io.BufferedWriter
 import java.io.File
-import java.io.PrintStream
 import java.nio.file.Path
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.bufferedWriter
 
 class AstPrintCommand : CliktCommand(
         name = "print"
@@ -26,37 +28,37 @@ class AstPrintCommand : CliktCommand(
     ).multiple()
 
     private val configPath: Path by option(
-            names = *arrayOf("--config", "-c"),
+            "--config", "-c",
             help = "config file (.json)"
     ).path(
             readable = true
     ).required()
 
     private val outputPath: Path? by option(
-            names = *arrayOf("--output", "-o"),
+            "--output", "-o",
             help = "output file"
     ).path(
             writable = true
     )
 
-    private val output: PrintStream = PrintStream(
-            outputPath?.toFile()?.outputStream()
-                    ?: System.out
-    )
+    @ExperimentalPathApi
+    private val output: BufferedWriter = outputPath?.bufferedWriter()
+            ?: System.out.bufferedWriter()
 
+    @ExperimentalPathApi
     override fun run() {
         val config = LangConfigLoader.load(configPath)
-        val parser = CommonParser(
+        val parser = GenericParser.fromFiles(
                 grammarFiles = config.grammar.grammarFilePaths,
                 utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
         inputs
                 .forEach { input ->
-                    val tree = parser.parse(input.readText(), config.grammar.startRule)
-                    val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.getAntlrParser()))
+                    val tree = parser.parse(input.bufferedReader(), config.grammar.startRule)
+                    val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser))
                     val text = ast.accept(AstPrintVisitor)
-                    output.println("\n@ ${input.path}")
-                    output.println(text)
+                    output.appendLine("\n@ ${input.path}")
+                    output.appendLine(text)
                 }
     }
 }
