@@ -35,13 +35,12 @@ class CommonParser constructor(
 		)
 	}
 
-	fun parse(input: Path, startRuleName: String?): Pair<ParserRuleContext, Parser> {
-		val tree = gParser.parse(
+	fun parse(input: Path, startRuleName: String?): ParserRuleContext {
+		return gParser.parse(
 				input.toFile(),
 				startRuleName,
 				GenericParser.CaseSensitiveType.NONE
 		)
-		return Pair(tree, antlrParser)
 	}
 
 	private object ParserListener : DefaultListener() {

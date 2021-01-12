@@ -19,9 +19,8 @@ class ParserTester(
 		// Pair<Result, Path>
 		val results = inputFiles.map { file ->
 			runCatching {
-				val result = parser.parse(file, startRuleName)
-				val tree = result.first
-				val parser = result.second
+				val tree = parser.parse(file, startRuleName)
+				val parser = parser.antlrParser
 				tree.accept(AstBuildVisitor(grammarName = null, parser))
 			} to file
 		}
