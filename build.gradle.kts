@@ -24,7 +24,7 @@ dependencies {
     // Versions
     val antlrVersion = "4.9.1"
     val inmemantlrVersion = "1.7.0"
-    val kotestVersion = "4.3.2"
+    val kotestVersion = "4.4.1"
     val cliktVersion = "2.4.0"
     val sqliteJdbcVersion = "3.34.0"
     val exposedVersion = "0.17.7"
