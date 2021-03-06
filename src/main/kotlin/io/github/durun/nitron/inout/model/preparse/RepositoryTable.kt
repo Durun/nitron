@@ -6,6 +6,6 @@ import org.jetbrains.exposed.sql.Column
 object RepositoryTable : IntIdTable("repositories") {
 	val name: Column<String> = text("name")
 	val url: Column<String> = text("url")
-		.uniqueIndex("url")
+		.uniqueIndex("repositories_url")
 	val langs: Column<String> = text("languages")    // comma delimited language names
 }
