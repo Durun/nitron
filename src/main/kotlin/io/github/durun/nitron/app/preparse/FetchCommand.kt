@@ -68,9 +68,11 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
             transaction { clearOldRows(repoId) }
             val git = openRepository(repoUrl)
             checkoutMainBranch(git)
+            var cnt = 0
             getCommitSequence(git, fileFilter).forEach {
-                println("Calling sequence: $it")
                 transaction(db) { processCommitInfo(repoId, it) }
+                cnt++
+                if (cnt % 100 == 0) log.info { "Wrote commits: $cnt" }
             }
         }
     }
@@ -141,7 +143,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                 it[author] = commitInfo.author
             }
         }
-        log.info { "Insert 'commits': $commitId" }
+        log.verbose { "Insert 'commits': $commitId" }
 
         commitInfo.files.forEach { fileInfo ->
             val content = fileInfo.readText.invoke()
@@ -150,7 +152,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                 it[path] = fileInfo.path
                 it[checksum] = MD5.digest(content).toString()
             }
-            log.info { "Insert 'files': $fileId" }
+            log.verbose { "Insert 'files': $fileId" }
         }
     }
 }
