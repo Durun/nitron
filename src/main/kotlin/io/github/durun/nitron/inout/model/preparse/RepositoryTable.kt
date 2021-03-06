@@ -7,4 +7,5 @@ object RepositoryTable : IntIdTable("repositories") {
 	val name: Column<String> = text("name")
 	val url: Column<String> = text("url")
 		.uniqueIndex("url")
+	val langs: Column<String> = text("languages")    // comma delimited language names
 }
