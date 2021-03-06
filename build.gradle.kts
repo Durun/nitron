@@ -29,6 +29,7 @@ dependencies {
     val sqliteJdbcVersion = "3.34.0"
     val exposedVersion = "0.17.9"
     val kotlinSerializationVersion = "1.0.1"
+    val jgitVersion = "5.10.0.202012080955-r"
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:$antlrVersion")
@@ -37,6 +38,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:$sqliteJdbcVersion")
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
