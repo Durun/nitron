@@ -50,7 +50,7 @@ internal class DbUtil(
     }
 
     fun insertCommitInfo(repositoryInfo: RepositoryInfo, commitInfo: CommitInfo) = transaction(db) {
-        val commitId = transaction {
+        val commitId =
             CommitTable.insertAndGetId {
                 it[repository] = repositoryInfo.id
                 it[hash] = commitInfo.id
@@ -58,7 +58,6 @@ internal class DbUtil(
                 it[date] = commitInfo.date
                 it[author] = commitInfo.author
             }
-        }
         log.verbose { "Insert 'commits': $commitId" }
 
 
@@ -66,6 +65,36 @@ internal class DbUtil(
             this[FileTable.commit] = commitId
             this[FileTable.path] = it.path
             this[FileTable.checksum] = MD5.digest(it.readText()).toString()
+        }
+        log.verbose { "Insert 'files' in $commitId" }
+    }
+
+
+    fun batchInsertCommitInfos(repositoryInfo: RepositoryInfo, commitInfos: List<CommitInfo>) = transaction(db) {
+        val first = commitInfos.first()
+        val commitId =
+            CommitTable.insertAndGetId {
+                it[repository] = repositoryInfo.id
+                it[hash] = first.id
+                it[message] = first.message
+                it[date] = first.date
+                it[author] = first.author
+            }
+        CommitTable.batchInsert(commitInfos.drop(1)) {
+            this[CommitTable.repository] = repositoryInfo.id
+            this[CommitTable.hash] = it.id
+            this[CommitTable.message] = it.message
+            this[CommitTable.date] = it.date
+            this[CommitTable.author] = it.author
+        }
+        log.verbose { "Insert 'commits': $commitId" }
+
+        commitInfos.forEachIndexed { i, commitInfo ->
+            FileTable.batchInsert(commitInfo.files) {
+                this[FileTable.commit] = EntityID(commitId.value + i, commitId.table)
+                this[FileTable.path] = it.path
+                this[FileTable.checksum] = MD5.digest(it.readText()).toString()
+            }
         }
         log.verbose { "Insert 'files' in $commitId" }
     }

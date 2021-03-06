@@ -78,6 +78,15 @@ internal class GitUtil(
                 )
             }
     }
+    fun createCommitInfo(git: Git, commit: RevCommit, parent: RevCommit?, filter: (filePath: String) -> Boolean): CommitInfo {
+        return CommitInfo(
+            id = commit.id.name,
+            message = commit.fullMessage,
+            date = DateTime(commit.getDate()),
+            author = commit.authorIdent.name,
+            files = createFileInfos(git.repository, commit, parent, filter)
+        )
+    }
 
     private fun createFileInfos(
         repository: Repository,

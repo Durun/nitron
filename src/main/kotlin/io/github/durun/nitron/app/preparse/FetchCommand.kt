@@ -13,6 +13,7 @@ import io.github.durun.nitron.inout.model.preparse.CommitTable
 import io.github.durun.nitron.inout.model.preparse.FileTable
 import io.github.durun.nitron.inout.model.preparse.RepositoryTable
 import io.github.durun.nitron.util.logger
+import kotlinx.coroutines.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand
 import org.eclipse.jgit.diff.DiffFormatter
@@ -26,6 +27,7 @@ import org.eclipse.jgit.treewalk.TreeWalk
 import org.eclipse.jgit.util.io.DisabledOutputStream
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.io.File
@@ -33,6 +35,7 @@ import java.net.URL
 import java.nio.file.Path
 import java.time.LocalDateTime
 import java.util.Date
+import kotlin.streams.asStream
 
 class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
@@ -58,16 +61,35 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
         log.info { "Fetch list:\n${repos.joinToString("\n").prependIndent("\t")}" }
 
         repos.forEach { repo ->
-            val extensions = repo.fileExtensions(config)
-            val fileFilter = { path: String -> extensions.any { path.endsWith(it) } }
-            dbUtil.clearOldRows(repo.id)
             val git = gitUtil.openRepository(repo.url)
             gitUtil.checkoutMainBranch(git)
-            var cnt = 0
-            gitUtil.createCommitInfoSequence(git, fileFilter).forEach {
-                dbUtil.insertCommitInfo(repo, it)
-                cnt++
-                if (cnt % 100 == 0) log.info { "Wrote commits: $cnt" }
+
+            dbUtil.clearOldRows(repo.id)
+
+            val extensions = repo.fileExtensions(config)
+
+
+            val commitPairs = gitUtil.zipCommitWithParent(git)
+
+            val commits = gitUtil.createCommitInfoSequence(git) { path -> extensions.any { path.endsWith(it) } }
+
+            val filter = { path: String -> extensions.any { path.endsWith(it) } }
+
+
+            runBlocking(Dispatchers.Default) {
+                val commitInfos = commitPairs.asSequence().mapIndexed { i, (commit, parent) ->
+                    async {
+                        val info = gitUtil.createCommitInfo(git, commit, parent, filter)
+                        if (i % 100 == 0) log.info { "Made commit: $i" }
+                        //dbUtil.insertCommitInfo(repo, info)
+                        //if (i % 100 == 0) log.info { "Wrote commit: $i" }
+                        info
+                    }
+                }
+                runBlocking {
+                    val buffer = commitInfos.toList().map { it.await() }
+                    dbUtil.batchInsertCommitInfos(repo, buffer)
+                }
             }
         }
     }
