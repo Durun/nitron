@@ -50,79 +50,25 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val log by logger()
 
     override fun run() {
-        val gitUtil = GitUtil(workingDir)
         val db = SQLiteDatabase.connect(dbFile)
-        transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(CommitTable, FileTable)
-        }
+        val dbUtil = DbUtil(db)
+        val gitUtil = GitUtil(workingDir)
 
-        val repos = transaction(db) {
-            RepositoryTable
-                .slice(RepositoryTable.id, RepositoryTable.url, RepositoryTable.langs)
-                .selectAll()
-                .map { Triple(it[RepositoryTable.id], URL(it[RepositoryTable.url]), it[RepositoryTable.langs]) }
-        }
+        val repos = dbUtil.getRepositoryInfos()
         log.info { "Fetch list:\n${repos.joinToString("\n").prependIndent("\t")}" }
-        repos.forEach { (repoId, repoUrl, langs) ->
-            val extensions = getExtensions(langs)
-            val fileFilter = { name: String -> extensions.any { name.endsWith(it) } }
-            transaction { clearOldRows(repoId) }
-            val git = gitUtil.openRepository(repoUrl)
+
+        repos.forEach { repo ->
+            val extensions = repo.fileExtensions(config)
+            val fileFilter = { path: String -> extensions.any { path.endsWith(it) } }
+            dbUtil.clearOldRows(repo.id)
+            val git = gitUtil.openRepository(repo.url)
             gitUtil.checkoutMainBranch(git)
             var cnt = 0
             gitUtil.createCommitInfoSequence(git, fileFilter).forEach {
-                transaction(db) { processCommitInfo(repoId, it) }
+                dbUtil.insertCommitInfo(repo, it)
                 cnt++
                 if (cnt % 100 == 0) log.info { "Wrote commits: $cnt" }
             }
-        }
-    }
-
-    private fun getExtensions(langs: String): List<String> {
-        val langList = langs.split(',')
-        return langList.mapNotNull {
-            config.langConfig[it]?.extensions
-        }.flatten()
-    }
-
-    private fun clearOldRows(repoTableID: EntityID<Int>) {
-        transaction {
-            val toDeleteCommits = CommitTable.select { CommitTable.repository eq repoTableID }
-                .adjustSlice { slice(CommitTable.id) }
-            FileTable.deleteWhere {
-                FileTable.commit.inSubQuery(toDeleteCommits)
-            }
-        }
-        log.info { "Cleared 'files' in repository $repoTableID" }
-
-        transaction {
-            CommitTable.deleteWhere {
-                CommitTable.repository eq repoTableID
-            }
-        }
-        log.info { "Cleared 'commits' in repository $repoTableID" }
-    }
-
-    private fun processCommitInfo(repoTableID: EntityID<Int>, commitInfo: CommitInfo) {
-        val commitId = transaction {
-            CommitTable.insertAndGetId {
-                it[repository] = repoTableID
-                it[hash] = commitInfo.id
-                it[message] = commitInfo.message
-                it[date] = commitInfo.date
-                it[author] = commitInfo.author
-            }
-        }
-        log.verbose { "Insert 'commits': $commitId" }
-
-        commitInfo.files.forEach { fileInfo ->
-            val content = fileInfo.readText()
-            val fileId = FileTable.insertIgnore {
-                it[commit] = commitId
-                it[path] = fileInfo.path
-                it[checksum] = MD5.digest(content).toString()
-            }
-            log.verbose { "Insert 'files': $fileId" }
         }
     }
 }

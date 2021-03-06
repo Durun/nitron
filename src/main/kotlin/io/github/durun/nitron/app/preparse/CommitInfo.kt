@@ -1,8 +1,24 @@
 package io.github.durun.nitron.app.preparse
 
+import io.github.durun.nitron.core.config.NitronConfig
 import org.eclipse.jgit.revwalk.RevCommit
+import org.jetbrains.exposed.dao.EntityID
 import org.joda.time.DateTime
+import java.net.URL
 import java.util.*
+
+internal class RepositoryInfo(
+    val id: EntityID<Int>,
+    val url: URL,
+    commaDelimitedLangs: String
+) {
+    val languages: List<String> = commaDelimitedLangs.split(',')
+    fun fileExtensions(config: NitronConfig): List<String> {
+        return languages.mapNotNull {
+            config.langConfig[it]?.extensions
+        }.flatten()
+    }
+}
 
 internal data class CommitInfo(
     val id: String,
