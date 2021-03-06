@@ -55,22 +55,31 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
             SchemaUtils.createMissingTablesAndColumns(CommitTable, FileTable)
         }
 
-        val repos: List<Pair<EntityID<Int>, URL>> = transaction(db) {
+        val repos = transaction(db) {
             RepositoryTable
-                .slice(RepositoryTable.id, RepositoryTable.url)
+                .slice(RepositoryTable.id, RepositoryTable.url, RepositoryTable.langs)
                 .selectAll()
-                .map { it[RepositoryTable.id] to URL(it[RepositoryTable.url]) }
+                .map { Triple(it[RepositoryTable.id], URL(it[RepositoryTable.url]), it[RepositoryTable.langs]) }
         }
         log.info { "Fetch list:\n${repos.joinToString("\n").prependIndent("\t")}" }
-        repos.forEach { (repoId, repoUrl) ->
+        repos.forEach { (repoId, repoUrl, langs) ->
+            val extensions = getExtensions(langs)
+            val fileFilter = { name: String -> extensions.any { name.endsWith(it) } }
             transaction { clearOldRows(repoId) }
             val git = openRepository(repoUrl)
             checkoutMainBranch(git)
-            getCommitSequence(git).forEach {
+            getCommitSequence(git, fileFilter).forEach {
                 println("Calling sequence: $it")
                 transaction(db) { processCommitInfo(repoId, it) }
             }
         }
+    }
+
+    private fun getExtensions(langs: String): List<String> {
+        val langList = langs.split(',')
+        return langList.mapNotNull {
+            config.langConfig[it]?.extensions
+        }.flatten()
     }
 
     private fun openRepository(repoUrl: URL): Git {
@@ -163,7 +172,7 @@ fun RevCommit.getDate(): Date {
     return Date(this.commitTime * 1000L)
 }
 
-private fun getCommitSequence(git: Git): Sequence<CommitInfo> {
+private fun getCommitSequence(git: Git, filter: (fileName: String) -> Boolean): Sequence<CommitInfo> {
     val commitPairs = git.log()
         .all()
         .call()
@@ -177,7 +186,7 @@ private fun getCommitSequence(git: Git): Sequence<CommitInfo> {
             message = commit.fullMessage,
             date = DateTime(commit.getDate()),
             author = commit.authorIdent.name,
-            files = detectCommitInfo(git.repository, commit, parent) { true }
+            files = detectCommitInfo(git.repository, commit, parent, filter)
         )
     }
 }
@@ -217,7 +226,9 @@ private fun detectCommitInfo(
             }
         return mutableListOf<FileInfo>().apply {
             while (treewalk.next()) {
-                val objId = treewalk.getObjectId(0).takeUnless { it == ObjectId.zeroId() }
+                val objId = treewalk.getObjectId(0)
+                    .takeIf { filter(treewalk.pathString) }
+                    .takeUnless { it == ObjectId.zeroId() }
                 val info = objId?.let {
                     FileInfo(treewalk.pathString) {
                         repository.open(it)
