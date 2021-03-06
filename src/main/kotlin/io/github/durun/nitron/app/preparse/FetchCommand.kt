@@ -25,9 +25,12 @@ import org.eclipse.jgit.util.io.DisabledOutputStream
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import java.io.File
 import java.net.URL
 import java.nio.file.Path
+import java.time.LocalDateTime
+import java.util.Date
 
 class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
@@ -123,6 +126,8 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                 it[repository] = repoTableID
                 it[hash] = commitInfo.id
                 it[message] = commitInfo.message
+                it[date] = commitInfo.date
+                it[author] = commitInfo.author
             }
         }
         log.info { "Insert 'commits': $commitId" }
@@ -139,7 +144,9 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
 data class CommitInfo(
     val id: String,
+    val date: DateTime,
     val message: String,
+    val author: String,
     val files: Collection<FileInfo>
 )
 
@@ -148,6 +155,9 @@ data class FileInfo(
     val readText: () -> String
 )
 
+fun RevCommit.getDate(): Date {
+    return Date(this.commitTime * 1000L)
+}
 
 private fun getCommitSequence(git: Git): Sequence<CommitInfo> {
     val commitPairs = git.log()
@@ -161,6 +171,8 @@ private fun getCommitSequence(git: Git): Sequence<CommitInfo> {
         CommitInfo(
             id = commit.id.name,
             message = commit.fullMessage,
+            date = DateTime(commit.getDate()),
+            author = commit.authorIdent.name,
             files = detectCommitInfo(git.repository, commit, parent) { true }
         )
     }
