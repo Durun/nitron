@@ -50,6 +50,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val log by logger()
 
     override fun run() {
+        val gitUtil = GitUtil(workingDir)
         val db = SQLiteDatabase.connect(dbFile)
         transaction(db) {
             SchemaUtils.createMissingTablesAndColumns(CommitTable, FileTable)
@@ -66,10 +67,10 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
             val extensions = getExtensions(langs)
             val fileFilter = { name: String -> extensions.any { name.endsWith(it) } }
             transaction { clearOldRows(repoId) }
-            val git = openRepository(repoUrl)
-            checkoutMainBranch(git)
+            val git = gitUtil.openRepository(repoUrl)
+            gitUtil.checkoutMainBranch(git)
             var cnt = 0
-            getCommitSequence(git, fileFilter).forEach {
+            gitUtil.createCommitInfoSequence(git, fileFilter).forEach {
                 transaction(db) { processCommitInfo(repoId, it) }
                 cnt++
                 if (cnt % 100 == 0) log.info { "Wrote commits: $cnt" }
@@ -82,37 +83,6 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
         return langList.mapNotNull {
             config.langConfig[it]?.extensions
         }.flatten()
-    }
-
-    private fun openRepository(repoUrl: URL): Git {
-        val repoDir = workingDir.resolve(repoUrl.file.trim('/'))
-        return runCatching {
-            log.info { "Opening: $repoUrl" }
-            Git.open(repoDir)
-        }.recover {
-            log.info { "Cloning: $repoUrl" }
-            Git.cloneRepository()
-                .setDirectory(repoDir)
-                .setURI(repoUrl.toString())
-                .call()
-        }.getOrThrow()
-    }
-
-    private fun checkoutMainBranch(git: Git) {
-        val branches: List<Ref> = git.branchList()
-            .setListMode(ListBranchCommand.ListMode.REMOTE)
-            .call()
-        val mainBranch = branches
-            .find {
-                val simpleName = it.name.split('/').last()
-                simpleName == "main" || simpleName == "master"
-            }
-        log.info { "Detected main branch: $mainBranch" }
-        mainBranch?.let {
-            git.checkout()
-                .setName(it.name)
-                .call()
-        }
     }
 
     private fun clearOldRows(repoTableID: EntityID<Int>) {
@@ -146,99 +116,13 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
         log.verbose { "Insert 'commits': $commitId" }
 
         commitInfo.files.forEach { fileInfo ->
-            val content = fileInfo.readText.invoke()
+            val content = fileInfo.readText()
             val fileId = FileTable.insertIgnore {
                 it[commit] = commitId
                 it[path] = fileInfo.path
                 it[checksum] = MD5.digest(content).toString()
             }
             log.verbose { "Insert 'files': $fileId" }
-        }
-    }
-}
-
-data class CommitInfo(
-    val id: String,
-    val date: DateTime,
-    val message: String,
-    val author: String,
-    val files: Collection<FileInfo>
-)
-
-data class FileInfo(
-    val path: String,
-    val readText: () -> String
-)
-
-fun RevCommit.getDate(): Date {
-    return Date(this.commitTime * 1000L)
-}
-
-private fun getCommitSequence(git: Git, filter: (fileName: String) -> Boolean): Sequence<CommitInfo> {
-    val commitPairs = git.log()
-        .all()
-        .call()
-        .zipWithNext()
-    require(commitPairs.isNotEmpty()) { "Commits are less than 2" }
-    val initialCommit = commitPairs.last().second
-    val allPairs = commitPairs + listOf(initialCommit to null)
-    return allPairs.asSequence().map { (commit, parent) ->
-        CommitInfo(
-            id = commit.id.name,
-            message = commit.fullMessage,
-            date = DateTime(commit.getDate()),
-            author = commit.authorIdent.name,
-            files = detectCommitInfo(git.repository, commit, parent, filter)
-        )
-    }
-}
-
-private fun detectCommitInfo(
-    repository: Repository,
-    commit: RevCommit,
-    parent: RevCommit?,
-    filter: (fileName: String) -> Boolean
-): Collection<FileInfo> {
-    if (parent != null) {
-        val entries = DiffFormatter(DisabledOutputStream.INSTANCE)
-            .let {
-                it.setRepository(repository)
-                it.setDiffComparator(RawTextComparator.DEFAULT)
-                it.isDetectRenames = true
-                val entries = it.scan(parent, commit)
-                it.close()
-                entries
-            }
-        val reader = repository.newObjectReader()
-        return entries
-            .filter { filter(it.newPath) }
-            .map {
-                FileInfo(path = it.newPath) {
-                    reader.open(it.newId.toObjectId(), Constants.OBJ_BLOB)
-                        .cachedBytes
-                        .decodeToString()
-                }
-            }
-    } else {
-        // if commit is the initial commit
-        val treewalk = TreeWalk(repository)
-            .apply {
-                addTree(commit.tree)
-                isRecursive = true
-            }
-        return mutableListOf<FileInfo>().apply {
-            while (treewalk.next()) {
-                val objId = treewalk.getObjectId(0)
-                    .takeIf { filter(treewalk.pathString) }
-                    .takeUnless { it == ObjectId.zeroId() }
-                val info = objId?.let {
-                    FileInfo(treewalk.pathString) {
-                        repository.open(it)
-                            .cachedBytes.decodeToString()
-                    }
-                }
-                info?.let { add(it) }
-            }
         }
     }
 }
