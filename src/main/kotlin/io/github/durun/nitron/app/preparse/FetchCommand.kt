@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.CommitTable
@@ -17,6 +18,7 @@ import org.eclipse.jgit.api.ListBranchCommand
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.diff.RawTextComparator
 import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.RevCommit
@@ -133,9 +135,11 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
         log.info { "Insert 'commits': $commitId" }
 
         commitInfo.files.forEach { fileInfo ->
+            val content = fileInfo.readText.invoke()
             val fileId = FileTable.insertIgnore {
                 it[commit] = commitId
                 it[path] = fileInfo.path
+                it[checksum] = MD5.digest(content).toString()
             }
             log.info { "Insert 'files': $fileId" }
         }
@@ -213,11 +217,14 @@ private fun detectCommitInfo(
             }
         return mutableListOf<FileInfo>().apply {
             while (treewalk.next()) {
-                val info = FileInfo(treewalk.pathString) {
-                    repository.open(treewalk.getObjectId(0))
-                        .cachedBytes.decodeToString()
+                val objId = treewalk.getObjectId(0).takeUnless { it == ObjectId.zeroId() }
+                val info = objId?.let {
+                    FileInfo(treewalk.pathString) {
+                        repository.open(it)
+                            .cachedBytes.decodeToString()
+                    }
                 }
-                add(info)
+                info?.let { add(it) }
             }
         }
     }
