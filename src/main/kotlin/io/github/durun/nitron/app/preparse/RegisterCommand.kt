@@ -26,7 +26,10 @@ class RegisterCommand : CliktCommand(name = "preparse-register") {
 	private val dbFile: Path by argument(name = "--database", help = "Database file")
 		.path(writable = true)
 	private val remote: URL? by option("--remote", help = "Git repository URL")
-		.convert { URL(it) }
+		.convert {
+			val gitUrl = if (it.endsWith(".git")) it else "$it.git"
+			URL(gitUrl)
+		}
 		.validate(gitUrlValidator)
 	private val langArgs: List<String> by option("--lang", help = "Language config name")
 		.multiple()
@@ -54,6 +57,7 @@ class RegisterCommand : CliktCommand(name = "preparse-register") {
 }
 
 private val gitUrlValidator: OptionValidator<URL> = { url ->
+	require(url.toString().endsWith(".git")) { "Must end with '.git' but: $url" }
 	runCatching {
 		Git.lsRemoteRepository()
 			.setRemote(url.toString())
