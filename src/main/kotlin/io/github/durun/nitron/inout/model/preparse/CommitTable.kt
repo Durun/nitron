@@ -6,8 +6,6 @@ import org.jetbrains.exposed.sql.Column
 
 object CommitTable : IntIdTable("commits") {
     val repository: Column<EntityID<Int>> = reference("repository", RepositoryTable)
-        .uniqueIndex("commit")
     val hash: Column<String> = varchar("hash", 40)
-        .uniqueIndex("commit")
     val message: Column<String> = text("message")
 }
