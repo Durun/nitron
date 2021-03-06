@@ -2,9 +2,11 @@ package io.github.durun.nitron.app.preparse
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
+import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
@@ -49,6 +51,9 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
         .path(writable = true)
 
+    private val bufferSize: Int? by option("-b")
+        .int()
+        .default(1000)
 
     private val log by logger()
 
@@ -67,28 +72,23 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
             dbUtil.clearOldRows(repo.id)
 
             val extensions = repo.fileExtensions(config)
-
-
-            val commitPairs = gitUtil.zipCommitWithParent(git)
-
-            val commits = gitUtil.createCommitInfoSequence(git) { path -> extensions.any { path.endsWith(it) } }
-
             val filter = { path: String -> extensions.any { path.endsWith(it) } }
-
+            val commitPairs = gitUtil.zipCommitWithParent(git)
 
             runBlocking(Dispatchers.Default) {
                 val commitInfos = commitPairs.asSequence().mapIndexed { i, (commit, parent) ->
                     async {
                         val info = gitUtil.createCommitInfo(git, commit, parent, filter)
                         if (i % 100 == 0) log.info { "Made commit: $i" }
-                        //dbUtil.insertCommitInfo(repo, info)
-                        //if (i % 100 == 0) log.info { "Wrote commit: $i" }
                         info
                     }
                 }
                 runBlocking {
-                    val buffer = commitInfos.toList().map { it.await() }
-                    dbUtil.batchInsertCommitInfos(repo, buffer)
+                    val buffers: Sequence<List<Deferred<CommitInfo>>> = commitInfos.chunked(bufferSize)
+                    buffers.forEachIndexed { i, buf ->
+                        dbUtil.batchInsertCommitInfos(repo, buf.awaitAll())
+                        log.info { "Wrote commit: ${i * bufferSize}" }
+                    }
                 }
             }
         }
