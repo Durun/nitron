@@ -174,16 +174,16 @@ internal class DbUtil(
     }
 
     /**
-     * @return pair(filePath, langName)
+     * @return pair(objectId, langName)
      */
     fun queryAbsentAst(repositoryId: Int): Sequence<Pair<String, String>> {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
-            .slice(CommitTable.repository, FileTable.path, LanguageTable.name, AstTable.content)
+            .slice(CommitTable.repository, FileTable.objectId, LanguageTable.name, AstTable.content)
             .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
             .asSequence()
-            .map { it[FileTable.path] to it[LanguageTable.name] }
+            .map { it[FileTable.objectId] to it[LanguageTable.name] }
     }
 }

@@ -13,47 +13,52 @@ import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import java.net.URL
 import java.nio.file.Path
 
 class ParseCommand : CliktCommand(name = "preparse") {
 
-	private val customConfig: Path? by option("--config")
-		.path(readable = true)
-	private val config = (customConfig ?: Path.of("config/nitron.json"))
-		.let { NitronConfigLoader.load(it) }
-	private val workingDir: File by option("--dir")
-		.file(folderOkay = true, fileOkay = false)
-		.defaultLazy { Path.of("tmp").toFile() }
-	private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
-		.path(writable = true)
+    private val customConfig: Path? by option("--config")
+        .path(readable = true)
+    private val config = (customConfig ?: Path.of("config/nitron.json"))
+        .let { NitronConfigLoader.load(it) }
+    private val workingDir: File by option("--dir")
+        .file(folderOkay = true, fileOkay = false)
+        .defaultLazy { Path.of("tmp").toFile() }
+    private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
+        .path(writable = true)
 
-	private val log by logger()
+    private val log by logger()
 
-	@kotlin.io.path.ExperimentalPathApi
-	override fun run() {
-		val db = SQLiteDatabase.connect(dbFile)
-		val dbUtil = DbUtil(db)
+    @kotlin.io.path.ExperimentalPathApi
+    override fun run() {
+        val db = SQLiteDatabase.connect(dbFile)
+        val dbUtil = DbUtil(db)
+        val gitUtil = GitUtil(workingDir)
 
-		log.info { "Available languages: ${config.langConfig.keys}" }
-		config.langConfig.entries.forEach { (name, config) ->
-			check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
-			log.verbose { "Language check OK: $name" }
-		}
+        log.info { "Available languages: ${config.langConfig.keys}" }
+        config.langConfig.entries.forEach { (name, config) ->
+            check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
+            log.verbose { "Language check OK: $name" }
+        }
 
-		// list asts table
-		dbUtil.prepareAstTable(config)
+        // list asts table
+        dbUtil.prepareAstTable(config)
 
-		val repo = transaction(db) {
-			RepositoryTable
-				.selectAll()
-				.map { it[RepositoryTable.id] }
-				.first()
-		}
-		val jobs = dbUtil.queryAbsentAst(repo.value)
-		transaction(db) {
-			jobs.forEach { (path, lang) ->
-				log.assert { "Process lang=$lang, path=$path" }
-			}
-		}
-	}
+        val (repoId, repoUrl) = transaction(db) {
+            RepositoryTable
+                .selectAll()
+                .map { it[RepositoryTable.id] to it[RepositoryTable.url] }
+                .first()
+        }
+        val jobs: Sequence<Pair<String, String>> = dbUtil.queryAbsentAst(repoId.value)
+        val git = gitUtil.openRepository(URL(repoUrl))
+        val parseUtil = ParseUtil(git, config)
+        transaction(db) {
+            jobs.forEach { (objectId, lang) ->
+                log.assert { "Process lang=$lang, objectId=$objectId" }
+                println(parseUtil.readFile(objectId))
+            }
+        }
+    }
 }
