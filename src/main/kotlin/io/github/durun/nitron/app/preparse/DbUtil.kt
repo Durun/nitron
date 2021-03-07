@@ -2,10 +2,8 @@ package io.github.durun.nitron.app.preparse
 
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.LangConfig
-import io.github.durun.nitron.inout.model.preparse.CommitTable
-import io.github.durun.nitron.inout.model.preparse.FileTable
-import io.github.durun.nitron.inout.model.preparse.LanguageTable
-import io.github.durun.nitron.inout.model.preparse.RepositoryTable
+import io.github.durun.nitron.core.config.NitronConfig
+import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
@@ -24,7 +22,9 @@ internal class DbUtil(
                 RepositoryTable,
                 CommitTable,
                 FileTable,
-                LanguageTable
+                LanguageTable,
+                AstTable,
+                AstContentTable
             )
         }
     }
@@ -132,5 +132,43 @@ internal class DbUtil(
             }
             true
         }
+    }
+
+    fun detectLangFromExtension(path: String, config: NitronConfig): String? {
+        return config.langConfig.entries.find { (_, config) ->
+            config.extensions.any { path.endsWith(it) }
+        }?.let { (name, _) -> name }
+    }
+
+    fun prepareAstTable(config: NitronConfig) {
+
+        // Language name : id
+        val langs = transaction(db) {
+            LanguageTable.selectAll()
+                .associate { it[LanguageTable.name] to it[LanguageTable.id] }
+        }
+
+        val files = transaction(db) {
+            FileTable.selectAll().asIterable()
+                .map {
+                    val path = it[FileTable.path]
+                    val langName = detectLangFromExtension(path, config)
+                    FileRowInfo(
+                        fileId = it[FileTable.id],
+                        commitId = it[FileTable.commit],
+                        langId = langs[langName],
+                        path = path
+                    )
+                }
+        }
+        log.info { "Collected file rows" }
+
+        transaction(db) {
+            AstTable.batchInsert(files.filter { it.langId != null }, ignore = true) {
+                this[AstTable.file] = it.fileId
+                this[AstTable.language] = it.langId!!
+            }
+        }
+        log.info { "Inserted 'asts' rows" }
     }
 }

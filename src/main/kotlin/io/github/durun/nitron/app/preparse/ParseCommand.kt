@@ -36,5 +36,9 @@ class ParseCommand : CliktCommand(name = "preparse") {
 			check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
 			log.verbose { "Language check OK: $name" }
 		}
+
+
+		// list asts table
+		dbUtil.prepareAstTable(config)
 	}
 }
