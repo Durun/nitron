@@ -176,7 +176,7 @@ internal class DbUtil(
     /**
      * @return pair(objectId, langName)
      */
-    fun queryAbsentAst(repositoryId: Int): Sequence<Triple<EntityID<Int>, String, String>> {
+    fun queryAbsentAst(repositoryId: EntityID<Int>): Sequence<Triple<EntityID<Int>, String, String>> {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })

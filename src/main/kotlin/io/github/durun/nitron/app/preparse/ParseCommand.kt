@@ -57,24 +57,23 @@ class ParseCommand : CliktCommand(name = "preparse") {
                 .map { it[RepositoryTable.id] to it[RepositoryTable.url] }
                 .last()
         }
-        val jobs: Sequence<Triple<EntityID<Int>, String, String>> = dbUtil.queryAbsentAst(repoId.value)
+
         val git = gitUtil.openRepository(URL(repoUrl))
         val parseUtil = ParseUtil(git, config)
-        transaction(db) {
-            jobs.forEach { (astId, objectId, lang) ->
-                log.assert { "Process lang=$lang, objectId=$objectId" }
-                val parsed = parseUtil.parseText(parseUtil.readFile(objectId)!!, lang, config.langConfig[lang]!!)
 
-                transaction {
-                    val contentId = AstContentTable.insertIgnoreAndGetId {
-                        it[content] = parsed
-                        it[checksum] = MD5.digest(parsed).toString()
-                    }
-                    AstTable.update({ AstTable.id eq astId }) {
-                        it[content] = contentId
-                    }
-                }
+        transaction(db) {
+            val (astId, objectId, lang) = dbUtil.queryAbsentAst(repoId).first()
+
+            val parsed = parseUtil.parseText(parseUtil.readFile(objectId)!!, lang, config.langConfig[lang]!!)
+
+            val contentId = AstContentTable.insertIgnoreAndGetId {
+                it[content] = parsed
+                it[checksum] = MD5.digest(parsed).toString()
+            }
+            AstTable.update({ AstTable.id eq astId }) {
+                it[content] = contentId
             }
         }
+
     }
 }
