@@ -8,7 +8,10 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
+import io.github.durun.nitron.inout.model.preparse.RepositoryTable
 import io.github.durun.nitron.util.logger
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Path
 
@@ -37,8 +40,20 @@ class ParseCommand : CliktCommand(name = "preparse") {
 			log.verbose { "Language check OK: $name" }
 		}
 
-
 		// list asts table
 		dbUtil.prepareAstTable(config)
+
+		val repo = transaction(db) {
+			RepositoryTable
+				.selectAll()
+				.map { it[RepositoryTable.id] }
+				.first()
+		}
+		val jobs = dbUtil.queryAbsentAst(repo.value)
+		transaction(db) {
+			jobs.forEach { (path, lang) ->
+				log.assert { "Process lang=$lang, path=$path" }
+			}
+		}
 	}
 }
