@@ -1,14 +1,17 @@
 package io.github.durun.nitron.app.preparse
 
 import io.github.durun.nitron.core.MD5
+import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.inout.model.preparse.CommitTable
 import io.github.durun.nitron.inout.model.preparse.FileTable
+import io.github.durun.nitron.inout.model.preparse.LanguageTable
 import io.github.durun.nitron.inout.model.preparse.RepositoryTable
 import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
+import kotlin.io.path.readText
 
 internal class DbUtil(
     val db: Database
@@ -17,7 +20,12 @@ internal class DbUtil(
 
     init {
         transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(CommitTable, FileTable)
+            SchemaUtils.createMissingTablesAndColumns(
+                RepositoryTable,
+                CommitTable,
+                FileTable,
+                LanguageTable
+            )
         }
     }
 
@@ -97,5 +105,32 @@ internal class DbUtil(
             }
         }
         log.verbose { "Insert 'files' in $commitId" }
+    }
+
+    @kotlin.io.path.ExperimentalPathApi
+    fun isLanguageConsistent(langName: String, langConfig: LangConfig): Boolean {
+        val paths = langConfig.grammar.grammarFilePaths + langConfig.grammar.utilJavaFilePaths
+        val checksum = paths.map { MD5.digest(it.readText()).toString() }
+            .sorted()
+            .reduce { a, b -> a + b }
+            .let { MD5.digest(it) }
+
+        val correctSum = transaction(db) {
+            val rows = LanguageTable.select { LanguageTable.name eq langName }
+                .map { it[LanguageTable.checksum] }
+            check(rows.size <= 1) { "Languages must be distinct. Check 'languages' table." }
+            rows.firstOrNull()
+        }
+
+        return if (correctSum != null) checksum.toString() == correctSum
+        else {
+            transaction(db) {
+                LanguageTable.insert {
+                    it[name] = langName
+                    it[this.checksum] = checksum.toString()
+                }
+            }
+            true
+        }
     }
 }

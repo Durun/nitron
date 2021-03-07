@@ -67,7 +67,7 @@ private val gitUrlValidator: OptionValidator<URL> = { url ->
 	}
 }
 
-private fun langsValidator(config: NitronConfig): OptionValidator<Collection<String>> = { inputs ->
+fun langsValidator(config: NitronConfig): OptionValidator<Collection<String>> = { inputs ->
 	require(inputs.isNotEmpty()) { "No languages specified" }
 	val languages = config.langConfig.keys
 	val errors = inputs.filterNot { languages.contains(it) }
