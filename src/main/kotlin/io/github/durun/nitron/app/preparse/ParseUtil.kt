@@ -7,9 +7,10 @@ import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.GenericParser
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ObjectId
+import java.util.zip.Deflater
+import java.util.zip.Inflater
 
 class ParseUtil(
     val git: Git,
@@ -50,4 +51,31 @@ class ParseUtil(
         val ast: AstNode = parseTree.accept(converter)
         return encoder.encodeToString(ast)
     }
+
+
+}
+
+fun ByteArray.deflate(): ByteArray {
+    val deflater = Deflater(Deflater.BEST_COMPRESSION, true)
+
+    deflater.setInput(this)
+    deflater.finish()
+
+    val buffer = ByteArray(this.size + 1)
+    deflater.deflate(buffer)
+
+    return buffer.sliceArray(0..deflater.bytesRead.toInt())
+        .also { deflater.end() }
+}
+
+fun ByteArray.inflate(): ByteArray {
+    val inflater = Inflater(true)
+
+    inflater.setInput(this)
+
+    val buffer = ByteArray(Short.MAX_VALUE.toInt())
+    val length = inflater.inflate(buffer)
+
+    return buffer.sliceArray(0 until length)
+        .also { inflater.end() }
 }
