@@ -1,6 +1,7 @@
 package io.github.durun.nitron.app.preparse
 
 import io.github.durun.nitron.core.config.NitronConfig
+import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.revwalk.RevCommit
 import org.jetbrains.exposed.dao.EntityID
 import org.joda.time.DateTime
@@ -30,6 +31,7 @@ internal data class CommitInfo(
 
 internal data class FileInfo(
     val path: String,
+    val objectId: ObjectId,
     val lazytext: () -> String
 ) {
     fun readText(): String = lazytext.invoke()

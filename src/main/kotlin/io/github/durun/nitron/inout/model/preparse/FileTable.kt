@@ -7,5 +7,6 @@ import org.jetbrains.exposed.sql.Column
 object FileTable : IntIdTable("files") {
     val commit: Column<EntityID<Int>> = reference("commit", CommitTable)
     val path: Column<String> = text("path")
+    val objectId: Column<String> = varchar("objectId", 40)
     val checksum: Column<String> = varchar("checksum", 40)
 }

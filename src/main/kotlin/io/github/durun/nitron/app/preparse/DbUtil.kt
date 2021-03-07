@@ -101,6 +101,7 @@ internal class DbUtil(
             FileTable.batchInsert(commitInfo.files) {
                 this[FileTable.commit] = EntityID(commitId.value + i, commitId.table)
                 this[FileTable.path] = it.path
+                this[FileTable.objectId] = it.objectId.name()
                 this[FileTable.checksum] = MD5.digest(it.readText()).toString()
             }
         }

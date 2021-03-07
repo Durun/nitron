@@ -108,7 +108,7 @@ internal class GitUtil(
             return entries
                 .filter { filter(it.newPath) }
                 .map {
-                    FileInfo(path = it.newPath) {
+                    FileInfo(path = it.newPath, objectId = it.newId.toObjectId()) {
                         reader.open(it.newId.toObjectId(), Constants.OBJ_BLOB)
                             .cachedBytes
                             .decodeToString()
@@ -127,7 +127,7 @@ internal class GitUtil(
                         .takeIf { filter(treewalk.pathString) }
                         .takeUnless { it == ObjectId.zeroId() }
                     val info = objId?.let {
-                        FileInfo(treewalk.pathString) {
+                        FileInfo(path = treewalk.pathString, objectId = it) {
                             repository.open(it)
                                 .cachedBytes.decodeToString()
                         }
