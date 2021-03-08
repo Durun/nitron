@@ -47,3 +47,11 @@ internal data class FileRowInfo(
     val langId: EntityID<Int>?,
     val path: String
 )
+
+
+internal data class ParseJobInfo(
+    val repoId: EntityID<Int>,
+    val astId: EntityID<Int>,
+    val fileObjectId: String,
+    val lang: String
+)

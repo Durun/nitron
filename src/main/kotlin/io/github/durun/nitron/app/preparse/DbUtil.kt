@@ -176,14 +176,14 @@ internal class DbUtil(
     /**
      * @return pair(objectId, langName)
      */
-    fun queryAbsentAst(repositoryId: EntityID<Int>): Sequence<Triple<EntityID<Int>, String, String>> {
+    fun queryAbsentAst(repositoryId: EntityID<Int>, limit: Int = 100): List<ParseJobInfo> {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
             .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
             .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
-            .asSequence()
-            .map { Triple(it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
+            .take(limit)
+            .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }
 }

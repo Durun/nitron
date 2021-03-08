@@ -56,7 +56,7 @@ class RegisterCommand : CliktCommand(name = "preparse-register") {
 	}
 }
 
-private val gitUrlValidator: OptionValidator<URL> = { url ->
+val gitUrlValidator: OptionValidator<URL> = { url ->
 	require(url.toString().endsWith(".git")) { "Must end with '.git' but: $url" }
 	runCatching {
 		Git.lsRemoteRepository()
