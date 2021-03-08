@@ -19,6 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.net.URL
 import java.nio.file.Path
+import java.util.concurrent.atomic.AtomicInteger
 
 class ParseCommand : CliktCommand(name = "preparse") {
 
@@ -92,14 +93,19 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.info { "Opened: $url" }
 
         val parseUtil = ParseUtil(git, config)
-
-
+        val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId) }
+        var count = AtomicInteger(0)
         do {
             val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = 500) }
-            log.info { "Got ${jobs.size} jobs" }
+            log.verbose { "Got ${jobs.size} jobs" }
 
             runBlocking(Dispatchers.Default) {
-                jobs.map { async { processJob(parseUtil, db, it) } }
+                jobs.map {
+                    async {
+                        processJob(parseUtil, db, it)
+                        log.info { "Done: $repoUrl ${count.addAndGet(1)} / $jobCount" }
+                    }
+                }
                     .map { it.await() }
             }
         } while (jobs.isNotEmpty())
@@ -121,6 +127,6 @@ class ParseCommand : CliktCommand(name = "preparse") {
                 AstTable.updateContent(job.astId, contentId)
             }
         }
-        log.info { "Done: $job" }
+        log.verbose { "Done: $job" }
     }
 }
