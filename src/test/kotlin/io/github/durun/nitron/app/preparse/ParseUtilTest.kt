@@ -19,6 +19,8 @@ class ParseUtilTest : FreeSpec({
                 val output = bytes.inflate().decodeToString()
 
                 println(output)
+                println("Input length : ${input.length}")
+                println("Deflated size: ${bytes.size}")
                 output shouldBe input
             }
         }
@@ -28,6 +30,31 @@ class ParseUtilTest : FreeSpec({
 
                 val bytes = input.toByteArray().deflate().toBlob()
                 val output = bytes.toByteArray().inflate().decodeToString()
+
+                println(output)
+                output shouldBe input
+            }
+        }
+
+        "gzip" {
+            Arb.string().take(10).forEach { input ->
+                println(input)
+
+                val bytes = input.gzip()
+                val output = bytes.ungzip()
+
+                println(output)
+                println("Input length : ${input.length}")
+                println("Deflated size: ${bytes.size}")
+                output shouldBe input
+            }
+        }
+        "gzip over blob" {
+            Arb.string().take(10).forEach { input ->
+                println(input)
+
+                val blob = input.gzip().toBlob()
+                val output = blob.toByteArray().ungzip()
 
                 println(output)
                 output shouldBe input

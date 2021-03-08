@@ -9,7 +9,10 @@ import io.github.durun.nitron.core.parser.GenericParser
 import kotlinx.serialization.encodeToString
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ObjectId
+import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 import java.util.zip.Inflater
 
 class ParseUtil(
@@ -78,4 +81,18 @@ fun ByteArray.inflate(): ByteArray {
 
     return buffer.sliceArray(0 until length)
         .also { inflater.end() }
+}
+
+fun String.gzip(): ByteArray {
+    val stream = ByteArrayOutputStream()
+    GZIPOutputStream(stream).bufferedWriter().use {
+        it.write(this)
+    }
+    return stream.toByteArray()
+}
+
+fun ByteArray.ungzip(): String {
+    return GZIPInputStream(this.inputStream()).bufferedReader().use {
+        it.readText()
+    }
 }
