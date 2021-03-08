@@ -3,9 +3,8 @@ package io.github.durun.nitron.inout.model.preparse
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.statements.InsertStatement
+import org.jetbrains.exposed.sql.insertIgnoreAndGetId
 import java.net.URL
 
 object RepositoryTable : IntIdTable("repositories") {
@@ -17,6 +16,14 @@ object RepositoryTable : IntIdTable("repositories") {
 
 fun RepositoryTable.insertAndGetId(url: URL, langs: List<String>): EntityID<Int> {
     return this.insertAndGetId {
+        it[this.name] = url.file.trim('/')
+        it[this.url] = url.toString()
+        it[this.langs] = langs.joinToString(",")
+    }
+}
+
+fun RepositoryTable.insertIgnoreAndGetId(url: URL, langs: List<String>): EntityID<Int>? {
+    return this.insertIgnoreAndGetId {
         it[this.name] = url.file.trim('/')
         it[this.url] = url.toString()
         it[this.langs] = langs.joinToString(",")

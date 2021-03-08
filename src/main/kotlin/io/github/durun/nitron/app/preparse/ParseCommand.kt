@@ -95,7 +95,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
         val parseUtil = ParseUtil(config)
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId) }
-        var count = AtomicInteger(0)
+        val count = AtomicInteger(0)
         do {
             val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = 500) }
             log.verbose { "Got ${jobs.size} jobs" }
