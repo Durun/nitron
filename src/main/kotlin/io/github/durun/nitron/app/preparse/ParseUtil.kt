@@ -16,18 +16,11 @@ import java.util.zip.GZIPOutputStream
 import java.util.zip.Inflater
 
 class ParseUtil(
-    val git: Git,
     val config: NitronConfig
 ) {
     private val parsers: MutableMap<String, GenericParser> = mutableMapOf()
     private val visitors: MutableMap<String, AstBuildVisitor> = mutableMapOf()
     private val encoder = AstSerializers.encodeOnlyJson
-
-    fun readFile(objectId: String): String? {
-        val loader = git.repository.open(ObjectId.fromString(objectId))
-            ?: return null
-        return loader.cachedBytes.decodeToString()
-    }
 
     private fun initParser(langConfig: LangConfig): GenericParser {
         return GenericParser.fromFiles(

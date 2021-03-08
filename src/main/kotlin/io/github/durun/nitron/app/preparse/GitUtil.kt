@@ -20,7 +20,7 @@ internal class GitUtil(
     val workingDir: File
 ) {
     private val log by logger()
-    val mainBranchNames: List<String> = listOf("main", "master")
+    private val mainBranchNames: List<String> = listOf("main", "master")
 
     fun openRepository(repoUrl: URL): Git {
         val repoDir = workingDir.resolve(repoUrl.file.trim('/'))
@@ -137,4 +137,10 @@ internal class GitUtil(
             }
         }
     }
+}
+
+fun Git.readFile(objectId: String): String? {
+    val loader = this.repository.open(ObjectId.fromString(objectId))
+        ?: return null
+    return loader.cachedBytes.decodeToString()
 }

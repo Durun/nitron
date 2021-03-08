@@ -12,6 +12,7 @@ import io.github.durun.nitron.util.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import org.eclipse.jgit.api.Git
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -92,7 +93,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val git = GitUtil(workingDir).openRepository(URL(repoUrl))
         log.info { "Opened: $url" }
 
-        val parseUtil = ParseUtil(git, config)
+        val parseUtil = ParseUtil(config)
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId) }
         var count = AtomicInteger(0)
         do {
@@ -102,7 +103,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
             runBlocking(Dispatchers.Default) {
                 jobs.map {
                     async {
-                        processJob(parseUtil, db, it)
+                        processJob(git, parseUtil, db, it)
                         log.info { "Done: $repoUrl ${count.addAndGet(1)} / $jobCount" }
                     }
                 }
@@ -113,8 +114,8 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     }
 
-    private fun processJob(parseUtil: ParseUtil, db: Database, job: ParseJobInfo) {
-        val code = parseUtil.readFile(job.fileObjectId)
+    private fun processJob(git: Git, parseUtil: ParseUtil, db: Database, job: ParseJobInfo) {
+        val code = git.readFile(job.fileObjectId)
             ?: return log.warn { "Can't read file: $job" }
         val langConfig = config.langConfig[job.lang]
             ?: return log.warn { "Can't get language config: $job" }
