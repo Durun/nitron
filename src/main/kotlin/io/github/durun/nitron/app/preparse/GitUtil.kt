@@ -52,94 +52,85 @@ internal class GitUtil(
                 .call()
         }
     }
+}
 
-    /**
-     * @return 組(コミット, 親コミット)のリストです。最初のコミットの親にはnullが入ります。
-     */
-    fun zipCommitWithParent(git: Git): List<Pair<RevCommit, RevCommit?>> {
-        val commitPairs = git.log()
-            .all()
-            .call()
-            .zipWithNext()
-        require(commitPairs.isNotEmpty()) { "Commits are less than 2" }
-        val initialCommit = commitPairs.last().second
-        return commitPairs + listOf(initialCommit to null)
-    }
-
-    fun createCommitInfoSequence(git: Git, filter: (filePath: String) -> Boolean): Sequence<CommitInfo> {
-        return zipCommitWithParent(git).asSequence()
-            .map { (commit, parent) ->
-                CommitInfo(
-                    id = commit.id.name,
-                    message = commit.fullMessage,
-                    date = DateTime(commit.getDate()),
-                    author = commit.authorIdent.name,
-                    files = createFileInfos(git.repository, commit, parent, filter)
-                )
+private fun Repository.createFileInfos(
+    commit: RevCommit,
+    parent: RevCommit?,
+    filter: (filePath: String) -> Boolean
+): Collection<FileInfo> {
+    if (parent != null) {
+        val entries = DiffFormatter(DisabledOutputStream.INSTANCE)
+            .let {
+                it.setRepository(this)
+                it.setDiffComparator(RawTextComparator.DEFAULT)
+                it.isDetectRenames = true
+                val entries = it.scan(parent, commit)
+                it.close()
+                entries
             }
-    }
-    fun createCommitInfo(git: Git, commit: RevCommit, parent: RevCommit?, filter: (filePath: String) -> Boolean): CommitInfo {
-        return CommitInfo(
-            id = commit.id.name,
-            message = commit.fullMessage,
-            date = DateTime(commit.getDate()),
-            author = commit.authorIdent.name,
-            files = createFileInfos(git.repository, commit, parent, filter)
-        )
-    }
-
-    private fun createFileInfos(
-        repository: Repository,
-        commit: RevCommit,
-        parent: RevCommit?,
-        filter: (filePath: String) -> Boolean
-    ): Collection<FileInfo> {
-        if (parent != null) {
-            val entries = DiffFormatter(DisabledOutputStream.INSTANCE)
-                .let {
-                    it.setRepository(repository)
-                    it.setDiffComparator(RawTextComparator.DEFAULT)
-                    it.isDetectRenames = true
-                    val entries = it.scan(parent, commit)
-                    it.close()
-                    entries
+        val reader = this.newObjectReader()
+        return entries
+            .filter { filter(it.newPath) }
+            .map {
+                FileInfo(path = it.newPath, objectId = it.newId.toObjectId()) {
+                    reader.open(it.newId.toObjectId(), Constants.OBJ_BLOB)
+                        .cachedBytes
+                        .decodeToString()
                 }
-            val reader = repository.newObjectReader()
-            return entries
-                .filter { filter(it.newPath) }
-                .map {
-                    FileInfo(path = it.newPath, objectId = it.newId.toObjectId()) {
-                        reader.open(it.newId.toObjectId(), Constants.OBJ_BLOB)
-                            .cachedBytes
-                            .decodeToString()
+            }
+    } else {
+        // if commit is the initial commit
+        val treewalk = TreeWalk(this)
+            .apply {
+                addTree(commit.tree)
+                isRecursive = true
+            }
+        return mutableListOf<FileInfo>().apply {
+            while (treewalk.next()) {
+                val objId = treewalk.getObjectId(0)
+                    .takeIf { filter(treewalk.pathString) }
+                    .takeUnless { it == ObjectId.zeroId() }
+                val info = objId?.let {
+                    FileInfo(path = treewalk.pathString, objectId = it) {
+                        this@createFileInfos.open(it)
+                            .cachedBytes.decodeToString()
                     }
                 }
-        } else {
-            // if commit is the initial commit
-            val treewalk = TreeWalk(repository)
-                .apply {
-                    addTree(commit.tree)
-                    isRecursive = true
-                }
-            return mutableListOf<FileInfo>().apply {
-                while (treewalk.next()) {
-                    val objId = treewalk.getObjectId(0)
-                        .takeIf { filter(treewalk.pathString) }
-                        .takeUnless { it == ObjectId.zeroId() }
-                    val info = objId?.let {
-                        FileInfo(path = treewalk.pathString, objectId = it) {
-                            repository.open(it)
-                                .cachedBytes.decodeToString()
-                        }
-                    }
-                    info?.let { add(it) }
-                }
+                info?.let { add(it) }
             }
         }
     }
 }
 
-fun Git.readFile(objectId: String): String? {
+internal fun Git.createCommitInfo(
+    commit: RevCommit,
+    parent: RevCommit?,
+    filter: (filePath: String) -> Boolean
+): CommitInfo {
+    return CommitInfo(
+        id = commit.id.name,
+        message = commit.fullMessage,
+        date = DateTime(commit.getDate()),
+        author = commit.authorIdent.name,
+        files = this.repository.createFileInfos(commit, parent, filter)
+    )
+}
+
+/**
+ * @return 組(コミット, 親コミット)のリストです。最初のコミットの親にはnullが入ります。
+ */
+internal fun Git.zipCommitWithParent(): List<Pair<RevCommit, RevCommit?>> {
+    val commitPairs = this.log()
+        .all()
+        .call()
+        .zipWithNext()
+    require(commitPairs.isNotEmpty()) { "Commits are less than 2" }
+    val initialCommit = commitPairs.last().second
+    return commitPairs + listOf(initialCommit to null)
+}
+
+internal fun Git.readFile(objectId: String): String? {
     val loader = this.repository.open(ObjectId.fromString(objectId))
         ?: return null
     return loader.cachedBytes.decodeToString()
