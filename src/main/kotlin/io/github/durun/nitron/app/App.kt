@@ -15,7 +15,7 @@ class App : CliktCommand() {
 }
 
 fun main(args: Array<String>) {
-	LogLevel = Log.Level.VERBOSE
+	LogLevel = Log.Level.INFO
     App().subcommands(
 		AstPrintCommand(),
 		CodeNormalizeCommand(),
