@@ -17,7 +17,7 @@ object RepositoryTable : IntIdTable("repositories") {
 
 fun RepositoryTable.insertAndGetId(url: URL, langs: List<String>): EntityID<Int> {
     return this.insertAndGetId {
-        it[this.name] = url.file
+        it[this.name] = url.file.trim('/')
         it[this.url] = url.toString()
         it[this.langs] = langs.joinToString(",")
     }
