@@ -119,7 +119,14 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val langConfig = config.langConfig[job.lang]
             ?: return log.warn { "Can't get language config: $job" }
         val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
-            .onFailure { log.warn { "Failed to parse: $job ${it.message}" } }
+            .onFailure {
+                log.warn { "Failed to parse: $job ${it.message}" }
+                synchronized(db) {
+                    transaction(db) {
+                        AstTable.updateContent(job.astId, AstTable.FAILED_TO_PARSE)
+                    }
+                }
+            }
             .getOrNull() ?: return
         synchronized(db) {
             transaction(db) {

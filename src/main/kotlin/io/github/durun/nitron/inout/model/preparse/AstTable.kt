@@ -9,6 +9,8 @@ object AstTable : IntIdTable("asts") {
         .uniqueIndex()
     val language: Column<EntityID<Int>> = reference("language", LanguageTable)
     val content: Column<EntityID<Int>?> = optReference("content", AstContentTable, onDelete = ReferenceOption.SET_NULL)
+
+    val FAILED_TO_PARSE: EntityID<Int> = EntityID(-1, AstContentTable)
 }
 
 fun AstTable.insertAndGetId(
