@@ -9,6 +9,9 @@ import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -69,7 +72,6 @@ class ParseCommand : CliktCommand(name = "preparse") {
     private fun processRepository(dbUtil: DbUtil, url: URL) {
         val db = dbUtil.db
 
-        log.info { "Start: $url" }
         val (repoId, repoUrl) = transaction(db) {
             RepositoryTable
                 .select { RepositoryTable.url eq url.toString() }
@@ -83,23 +85,32 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val parseUtil = ParseUtil(git, config)
 
 
-        val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = 2) }
-        log.info { "Got ${jobs.size} jobs" }
+        do {
+            val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = 500) }
+            log.info { "Got ${jobs.size} jobs" }
 
-        jobs.forEach { job->
-            processJob(parseUtil, db, job)
-        }
+            runBlocking(Dispatchers.Default) {
+                jobs.map { async { processJob(parseUtil, db, it) } }
+                    .map { it.await() }
+            }
+        } while (jobs.isNotEmpty())
+
+
     }
 
     private fun processJob(parseUtil: ParseUtil, db: Database, job: ParseJobInfo) {
         val code = parseUtil.readFile(job.fileObjectId)
-            ?: return log.warn { "Can't read file: ${job.fileObjectId}" }
+            ?: return log.warn { "Can't read file: $job" }
         val langConfig = config.langConfig[job.lang]
-            ?: return log.warn { "Can't get language config: ${job.lang}" }
-        val parsed = parseUtil.parseText(code, job.lang, langConfig)
-        transaction(db) {
-            val contentId = AstContentTable.insertAndGetId(parsed)
-            AstTable.updateContent(job.astId, contentId)
+            ?: return log.warn { "Can't get language config: $job" }
+        val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
+            .onFailure { log.warn { "Failed to parse: $job ${it.message}" } }
+            .getOrNull() ?: return
+        synchronized(db) {
+            transaction(db) {
+                val contentId = AstContentTable.insertIfAbsentAndGetId(parsed)
+                AstTable.updateContent(job.astId, contentId)
+            }
         }
         log.info { "Done: $job" }
     }
