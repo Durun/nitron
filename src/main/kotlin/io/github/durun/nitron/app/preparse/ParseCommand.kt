@@ -40,6 +40,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val log by logger()
 
+    override fun toString(): String = "<preparse $dbFile --repository=$repoUrl>"
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
@@ -61,8 +62,16 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
 
         // parse
-        log.info { "Repository list: $repoUrl" }
-        repoUrl.forEach {
+        val repos = if (allFlag) {
+            transaction(db) {
+                RepositoryTable.selectAll()
+                    .map { URL(it[RepositoryTable.url]) }
+            }
+        } else repoUrl
+
+        log.info { "Repository list: $repos" }
+
+        repos.forEach {
             log.info { "Start repository: $it" }
             processRepository(dbUtil, it)
             log.info { "Done repository: $it" }
