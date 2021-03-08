@@ -16,6 +16,9 @@ fun Collection<Byte>.toMD5(): MD5 = MD5.of(this)
 fun Blob.toMD5(): MD5 = this.getBytes(1, MD5.length).toMD5()
 
 fun MD5.toBlob(): Blob = SerialBlob(this.toByteArray())
+fun ByteArray.toBlob(): Blob = SerialBlob(this)
+
+fun Blob.toByteArray(): ByteArray = this.getBytes(1, length().toInt())
 
 @Serializable(with = MD5.Serializer::class)
 class MD5 private constructor(
