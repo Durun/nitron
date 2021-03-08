@@ -56,6 +56,7 @@ class Extractor(
                 .map { it[AstTable.content] }
                 .firstOrNull()
         } ?: return null
+        if (contentId == AstTable.FAILED_TO_PARSE) return null
         return transaction(db) {
             AstContentTable.select { AstContentTable.id eq contentId }
                 .map { it[AstContentTable.content] }
