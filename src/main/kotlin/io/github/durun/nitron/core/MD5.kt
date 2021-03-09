@@ -22,7 +22,7 @@ fun Blob.toByteArray(): ByteArray = this.getBytes(1, length().toInt())
 
 @Serializable(with = MD5.Serializer::class)
 class MD5 private constructor(
-		private val bytes: ByteArray
+	val bytes: ByteArray
 ) : List<Byte> by bytes.asList() {
 	companion object {
 		const val length: Int = 16
