@@ -31,6 +31,7 @@ class MD5 private constructor(
 		fun of(bytes: ByteArray): MD5 = MD5(bytes.clone())
 		fun of(bytes: Collection<Byte>): MD5 = MD5(bytes.toByteArray())
 
+		@JvmStatic
 		fun digest(input: String): MD5 {
 			return md5.digest(input.toByteArray(Charsets.UTF_8)).toMD5()
 		}
