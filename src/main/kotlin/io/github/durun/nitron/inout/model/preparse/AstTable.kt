@@ -34,7 +34,7 @@ fun AstTable.updateContent(astId: EntityID<Int>, contentId: EntityID<Int>): Int 
 fun AstTable.setNullOnAbsentContent(): Int {
     val deletedContents = AstTable
         .leftJoin(AstContentTable, { content }, { id })
-        .select { AstContentTable.id.isNull() }
+        .select { AstContentTable.id.isNull() and (AstTable.content neq FAILED_TO_PARSE) }
         .adjustSlice { slice(content) }
     return AstTable.update({ content.inSubQuery(deletedContents) }) {
         it[this.content] = null
