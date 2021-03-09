@@ -22,7 +22,7 @@ fun Blob.toByteArray(): ByteArray = this.getBytes(1, length().toInt())
 
 @Serializable(with = MD5.Serializer::class)
 class MD5 private constructor(
-		private val bytes: ByteArray
+	val bytes: ByteArray
 ) : List<Byte> by bytes.asList() {
 	companion object {
 		const val length: Int = 16
@@ -31,6 +31,7 @@ class MD5 private constructor(
 		fun of(bytes: ByteArray): MD5 = MD5(bytes.clone())
 		fun of(bytes: Collection<Byte>): MD5 = MD5(bytes.toByteArray())
 
+		@JvmStatic
 		fun digest(input: String): MD5 {
 			return md5.digest(input.toByteArray(Charsets.UTF_8)).toMD5()
 		}

@@ -49,12 +49,12 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
             val extensions = repo.fileExtensions(config)
             val filter = { path: String -> extensions.any { path.endsWith(it) } }
-            val commitPairs = gitUtil.zipCommitWithParent(git)
+            val commitPairs = git.zipCommitWithParent()
 
             runBlocking(Dispatchers.Default) {
                 val commitInfos = commitPairs.asSequence().mapIndexed { i, (commit, parent) ->
                     async {
-                        val info = gitUtil.createCommitInfo(git, commit, parent, filter)
+                        val info = git.createCommitInfo(commit, parent, filter)
                         if (i % 100 == 0) log.info { "Made commit: $i" }
                         info
                     }

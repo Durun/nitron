@@ -5,6 +5,7 @@ import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.core.toByteArray
+import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import kotlinx.serialization.decodeFromString
 import org.jetbrains.exposed.dao.EntityID
@@ -13,12 +14,19 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.nio.file.Path
 import java.sql.Blob
 
 class Extractor(
     val config: NitronConfig,
     val db: Database
 ) {
+    companion object {
+        fun open(config: NitronConfig, cacheDBFile: Path): Extractor = Extractor(
+            config, db = SQLiteDatabase.connect(cacheDBFile)
+        )
+    }
+
     private fun getLangId(langName: String): EntityID<Int>? {
         return transaction(db) {
             LanguageTable.select { LanguageTable.name eq langName }

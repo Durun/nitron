@@ -1,6 +1,5 @@
-
-group = "io.github.durun"
-version = "0.1-SNAPSHOT"
+group = "io.github.durun.nitron"
+version = "0.1"
 
 plugins {
     `maven-publish`
@@ -79,20 +78,22 @@ java {
 /**
  * Maven Publishing
  */
-publishing {
-    publications {
-        create<MavenPublication>("default") {
-            from(components["java"])
-        }
-    }
-    repositories {
-        maven {
-            url = uri("$buildDir/repository")
-        }
+tasks {
+    val sourcesJar by creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(sourceSets["main"].allSource)
     }
 }
-tasks {
-    build {
-        dependsOn(publish)
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["kotlin"])
+                artifact(tasks["sourcesJar"])
+                groupId = "io.github.durun"
+                artifactId = "nitron"
+                version = project.version.toString()
+            }
+        }
     }
 }

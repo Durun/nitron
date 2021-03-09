@@ -8,11 +8,11 @@ import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.RepositoryTable
+import io.github.durun.nitron.inout.model.preparse.insertIgnoreAndGetId
 import io.github.durun.nitron.util.logger
 import org.eclipse.jgit.api.Git
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insertIgnoreAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
 import java.nio.file.Path
@@ -46,11 +46,10 @@ class RegisterCommand : CliktCommand(name = "preparse-register") {
 	private fun URL.registerRemoteRepository(db: Database) = transaction(db) {
 		val remoteUrl = this@registerRemoteRepository
 		SchemaUtils.createMissingTablesAndColumns(RepositoryTable)
-		RepositoryTable.insertIgnoreAndGetId {
-			it[url] = remoteUrl.toString()
-			it[name] = remoteUrl.file.trim('/')
-			it[langs] = langArgs.joinToString(",")
-		}
+		RepositoryTable.insertIgnoreAndGetId(
+			url = remoteUrl,
+			langs = langArgs
+		)
 			?.let { log.debug { "Wrote: $remoteUrl" } }
 			?: run { log.info { "Already exists: $remoteUrl" } }
 	}

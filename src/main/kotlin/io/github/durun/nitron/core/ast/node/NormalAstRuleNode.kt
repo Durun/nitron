@@ -12,7 +12,10 @@ import kotlinx.serialization.Serializable
 @SerialName("n")
 class NormalAstRuleNode(
         @Contextual
+        @SerialName("t")
         override val type: RuleType,
+
+        @SerialName("s")
         private val text: String? = null
 ) : AstRuleNode {
     /**
