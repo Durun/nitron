@@ -159,6 +159,7 @@ internal class DbUtil(
             .innerJoin(LanguageTable, { AstTable.language }, { id })
             .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
             .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .reversed()
             .take(limit)
             .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }

@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
+import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
@@ -39,6 +40,9 @@ class ParseCommand : CliktCommand(name = "preparse") {
             URL(gitUrl)
         }.multiple()
     private val allFlag: Boolean by option("--all").flag()
+    private val bufferSize: Int by option("-b")
+        .int()
+        .default(1000)
 
     private val log by logger()
 
@@ -97,7 +101,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId) }
         val count = AtomicInteger(0)
         do {
-            val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = 500) }
+            val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize) }
             log.verbose { "Got ${jobs.size} jobs" }
 
             runBlocking(Dispatchers.Default) {
