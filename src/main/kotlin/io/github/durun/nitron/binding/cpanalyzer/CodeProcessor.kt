@@ -19,7 +19,7 @@ class CodeProcessor(
 		config: LangConfig,
 		outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-
+	val nodeTypePool: NodeTypePool
 	private val parser: GenericParser
 	private val nodeBuilder: AstBuildVisitor
 	private val startRule: String
@@ -34,17 +34,18 @@ class CodeProcessor(
 				utilityJavaFiles = config.grammar.utilJavaFilePaths
 		)
 		nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
+		nodeTypePool = nodeBuilder.nodeTypes
 		startRule = config.grammar.startRule
-		splitVisitor = astSplitVisitorOf(types = nodeBuilder.nodeTypes, splitTypes = config.process.splitConfig.splitRules)
-		ignoreVisitor = astIgnoreVisitorOf(types = nodeBuilder.nodeTypes, ignoreTypes = config.process.normalizeConfig.ignoreRules)
+		splitVisitor = astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
+		ignoreVisitor = astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
 		normalizer = astNormalizeVisitorOf(
 				nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
 				numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
-				types = nodeBuilder.nodeTypes)
+				types = nodeTypePool)
 
 		recorder = outputPath?.let {
 			JsonCodeRecorder(
-					nodeTypePool = nodeBuilder.nodeTypes,
+					nodeTypePool = nodeTypePool,
 					destination = it
 			)
 		}
