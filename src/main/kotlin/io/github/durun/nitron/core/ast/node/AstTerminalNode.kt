@@ -15,17 +15,20 @@ class AstTerminalNode(
         /**
          * トークン
          */
+        @SerialName("s")
         var token: String,
 
         /**
          * 終端規則
          */
         @Contextual
+        @SerialName("t")
         override val type: TokenType,
 
         /**
          * 元のソースコードとの対応位置
          */
+        @SerialName("l")
         val line: Int
 ) : AstNode {
     @Deprecated("use type", ReplaceWith("type.name"))

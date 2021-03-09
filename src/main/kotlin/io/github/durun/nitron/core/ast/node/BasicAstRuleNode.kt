@@ -9,7 +9,10 @@ import kotlinx.serialization.Serializable
 @SerialName("r")
 class BasicAstRuleNode(
         @Contextual
+        @SerialName("t")
         override val type: RuleType,
+
+        @SerialName("c")
         override var children: List<AstNode>
 ) : AstRuleNode {
     override fun getText(): String {
