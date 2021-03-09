@@ -81,9 +81,11 @@ class Extractor(
     }
 
     fun getAst(checksum: String, langName: String, types: NodeTypePool): AstNode? {
-        val langId: EntityID<Int> = getLangId(langName) ?: return null
-        val fileId: EntityID<Int> = getFileId(checksum) ?: return null
-        val blob: Blob = getBlob(langId, fileId) ?: return null
+        val blob: Blob = synchronized(db) {
+            val langId: EntityID<Int>? = getLangId(langName)
+            val fileId: EntityID<Int>? = getFileId(checksum)
+            langId?.let { fileId?.let { getBlob(langId, fileId) } }
+        } ?: return null
         val json = blob.toByteArray().ungzip()
         return AstSerializers.json(types).decodeFromString(json)
     }

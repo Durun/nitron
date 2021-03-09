@@ -16,89 +16,99 @@ import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import java.nio.file.Path
 
 class CodeProcessor(
-		config: LangConfig,
-		outputPath: Path? = null    // TODO recording feature should be separated
+    config: LangConfig,
+    outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-	val nodeTypePool: NodeTypePool
-	private val parser: GenericParser
-	private val nodeBuilder: AstBuildVisitor
-	private val startRule: String
-	private val splitVisitor: AstVisitor<List<AstNode>>
-	private val ignoreVisitor: AstVisitor<AstNode?>
-	private val normalizer: AstNormalizeVisitor
-	private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
+    val nodeTypePool: NodeTypePool
+    private val parser: GenericParser
+    private val nodeBuilder: AstBuildVisitor
+    private val startRule: String
+    private val splitVisitor: ThreadLocal<AstVisitor<List<AstNode>>>
+    private val ignoreVisitor: AstVisitor<AstNode?>
+    private val normalizer: ThreadLocal<AstNormalizeVisitor>
+    private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
 
-	init {
-		parser = GenericParser.fromFiles(
-				grammarFiles = config.grammar.grammarFilePaths,
-				utilityJavaFiles = config.grammar.utilJavaFilePaths
-		)
-		nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
-		nodeTypePool = nodeBuilder.nodeTypes
-		startRule = config.grammar.startRule
-		splitVisitor = astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
-		ignoreVisitor = astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
-		normalizer = astNormalizeVisitorOf(
-				nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
-				numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
-				types = nodeTypePool)
+    init {
+        parser = GenericParser.fromFiles(
+            grammarFiles = config.grammar.grammarFilePaths,
+            utilityJavaFiles = config.grammar.utilJavaFilePaths
+        )
+        nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
+        nodeTypePool = nodeBuilder.nodeTypes
+        startRule = config.grammar.startRule
+        ignoreVisitor =
+            astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
 
-		recorder = outputPath?.let {
-			JsonCodeRecorder(
-					nodeTypePool = nodeTypePool,
-					destination = it
-			)
-		}
-	}
+        splitVisitor = object : ThreadLocal<AstVisitor<List<AstNode>>>() {
+            override fun initialValue() =
+                astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
+        }
 
-	fun parse(input: String): AstNode {
-		val tree = parser.parse(input.reader(), startRule)
-		return tree.accept(nodeBuilder)
-	}
+        normalizer = object : ThreadLocal<AstNormalizeVisitor>() {
+            override fun initialValue() =
+                astNormalizeVisitorOf(
+                    nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
+                    numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
+                    types = nodeTypePool
+                )
+        }
 
-	fun split(input: AstNode): List<AstNode> {
-		return input.accept(splitVisitor)
-	}
+        recorder = outputPath?.let {
+            JsonCodeRecorder(
+                nodeTypePool = nodeTypePool,
+                destination = it
+            )
+        }
+    }
 
-	fun split(input: String): List<AstNode> {
-		val ast = parse(input)
-		return split(ast)
-	}
+    fun parse(input: String): AstNode {
+        val tree = parser.parse(input.reader(), startRule)
+        return tree.accept(nodeBuilder)
+    }
 
-	private fun dropIgnore(input: AstNode): AstNode? {
-		return input
-				.accept(ignoreVisitor)
-	}
+    fun split(input: AstNode): List<AstNode> {
+        return input.accept(splitVisitor.get())
+    }
 
-	private fun normalize(input: AstNode): AstNode {
-		return normalizer.normalize(input)
-	}
+    fun split(input: String): List<AstNode> {
+        val ast = parse(input)
+        return split(ast)
+    }
 
-	fun proceess(input: AstNode): AstNode? {
-		return dropIgnore(input)
-				?.let { normalize(it) }
-	}
+    private fun dropIgnore(input: AstNode): AstNode? {
+        return input
+            .accept(ignoreVisitor)
+    }
 
-	fun proceess(input: List<AstNode>): List<AstNode> {
-		return input.mapNotNull { proceess(it) }
-	}
+    private fun normalize(input: AstNode): AstNode {
+        return normalizer.get().normalize(input)
+    }
 
-	@Deprecated("This method can return incorrect result.")
-	fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
-		return input.map {
-			it to proceess(it)
-		}
-	}
+    fun proceess(input: AstNode): AstNode? {
+        return dropIgnore(input)
+            ?.let { normalize(it) }
+    }
 
-	fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated
-		(recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
-				.write(asts)
-	}
+    fun proceess(input: List<AstNode>): List<AstNode> {
+        return input.mapNotNull { proceess(it) }
+    }
+
+    @Deprecated("This method can return incorrect result.")
+    fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
+        return input.map {
+            it to proceess(it)
+        }
+    }
+
+    fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated
+        (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
+            .write(asts)
+    }
 }
 
 class JsonCodeRecorder(
-        private val nodeTypePool: NodeTypePool,
-        destination: Path
+    private val nodeTypePool: NodeTypePool,
+    destination: Path
 ) {
     private val writer: StructuresJsonWriter
 
@@ -117,6 +127,6 @@ class JsonCodeRecorder(
             Structure(nodeTypePool, it)
         }
         merge(structures)
-                ?.let { writer.write(it) }
+            ?.let { writer.write(it) }
     }
 }
