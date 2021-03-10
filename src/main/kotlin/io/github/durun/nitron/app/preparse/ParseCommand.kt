@@ -2,6 +2,7 @@ package io.github.durun.nitron.app.preparse
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
@@ -32,25 +33,34 @@ class ParseCommand : CliktCommand(name = "preparse") {
     private val workingDir: File by option("--dir")
         .file(folderOkay = true, fileOkay = false)
         .defaultLazy { Path.of("tmp").toFile() }
-    private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
+    private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
         .path(writable = true)
+        .multiple()
+
     private val repoUrl: List<URL> by option("--repository", help = "Git repository name (owner/project)")
         .convert {
             val gitUrl = if (it.endsWith(".git")) it else "$it.git"
             URL(gitUrl)
         }.multiple()
-    private val allFlag: Boolean by option("--all").flag()
     private val bufferSize: Int by option("-b")
         .int()
         .default(1000)
 
     private val log by logger()
 
-    override fun toString(): String = "<preparse $dbFile --repository=$repoUrl>"
+    override fun toString(): String = "<preparse $dbFiles --repository=$repoUrl>"
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
-        processOneDB(dbFile)
+        dbFiles.forEach { dbFile->
+            runCatching {
+                log.info { "Start DB=$dbFile" }
+                processOneDB(dbFile)
+            }.onFailure {
+                it.printStackTrace()
+            }
+            log.info { "Finish DB=$dbFile" }
+        }
     }
 
     @kotlin.io.path.ExperimentalPathApi
@@ -74,12 +84,12 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
 
         // parse
-        val repos = if (allFlag) {
+        val repos = repoUrl.ifEmpty {   // if empty, all repositories
             transaction(db) {
                 RepositoryTable.selectAll()
                     .map { URL(it[RepositoryTable.url]) }
             }
-        } else repoUrl
+        }
 
         log.info { "Repository list: $repos" }
 
