@@ -34,6 +34,14 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val log by logger()
 
     override fun run() {
+        runCatching {
+            processOneDB(dbFile)
+        }.onFailure {
+            it.printStackTrace()
+        }
+    }
+
+    private fun processOneDB(dbFile: Path) {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
         val gitUtil = GitUtil(workingDir)
