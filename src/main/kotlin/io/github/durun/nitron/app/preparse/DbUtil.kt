@@ -128,15 +128,11 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
-        log.info { "Counting files." }
-        val fileCount = transaction(db) {
-            FileTable.selectAll().count()
-        }
         var count = 0
         transaction(db) {
             FileTable.selectAll()
                 .forEach {
-                    if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count / $fileCount" }
+                    if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count" }
                     val path = it[FileTable.path]
                     val langName = detectLangFromExtension(path, config)
                     val langId = langs[langName]!!
