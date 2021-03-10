@@ -128,6 +128,7 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
+        log.info { "Counting files." }
         val fileCount = transaction(db) {
             FileTable.selectAll().count()
         }
@@ -135,6 +136,7 @@ internal class DbUtil(
         transaction(db) {
             FileTable.selectAll()
                 .forEach {
+                    if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count / $fileCount" }
                     val path = it[FileTable.path]
                     val langName = detectLangFromExtension(path, config)
                     val langId = langs[langName]!!
@@ -144,7 +146,6 @@ internal class DbUtil(
                         it[language] = langId
                     }
                     count++
-                    if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count / $fileCount" }
                 }
         }
         log.info { "Inserted 'asts' rows" }
