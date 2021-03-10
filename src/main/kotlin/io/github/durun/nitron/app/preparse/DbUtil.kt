@@ -128,26 +128,24 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
-        val files = transaction(db) {
-            FileTable.selectAll().asIterable()
-                .map {
+        val fileCount = transaction(db) {
+            FileTable.selectAll().count()
+        }
+        var count = 0
+        transaction(db) {
+            FileTable.selectAll()
+                .forEach {
                     val path = it[FileTable.path]
                     val langName = detectLangFromExtension(path, config)
-                    FileRowInfo(
-                        fileId = it[FileTable.id],
-                        commitId = it[FileTable.commit],
-                        langId = langs[langName],
-                        path = path
-                    )
+                    val langId = langs[langName]!!
+                    val fileId = it[FileTable.id]
+                    AstTable.insertIgnore {
+                        it[file] = fileId
+                        it[language] = langId
+                    }
+                    count++
+                    if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count / $fileCount" }
                 }
-        }
-        log.info { "Collected file rows" }
-
-        transaction(db) {
-            AstTable.batchInsert(files.filter { it.langId != null }, ignore = true) {
-                this[AstTable.file] = it.fileId
-                this[AstTable.language] = it.langId!!
-            }
         }
         log.info { "Inserted 'asts' rows" }
     }
