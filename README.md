@@ -19,10 +19,21 @@ Build executable into `build/libs/nitron-$version-all.jar`
 .\gradlew shadowJar
 ```
 
-
 ## Usage
 
 ### Normalize Java code
+
 ```shell
 java -jar nitron.jar normalize --config config/lang/java.json code.java
+```
+
+### Make cache of parsetrees
+
+```shell
+preparse-register  cache.db --lang kotlin --remote https://github.com/owner/repository
+
+preparse-fetch cache.db --dir tmp
+
+preparse cache.db --dir tmp --repository https://github.com/owner/repository
+# OR > preparse cache.db --dir tmp --all
 ```
