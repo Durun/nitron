@@ -2,6 +2,7 @@ package io.github.durun.nitron.app.preparse
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
@@ -24,8 +25,9 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val workingDir: File by option("--dir")
         .file(folderOkay = true, fileOkay = false)
         .defaultLazy { Path.of("tmp").toFile() }
-    private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
+    private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
         .path(writable = true)
+        .multiple()
 
     private val bufferSize: Int by option("-b")
         .int()
@@ -34,10 +36,14 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val log by logger()
 
     override fun run() {
-        runCatching {
-            processOneDB(dbFile)
-        }.onFailure {
-            it.printStackTrace()
+        dbFiles.forEach { dbFile ->
+            runCatching {
+                log.info { "Start DB=$dbFile" }
+                processOneDB(dbFile)
+            }.onFailure {
+                it.printStackTrace()
+            }
+            log.info { "Finish DB=$dbFile" }
         }
     }
 
