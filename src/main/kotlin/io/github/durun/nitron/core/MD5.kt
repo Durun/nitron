@@ -80,12 +80,12 @@ class MD5 private constructor(
 
 private fun lowerBitsToChar(i: Int): Char {
     return when (i and 0xF) {
-        0xA -> 'A'
-        0xB -> 'B'
-        0xC -> 'C'
-        0xD -> 'D'
-        0xE -> 'E'
-        0xF -> 'F'
+        0xA -> 'a'
+        0xB -> 'b'
+        0xC -> 'c'
+        0xD -> 'd'
+        0xE -> 'e'
+        0xF -> 'f'
         else -> '0' + i
     }
 }
