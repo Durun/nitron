@@ -128,27 +128,26 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
-        val files = transaction(db) {
-            FileTable.selectAll().asIterable()
-                .map {
-                    val path = it[FileTable.path]
-                    val langName = detectLangFromExtension(path, config)
-                    FileRowInfo(
-                        fileId = it[FileTable.id],
-                        commitId = it[FileTable.commit],
-                        langId = langs[langName],
-                        path = path
-                    )
-                }
-        }
-        log.info { "Collected file rows" }
-
-        transaction(db) {
-            AstTable.batchInsert(files.filter { it.langId != null }, ignore = true) {
-                this[AstTable.file] = it.fileId
-                this[AstTable.language] = it.langId!!
+        var count = 0
+        do {
+            val processed = transaction(db) {
+                FileTable.selectAll()
+                    .limit(10000, count)
+                    .onEach {
+                        if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count" }
+                        val path = it[FileTable.path]
+                        val langName = detectLangFromExtension(path, config)
+                        val langId = langs[langName]!!
+                        val fileId = it[FileTable.id]
+                        AstTable.insertIgnore {
+                            it[file] = fileId
+                            it[language] = langId
+                        }
+                        count++
+                    }
+                    .count()
             }
-        }
+        } while (0 < processed)
         log.info { "Inserted 'asts' rows" }
     }
 
@@ -159,8 +158,8 @@ internal class DbUtil(
             .innerJoin(LanguageTable, { AstTable.language }, { id })
             .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
             .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .limit(limit)
             .reversed()
-            .take(limit)
             .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }
 

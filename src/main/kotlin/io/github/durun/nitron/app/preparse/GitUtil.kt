@@ -64,7 +64,7 @@ private fun Repository.createFileInfos(
             .let {
                 it.setRepository(this)
                 it.setDiffComparator(RawTextComparator.DEFAULT)
-                it.isDetectRenames = true
+                it.isDetectRenames = false
                 val entries = it.scan(parent, commit)
                 it.close()
                 entries

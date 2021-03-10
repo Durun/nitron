@@ -56,13 +56,14 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.info { "Available languages: ${config.langConfig.keys}" }
         config.langConfig.entries.forEach { (name, config) ->
             check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
-            log.verbose { "Language check OK: $name" }
         }
+        log.info { "Language check OK" }
 
         // list asts table
         dbUtil.prepareAstTable(config)
 
         // normalize
+        log.info { "Normalizing 'asts' table" }
         transaction(db) {
             AstTable.setNullOnAbsentContent()
         }

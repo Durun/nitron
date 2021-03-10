@@ -10,6 +10,7 @@ import kotlinx.serialization.encoding.Encoder
 import java.security.MessageDigest
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
+import kotlin.experimental.and
 
 fun ByteArray.toMD5(): MD5 = MD5.of(this)
 fun Collection<Byte>.toMD5(): MD5 = MD5.of(this)
@@ -19,6 +20,10 @@ fun MD5.toBlob(): Blob = SerialBlob(this.toByteArray())
 fun ByteArray.toBlob(): Blob = SerialBlob(this)
 
 fun Blob.toByteArray(): ByteArray = this.getBytes(1, length().toInt())
+
+
+private const val LO_MASK: Byte = 0x0F
+private const val HI_MASK: Byte = 0xF0.toByte()
 
 @Serializable(with = MD5.Serializer::class)
 class MD5 private constructor(
@@ -41,11 +46,9 @@ class MD5 private constructor(
         require(bytes.size == length)
     }
 
-    override fun toString(): String = String.format(
-        "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-        bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
-        bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
-    )
+    override fun toString(): String {
+        return bytes.joinToString("") { it.toHexString() }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -73,4 +76,34 @@ class MD5 private constructor(
             return bytes.toMD5()
         }
     }
+}
+
+private fun lowerBitsToChar(i: Int): Char {
+    return when (i and 0xF) {
+        0x0 -> '0'
+        0x1 -> '1'
+        0x2 -> '2'
+        0x3 -> '3'
+        0x4 -> '4'
+        0x5 -> '5'
+        0x6 -> '6'
+        0x7 -> '7'
+        0x8 -> '8'
+        0x9 -> '9'
+        0xA -> 'a'
+        0xB -> 'b'
+        0xC -> 'c'
+        0xD -> 'd'
+        0xE -> 'e'
+        0xF -> 'f'
+        else -> throw IllegalStateException("Can't convert $i to hex expression")
+    }
+}
+
+private fun Byte.toHexString(): String {
+    val lo = (this and LO_MASK).toInt()         // 0x0F
+    val hi = (this and HI_MASK).toInt() / 0x10  // 0xF0
+    val loChar = lowerBitsToChar(lo)
+    val hiChar = lowerBitsToChar(hi)
+    return "$hiChar$loChar"
 }
