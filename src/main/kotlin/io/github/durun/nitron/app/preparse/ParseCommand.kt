@@ -50,6 +50,11 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
+        processOneDB(dbFile)
+    }
+
+    @kotlin.io.path.ExperimentalPathApi
+    private fun processOneDB(dbFile: Path) {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
 
