@@ -80,13 +80,23 @@ class MD5 private constructor(
 
 private fun lowerBitsToChar(i: Int): Char {
     return when (i and 0xF) {
+        0x0 -> '0'
+        0x1 -> '1'
+        0x2 -> '2'
+        0x3 -> '3'
+        0x4 -> '4'
+        0x5 -> '5'
+        0x6 -> '6'
+        0x7 -> '7'
+        0x8 -> '8'
+        0x9 -> '9'
         0xA -> 'a'
         0xB -> 'b'
         0xC -> 'c'
         0xD -> 'd'
         0xE -> 'e'
         0xF -> 'f'
-        else -> '0' + i
+        else -> throw IllegalStateException("Can't convert $i to hex expression")
     }
 }
 
