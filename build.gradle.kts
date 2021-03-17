@@ -9,7 +9,7 @@ plugins {
 
     application
 
-    id("org.jetbrains.dokka") version "1.4.20"
+    id("org.jetbrains.dokka") version "1.4.30"
 
     // for making fatJar
     id("com.github.johnrengelman.shadow") version "6.1.0"
