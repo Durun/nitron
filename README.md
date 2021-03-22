@@ -5,20 +5,29 @@ A multilingual code normalizer application/library.
 ## How to run
 
 1. Clone this repository
+
    __*Don't forget '--recursive' option.__
     ```
     git clone --recursive https://github.com/Durun/nitron.git
     ```
-1. Prepare JAR file Build manually as `gradlew shadowJar`
-   or [download JAR file here](https://github.com/Durun/nitron/releases/download/0.1-SNAPSHOT/nitron.jar)
-1. Place the config files Copy [config directory](https://github.com/Durun/nitron/tree/master/config) into the same
-   directory with `nitron.jar`. As below
+
+1. Prepare JAR file
+    - Build manually as `gradlew shadowJar`
+    - Or [download JAR file here](https://github.com/Durun/nitron/releases/download/0.1-SNAPSHOT/nitron.jar)
+
+1. Place the config files
+
+   Copy [config directory](https://github.com/Durun/nitron/tree/master/config) into the same directory with `nitron.jar`
+   . As below
     ```
     WorkingDir/
     ├ config/
     └ nitron.jar
     ```
-1. Run the JAR Run `java -jar nitron.jar [COMMAND] [OPTIONS] [ARGS]`
+
+1. Run the JAR file
+
+   Run `java -jar nitron.jar [COMMAND] [OPTIONS] [ARGS]`
    **on JVM 11 or higher**
 
 ## Command reference
