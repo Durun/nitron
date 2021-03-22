@@ -25,6 +25,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private val workingDir: File by option("--dir")
         .file(folderOkay = true, fileOkay = false)
         .defaultLazy { Path.of("tmp").toFile() }
+    private val branch: String? by option("--branch")
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
         .path(writable = true)
         .multiple()
@@ -50,7 +51,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     private fun processOneDB(dbFile: Path) {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
-        val gitUtil = GitUtil(workingDir)
+        val gitUtil = GitUtil(workingDir, branch)
 
         val repos = dbUtil.getRepositoryInfos()
         log.info { "Fetch list:\n${repos.joinToString("\n").prependIndent("\t")}" }
