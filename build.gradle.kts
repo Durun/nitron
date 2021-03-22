@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     // Versions
-    val antlrVersion = "4.9.1"
+    val antlrVersion = "4.9.2"
     val inmemantlrVersion = "1.7.0"
     val kotestVersion = "4.4.3"
     val cliktVersion = "2.4.0"
