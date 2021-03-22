@@ -28,7 +28,7 @@ dependencies {
     val sqliteJdbcVersion = "3.34.0"
     val exposedVersion = "0.17.9"
     val kotlinSerializationVersion = "1.0.1"
-    val jgitVersion = "5.10.0.202012080955-r"
+    val jgitVersion = "5.11.0.202103091610-r"
     val kotlinCoroutineVersion = "1.4.3"
 
     // This dependency is used by the application.
