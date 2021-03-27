@@ -3,6 +3,7 @@ package io.github.durun.nitron.core.ast.visitor
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import org.apache.commons.text.StringEscapeUtils
 
 object AstXmlBuildVisitor : AstVisitor<String> {
     override fun visit(node: AstNode): String {
@@ -18,6 +19,7 @@ object AstXmlBuildVisitor : AstVisitor<String> {
 
     override fun visitTerminal(node: AstTerminalNode): String {
         val tag = node.type.name
-        return "<$tag>${node.token}</$tag>"
+        val value = StringEscapeUtils.escapeXml10(node.token)
+        return """<$tag>$value</$tag>"""
     }
 }
