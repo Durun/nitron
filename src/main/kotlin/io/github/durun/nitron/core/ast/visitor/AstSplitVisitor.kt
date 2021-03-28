@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 
@@ -30,7 +31,10 @@ abstract class AstSplitVisitor : AstVisitor<List<AstNode>> {
                 .filter { it.isNotEmpty() }
                 .map { newChildren ->
                     if (hasSplitRule(newChildren.firstOrNull())) newChildren.first()
-                    else node.copyWithChildren(newChildren)
+                    else when (node) {
+                        is BasicAstRuleNode -> BasicAstRuleNode(node.type, newChildren.toMutableList())
+                        else -> node
+                    }
                 }
     }
 

@@ -19,10 +19,6 @@ class BasicAstRuleNode(
         return children.joinToString(" ") { it.getText() }
     }
 
-    override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
-        return BasicAstRuleNode(type, children.toMutableList())
-    }
-
     override fun copy() = BasicAstRuleNode(type, children.map { it.copy() }.toMutableList())
 
     override fun toString(): String = getText()

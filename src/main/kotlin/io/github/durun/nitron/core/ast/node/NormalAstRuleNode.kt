@@ -33,10 +33,6 @@ class NormalAstRuleNode(
 
     override fun copy() = NormalAstRuleNode(type, text)
 
-    override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
-        return this
-    }
-
     override fun toString(): String = getText()
 
     override fun equals(other: Any?): Boolean {
