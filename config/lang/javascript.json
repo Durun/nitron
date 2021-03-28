@@ -28,38 +28,6 @@
       "indexedMapping": {
         "Identifier": "$V"
       },
-      "nonNumberedRuleMap": [
-        {
-          "fromRules": [
-            "StringLiteral"
-          ],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": [
-            "TemplateStringLiteral"
-          ],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": ["numericLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["bigintLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["BooleanLiteral"],
-          "toSymbol": "$L"
-        }
-      ],
-      "numberedRuleMap": [
-        {
-          "fromRules": ["Identifier"],
-          "toSymbol": "$V"
-        }
-      ],
       "ignoreRules": [
         "importStatement",
         "EOF"

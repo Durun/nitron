@@ -21,37 +21,6 @@
 			"indexedMapping": {
 				"atom/NAME": "$V"
 			},
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": [
-						"STRING"
-					],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": [
-						"NUMBER"
-					],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["INDENT"],
-					"toSymbol": "INDENT"
-				},
-				{
-					"fromRules": ["DEDENT"],
-					"toSymbol": "DEDENT"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"atom",
-						"NAME"
-					],
-					"toSymbol": "$V"
-				}
-			],
 			"ignoreRules": [
 				"import_stmt",
 				"pass_stmt",

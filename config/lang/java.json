@@ -31,46 +31,6 @@
 				"variableDeclaratorId": "$V",
 				"typeName": "$V"
 			},
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": [
-						"StringLiteral"
-					],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": [
-						"CharacterLiteral"
-					],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["IntegerLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["FloatingPointLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["BooleanLiteral"],
-					"toSymbol": "$L"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["expressionName"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": ["variableDeclaratorId"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": ["typeName"],
-					"toSymbol": "$V"
-				}
-			],
 			"ignoreRules": [
 				"annotation",
 				"packageDeclaration",

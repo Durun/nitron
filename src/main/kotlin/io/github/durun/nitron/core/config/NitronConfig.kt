@@ -1,7 +1,6 @@
 package io.github.durun.nitron.core.config
 
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
 
@@ -73,17 +72,7 @@ data class SplitConfig(
 
 @Serializable
 data class NormalizeConfig(
-    @SerialName("nonNumberedRuleMap")
-    val nonNumberedRuleMapConfig: List<RuleMapConfig>,
-    @SerialName("numberedRuleMap")
-    val numberedRuleMapConfig: List<RuleMapConfig>,
     val mapping: Map<String, String>,
     val indexedMapping: Map<String, String>,
     val ignoreRules: List<String>
-)
-
-@Serializable
-data class RuleMapConfig(
-        val fromRules: List<String>,
-        val toSymbol: String
 )

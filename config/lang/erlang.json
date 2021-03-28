@@ -24,30 +24,6 @@
 			"indexedMapping": {
 				"tokVar": "$V"
 			},
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": [
-						"tokString"
-					],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": [
-						"tokChar"
-					],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["tokFloat"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["tokVar"],
-					"toSymbol": "$V"
-				}
-			],
 			"ignoreRules": [
 				"EOF"
 			]

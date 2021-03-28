@@ -23,30 +23,6 @@
 			"indexedMapping": {
 				"postfix_expression/primary_expression/IDENTIFIER": "$V"
 			},
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": [
-						"STRING_LITERAL"
-					],
-					"toSymbol": "'S'"
-				},
-				{
-					"fromRules": [
-						"CONSTANT"
-					],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"postfix_expression",
-						"primary_expression",
-						"IDENTIFIER"
-					],
-					"toSymbol": "$V"
-				}
-			],
 			"ignoreRules": [
 				"EOF"
 			]

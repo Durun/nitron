@@ -26,46 +26,6 @@
       "indexedMapping": {
         "ID": "$V"
       },
-      "nonNumberedRuleMap": [
-        {
-          "fromRules": [
-            "STRING"
-          ],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": [
-            "HEX"
-          ],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["INT"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["FLOAT"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["COMPLEX"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["'TRUE'"],
-          "toSymbol": "$L"
-        },
-        {
-          "fromRules": ["'FALSE'"],
-          "toSymbol": "$L"
-        }
-      ],
-      "numberedRuleMap": [
-        {
-          "fromRules": ["ID"],
-          "toSymbol": "$V"
-        }
-      ],
       "ignoreRules": [
         "EOF"
       ]

@@ -33,52 +33,6 @@
 				"identifier_pattern/declaration_identifier": "$V",
 				"function_call_argument/label_identifier": "$V"
 			},
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": [
-						"string_literal"
-					],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": [
-						"numeric_literal"
-					],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["boolean_literal"],
-					"toSymbol": "$L"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["variable_name"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"postfix_expression",
-						"primary_expression",
-						"declaration_identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"identifier_pattern",
-						"declaration_identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"function_call_argument",
-						"label_identifier"
-					],
-					"toSymbol": "$V"
-				}
-			],
 			"ignoreRules": [
 				"import_declaration",
 				"EOF"
