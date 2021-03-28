@@ -4,7 +4,6 @@ import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.path.AstPath
 import io.github.durun.nitron.core.ast.processors.AstNormalizer
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
@@ -25,8 +24,6 @@ class CodeProcessor(
     private val nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
     val nodeTypePool: NodeTypePool = nodeBuilder.nodeTypes
     private val startRule: String = config.grammar.startRule
-    private val ignoreVisitor =
-        astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
     private val splitVisitor = ThreadLocal.withInitial {
         astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
     }
@@ -64,11 +61,6 @@ class CodeProcessor(
     fun split(input: String): List<AstNode> {
         val ast = parse(input)
         return split(ast)
-    }
-
-    private fun dropIgnore(input: AstNode): AstNode? {
-        return input
-            .accept(ignoreVisitor)
     }
 
     private fun normalize(input: AstNode): AstNode? {
