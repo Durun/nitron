@@ -21,11 +21,12 @@ class AstNormalizer(
 				}
 			}
 		}
-		val count: MutableMap<String, Int> = mutableMapOf()
+		val nameTables: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
 		numberedMapping.entries.forEach { (path, symbol) ->
 			path.replaceNode(root = copied) {
-				val n = count[symbol] ?: 0
-				count[symbol] = n + 1
+				val table = nameTables.computeIfAbsent(symbol) { mutableMapOf() }
+				val name = it.getText()
+				val n = table.computeIfAbsent(name) { table.size }
 				when (it) {
 					is AstRuleNode -> NormalAstRuleNode(it.type, "$symbol$n")
 					is AstTerminalNode -> it.replaceToken("$symbol$n")
