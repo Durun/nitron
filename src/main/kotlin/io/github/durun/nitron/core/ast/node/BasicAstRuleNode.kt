@@ -13,7 +13,7 @@ class BasicAstRuleNode(
         override val type: RuleType,
 
     @SerialName("c")
-    override var children: MutableList<AstNode>
+    override val children: MutableList<AstNode>
 ) : AstRuleNode {
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
