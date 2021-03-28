@@ -1,12 +1,13 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.path.AstPath
+import io.github.durun.nitron.core.ast.processors.AstNormalizer
+import io.github.durun.nitron.core.ast.processors.AstProcessor
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
 import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
-import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
-import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.GenericParser
@@ -25,7 +26,7 @@ class CodeProcessor(
     private val startRule: String
     private val splitVisitor: ThreadLocal<AstVisitor<List<AstNode>>>
     private val ignoreVisitor: AstVisitor<AstNode?>
-    private val normalizer: ThreadLocal<AstNormalizeVisitor>
+    private val normalizer: ThreadLocal<AstProcessor<AstNode>>
     private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
 
     init {
@@ -44,13 +45,17 @@ class CodeProcessor(
                 astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
         }
 
-        normalizer = object : ThreadLocal<AstNormalizeVisitor>() {
-            override fun initialValue() =
-                astNormalizeVisitorOf(
-                    nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
-                    numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
-                    types = nodeTypePool
+        normalizer = object : ThreadLocal<AstProcessor<AstNode>>() {
+            override fun initialValue(): AstNormalizer {
+                return AstNormalizer(
+                    mapping = config.process.normalizeConfig.nonNumberedRuleMap.entries.associate { (rules, symbol) ->
+                        AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+                    },
+                    numberedMapping = config.process.normalizeConfig.numberedRuleMap.entries.associate { (rules, symbol) ->
+                        AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+                    }
                 )
+            }
         }
 
         recorder = outputPath?.let {
@@ -81,7 +86,7 @@ class CodeProcessor(
     }
 
     private fun normalize(input: AstNode): AstNode {
-        return normalizer.get().normalize(input)
+        return normalizer.get().process(input)
     }
 
     fun proceess(input: AstNode): AstNode? {
