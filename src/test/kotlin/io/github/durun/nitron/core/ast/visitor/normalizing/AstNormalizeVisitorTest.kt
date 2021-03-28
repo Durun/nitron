@@ -11,10 +11,11 @@ import java.nio.file.Paths
 class AstNormalizeVisitorTest : FreeSpec({
 	val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
 	val parser = GenericParser.fromFiles(config.grammar.grammarFilePaths, config.grammar.utilJavaFilePaths)
+	val javaAst = parser.parse(javaCode.reader(), config.grammar.startRule)
+		.accept(AstBuildVisitor("java", parser.antlrParser))
 
 	"simple path" {
-		val ast = parser.parse(javaCode.reader(), config.grammar.startRule)
-			.accept(AstBuildVisitor("java", parser.antlrParser))
+		val ast = javaAst.copy()
 		println(ast)
 		val normalizer = astNormalizeVisitorOf(
 			types = nodeTypePoolOf("java", parser.antlrParser),
@@ -26,8 +27,7 @@ class AstNormalizeVisitorTest : FreeSpec({
 		normalized.toString() shouldBe normalizedCode1
 	}
 	"path ifThenStatement/expression" {
-		val ast = parser.parse(javaCode.reader(), config.grammar.startRule)
-			.accept(AstBuildVisitor("java", parser.antlrParser))
+		val ast = javaAst.copy()
 		println(ast)
 		val normalizer = astNormalizeVisitorOf(
 			types = nodeTypePoolOf("java", parser.antlrParser),
