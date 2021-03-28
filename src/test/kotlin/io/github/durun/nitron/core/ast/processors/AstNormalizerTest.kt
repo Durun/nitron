@@ -43,11 +43,11 @@ class AstNormalizerTest : FreeSpec({
 private const val javaCode = """
 public class HelloWorld { 
    public static void main(String[] args) { 
-      if (false) x = y + 1;
+      if (false) x = y * x + 1;
    }
 } 
 """
 private const val normalizedCode1 =
-	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( false ) V0 = V1 + N ; } } <EOF>"""
+	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( false ) V0 = V1 * V0 + N ; } } <EOF>"""
 private const val normalizedCode2 =
-	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( COND ) x = y + 1 ; } } <EOF>"""
+	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( COND ) x = y * x + 1 ; } } <EOF>"""
