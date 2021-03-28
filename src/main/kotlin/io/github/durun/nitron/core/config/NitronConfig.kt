@@ -1,6 +1,5 @@
 package io.github.durun.nitron.core.config
 
-import io.github.durun.nitron.core.ast.visitor.normalizing.NormalizingRuleMap
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -81,20 +80,13 @@ data class NormalizeConfig(
 
         val ignoreRules: List<String>
 ) {
-    private fun toRuleMap(list: List<RuleMapConfig>): NormalizingRuleMap {
-        return NormalizingRuleMap(
-                ruleMap = list
-                        .map {
-                            it.fromRules to it.toSymbol
-                        }.toMap()
-        )
+    val nonNumberedRuleMap: Map<List<String>, String> by lazy {
+        nonNumberedRuleMapConfig.associate { it.fromRules to it.toSymbol }
     }
 
-    val nonNumberedRuleMap: NormalizingRuleMap
-        get() = toRuleMap(nonNumberedRuleMapConfig)
-
-    val numberedRuleMap: NormalizingRuleMap
-        get() = toRuleMap(numberedRuleMapConfig)
+    val numberedRuleMap: Map<List<String>, String> by lazy {
+        numberedRuleMapConfig.associate { it.fromRules to it.toSymbol }
+    }
 }
 
 @Serializable
