@@ -40,22 +40,20 @@ class CodeProcessor(
         ignoreVisitor =
             astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
 
-        splitVisitor = object : ThreadLocal<AstVisitor<List<AstNode>>>() {
-            override fun initialValue() =
-                astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
+        splitVisitor = ThreadLocal.withInitial {
+            astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
         }
 
-        normalizer = object : ThreadLocal<AstProcessor<AstNode>>() {
-            override fun initialValue(): AstNormalizer {
-                return AstNormalizer(
-                    mapping = config.process.normalizeConfig.nonNumberedRuleMap.entries.associate { (rules, symbol) ->
-                        AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
-                    },
-                    numberedMapping = config.process.normalizeConfig.numberedRuleMap.entries.associate { (rules, symbol) ->
-                        AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
-                    }
-                )
-            }
+
+        normalizer = ThreadLocal.withInitial {
+            AstNormalizer(
+                mapping = config.process.normalizeConfig.nonNumberedRuleMap.entries.associate { (rules, symbol) ->
+                    AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+                },
+                numberedMapping = config.process.normalizeConfig.numberedRuleMap.entries.associate { (rules, symbol) ->
+                    AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+                }
+            )
         }
 
         recorder = outputPath?.let {
