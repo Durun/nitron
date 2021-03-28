@@ -22,13 +22,28 @@
 			]
 		},
 		"normalizeConfig": {
+			"mapping": {
+				"string_literal": "\"S\"",
+				"numeric_literal": "N",
+				"boolean_literal": "$L"
+			},
+			"indexedMapping": {
+				"variable_name": "$V",
+				"postfix_expression/primary_expression/declaration_identifier": "$V",
+				"identifier_pattern/declaration_identifier": "$V",
+				"function_call_argument/label_identifier": "$V"
+			},
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": ["string_literal"],
+					"fromRules": [
+						"string_literal"
+					],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": ["numeric_literal"],
+					"fromRules": [
+						"numeric_literal"
+					],
 					"toSymbol": "N"
 				},
 				{

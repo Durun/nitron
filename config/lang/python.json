@@ -12,13 +12,26 @@
 			"splitRules": ["stmt"]
 		},
 		"normalizeConfig": {
+			"mapping": {
+				"STRING": "\"S\"",
+				"NUMBER": "N",
+				"INDENT": "INDENT",
+				"DEDENT": "DEDENT"
+			},
+			"indexedMapping": {
+				"atom/NAME": "$V"
+			},
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": ["STRING"],
+					"fromRules": [
+						"STRING"
+					],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": ["NUMBER"],
+					"fromRules": [
+						"NUMBER"
+					],
 					"toSymbol": "N"
 				},
 				{

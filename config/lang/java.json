@@ -19,13 +19,29 @@
 			]
 		},
 		"normalizeConfig": {
+			"mapping": {
+				"StringLiteral": "\"S\"",
+				"CharacterLiteral": "'C'",
+				"IntegerLiteral": "N",
+				"FloatingPointLiteral": "N",
+				"BooleanLiteral": "$L"
+			},
+			"indexedMapping": {
+				"expressionName": "$V",
+				"variableDeclaratorId": "$V",
+				"typeName": "$V"
+			},
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": ["StringLiteral"],
+					"fromRules": [
+						"StringLiteral"
+					],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": ["CharacterLiteral"],
+					"fromRules": [
+						"CharacterLiteral"
+					],
 					"toSymbol": "'C'"
 				},
 				{

@@ -14,13 +14,27 @@
 			"splitRules": ["statement"]
 		},
 		"normalizeConfig": {
+			"mapping": {
+				"stringLiteral": "\"S\"",
+				"CharacterLiteral": "'C'",
+				"IntegerLiteral": "N",
+				"RealLiteral": "N"
+			},
+			"indexedMapping": {
+				"atomicExpression/simpleIdentifier": "$V",
+				"variableDeclaration/simpleIdentifier": "$V"
+			},
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": ["stringLiteral"],
+					"fromRules": [
+						"stringLiteral"
+					],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": ["CharacterLiteral"],
+					"fromRules": [
+						"CharacterLiteral"
+					],
 					"toSymbol": "'C'"
 				},
 				{

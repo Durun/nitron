@@ -16,13 +16,25 @@
 			]
 		},
 		"normalizeConfig": {
+			"mapping": {
+				"tokString": "\"S\"",
+				"tokChar": "'C'",
+				"tokFloat": "N"
+			},
+			"indexedMapping": {
+				"tokVar": "$V"
+			},
 			"nonNumberedRuleMap": [
 				{
-					"fromRules": ["tokString"],
+					"fromRules": [
+						"tokString"
+					],
 					"toSymbol": "\"S\""
 				},
 				{
-					"fromRules": ["tokChar"],
+					"fromRules": [
+						"tokChar"
+					],
 					"toSymbol": "'C'"
 				},
 				{

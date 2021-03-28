@@ -14,13 +14,29 @@
       ]
     },
     "normalizeConfig": {
+      "mapping": {
+        "STRING": "\"S\"",
+        "HEX": "N",
+        "INT": "N",
+        "FLOAT": "N",
+        "COMPLEX": "N",
+        "'TRUE'": "$L",
+        "'FALSE'": "$L"
+      },
+      "indexedMapping": {
+        "ID": "$V"
+      },
       "nonNumberedRuleMap": [
         {
-          "fromRules": ["STRING"],
+          "fromRules": [
+            "STRING"
+          ],
           "toSymbol": "\"S\""
         },
         {
-          "fromRules": ["HEX"],
+          "fromRules": [
+            "HEX"
+          ],
           "toSymbol": "N"
         },
         {
