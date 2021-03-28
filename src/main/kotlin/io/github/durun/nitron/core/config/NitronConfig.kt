@@ -73,21 +73,14 @@ data class SplitConfig(
 
 @Serializable
 data class NormalizeConfig(
-        @SerialName("nonNumberedRuleMap")
-        val nonNumberedRuleMapConfig: List<RuleMapConfig>,
-        @SerialName("numberedRuleMap")
-        val numberedRuleMapConfig: List<RuleMapConfig>,
-
-        val ignoreRules: List<String>
-) {
-    val nonNumberedRuleMap: Map<List<String>, String> by lazy {
-        nonNumberedRuleMapConfig.associate { it.fromRules to it.toSymbol }
-    }
-
-    val numberedRuleMap: Map<List<String>, String> by lazy {
-        numberedRuleMapConfig.associate { it.fromRules to it.toSymbol }
-    }
-}
+    @SerialName("nonNumberedRuleMap")
+    val nonNumberedRuleMapConfig: List<RuleMapConfig>,
+    @SerialName("numberedRuleMap")
+    val numberedRuleMapConfig: List<RuleMapConfig>,
+    val mapping: Map<String, String>,
+    val indexedMapping: Map<String, String>,
+    val ignoreRules: List<String>
+)
 
 @Serializable
 data class RuleMapConfig(

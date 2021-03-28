@@ -32,11 +32,11 @@ class CodeProcessor(
     }
     private val normalizer = ThreadLocal.withInitial {
         AstNormalizer(
-            mapping = config.process.normalizeConfig.nonNumberedRuleMap.entries.associate { (rules, symbol) ->
-                AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+            mapping = config.process.normalizeConfig.mapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, nodeTypePool) to symbol
             },
-            numberedMapping = config.process.normalizeConfig.numberedRuleMap.entries.associate { (rules, symbol) ->
-                AstPath.of(rules.joinToString("/"), nodeTypePool) to symbol
+            numberedMapping = config.process.normalizeConfig.indexedMapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, nodeTypePool) to symbol
             }
         )
     }
