@@ -7,10 +7,9 @@ import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
 import io.github.durun.nitron.core.ast.type.RuleType
 import io.github.durun.nitron.core.ast.type.TokenType
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.shouldBe
 
 class AstXmlBuildVisitorTest : FreeSpec({
-    fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toList())
+    fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toMutableList())
     fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode(text, type, line)
     fun nodeOf(type: RuleType, text: String) = NormalAstRuleNode(type, text)
 

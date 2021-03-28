@@ -29,7 +29,7 @@ class AstBuildVisitor(
         val rule = nodeTypes.getRuleType(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
         return BasicAstRuleNode(
                 type = rule,
-                children = children
+                children = children.toMutableList()
         )
     }
 
