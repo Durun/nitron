@@ -1,9 +1,6 @@
 package io.github.durun.nitron.core.ast.processors
 
-import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.node.AstRuleNode
-import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.node.*
 import io.github.durun.nitron.core.ast.path.AstPath
 
 class AstNormalizer(
@@ -15,6 +12,7 @@ class AstNormalizer(
 		var copied: AstNode? = ast.copy()
 		ignoreRules.forEach {
 			copied = it.removeNode(copied ?: return null)
+				?.removeEmptyNode()
 		}
 		mapping.entries.forEach { (path, symbol) ->
 			copied = path.replaceNode(root = copied ?: return null) {
@@ -37,5 +35,17 @@ class AstNormalizer(
 		is AstRuleNode -> NormalAstRuleNode(type, text)
 		is AstTerminalNode -> replaceToken(text)
 		else -> throw IllegalStateException()
+	}
+
+	private fun AstNode.removeEmptyNode(): AstNode? = when (this) {
+		is BasicAstRuleNode -> {
+			if (children.isEmpty()) null
+			else {
+				children.removeIf { it.removeEmptyNode() == null }
+				if (children.isEmpty()) null
+				else this
+			}
+		}
+		else -> this
 	}
 }
