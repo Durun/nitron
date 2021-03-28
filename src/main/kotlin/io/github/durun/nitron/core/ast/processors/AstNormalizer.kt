@@ -14,11 +14,7 @@ class AstNormalizer(
 		val copied = ast.copy()
 		mapping.entries.forEach { (path, symbol) ->
 			path.replaceNode(root = copied) {
-				when (it) {
-					is AstRuleNode -> NormalAstRuleNode(it.type, symbol)
-					is AstTerminalNode -> it.replaceToken(symbol)
-					else -> throw IllegalStateException()
-				}
+				it.normalizeTo(symbol)
 			}
 		}
 		val nameTables: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
@@ -27,13 +23,15 @@ class AstNormalizer(
 				val table = nameTables.computeIfAbsent(symbol) { mutableMapOf() }
 				val name = it.getText()
 				val n = table.computeIfAbsent(name) { table.size }
-				when (it) {
-					is AstRuleNode -> NormalAstRuleNode(it.type, "$symbol$n")
-					is AstTerminalNode -> it.replaceToken("$symbol$n")
-					else -> throw IllegalStateException()
-				}
+				it.normalizeTo("$symbol$n")
 			}
 		}
 		return copied
+	}
+
+	private fun AstNode.normalizeTo(text: String): AstNode = when (this) {
+		is AstRuleNode -> NormalAstRuleNode(type, text)
+		is AstTerminalNode -> replaceToken(text)
+		else -> throw IllegalStateException()
 	}
 }
