@@ -14,4 +14,6 @@ interface AstRuleNode : AstNode {
     fun copyWithChildren(children: List<AstNode>): AstRuleNode
 
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitRule(this)
+
+    override fun copy(): AstRuleNode
 }

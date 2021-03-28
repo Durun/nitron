@@ -28,6 +28,8 @@ class BasicAstRuleNode(
         return BasicAstRuleNode(type, children)
     }
 
+    override fun copy() = BasicAstRuleNode(type, children.map { it.copy() })
+
     override fun toString(): String = getText()
 
     override fun equals(other: Any?): Boolean {
