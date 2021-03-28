@@ -37,6 +37,9 @@ class CodeProcessor(
             },
             numberedMapping = config.process.normalizeConfig.indexedMapping.entries.associate { (path, symbol) ->
                 AstPath.of(path, nodeTypePool) to symbol
+            },
+            ignoreRules = config.process.normalizeConfig.ignoreRules.map {
+                AstPath.of(it, nodeTypePool)
             }
         )
     }
@@ -68,13 +71,12 @@ class CodeProcessor(
             .accept(ignoreVisitor)
     }
 
-    private fun normalize(input: AstNode): AstNode {
+    private fun normalize(input: AstNode): AstNode? {
         return normalizer.get().process(input)
     }
 
     fun proceess(input: AstNode): AstNode? {
-        return dropIgnore(input)
-            ?.let { normalize(it) }
+        return normalize(input)
     }
 
     fun proceess(input: List<AstNode>): List<AstNode> {
