@@ -3,14 +3,14 @@ package io.github.durun.nitron.core.ast.visitor.normalizing
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.ParserStore
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 
 class AstNormalizeVisitorTest : FreeSpec({
 	val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
-	val parser = GenericParser.fromFiles(config.grammar.grammarFilePaths, config.grammar.utilJavaFilePaths)
+	val parser = ParserStore.getOrThrow(config.grammar)
 	val javaAst = parser.parse(javaCode.reader(), config.grammar.startRule)
 		.accept(AstBuildVisitor("java", parser.antlrParser))
 
