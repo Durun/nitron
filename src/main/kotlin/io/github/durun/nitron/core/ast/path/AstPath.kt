@@ -79,15 +79,22 @@ private class AstXPath(expression: String) : AstPath() {
 	}
 
 	override fun removeNode(root: AstNode): AstNode? {
-		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
-		nodes.forEach {
-			val path = it.getIndexPath().drop(1)
-			if (path.isEmpty()) return null
-			val parent = root.resolve(path.dropLast(1)) as BasicAstRuleNode
-			val childIndex = path.last()
-			parent.children.removeAt(childIndex)
+		selectWithParent(root).sortedByDescending { (_, n) -> n }.forEach { (parent, childIndex) ->
+			if (parent == null) return null
+			else parent.children.removeAt(childIndex)
 		}
 		return root
+	}
+
+	private fun selectWithParent(root: AstNode): List<Pair<BasicAstRuleNode?, Int>> {
+		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
+		return nodes.map {
+			val path = it.getIndexPath().drop(1)
+			if (path.isEmpty()) return@map null to 0
+			val parent = root.resolve(path.dropLast(1)) as BasicAstRuleNode
+			val childIndex = path.last()
+			parent to childIndex
+		}
 	}
 
 	private fun NodeList.toList(): List<Node> = (0 until this.length).map { item(it) }
