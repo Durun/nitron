@@ -1,15 +1,11 @@
 package io.github.durun.nitron.core.ast.visitor.normalizing
 
 import io.github.durun.nitron.core.InvalidTypeException
-import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.node.AstRuleNode
-import io.github.durun.nitron.core.ast.node.AstTerminalNode
-import io.github.durun.nitron.core.ast.node.NormalAstRuleNode
+import io.github.durun.nitron.core.ast.node.*
 import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @param [nonNumberedRuleMap] 番号を付けない正規化対応付け
@@ -52,13 +48,16 @@ abstract class AstNormalizeVisitor: AstVisitor<AstNode> {
         enterTree(node)
         val newText = normalizeIfNeeded(node)
         val newNode = newText
-                ?.let {
-                    NormalAstRuleNode(originalNode = node, text = newText)
+            ?.let {
+                NormalAstRuleNode(originalNode = node, text = newText)
+            }
+            ?: node.let { node ->
+                check(node is BasicAstRuleNode)
+                node.children.forEachIndexed { i, it ->
+                    node.children[i] = it.accept(this)
                 }
-                ?: node.let {
-                    val children = node.children.orEmpty().map { it.accept(this) }
-                    node.replaceChildren(children)
-                }
+                node
+            }
         leaveTree(node)
         return newNode
     }

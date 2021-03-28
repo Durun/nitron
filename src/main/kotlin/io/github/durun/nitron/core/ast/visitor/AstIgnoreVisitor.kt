@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.InvalidTypeException
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
+import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeType
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 
@@ -21,9 +22,12 @@ abstract class AstIgnoreVisitor : AstVisitor<AstNode?> {
         return if (shouldIgnore(node))
             null
         else {
-            val children = node.children?.mapNotNull { it.accept(this) }
-            if (children.isNullOrEmpty()) null
-            else node.replaceChildren(children)
+            if (node is BasicAstRuleNode) {
+                node.children.removeIf {
+                    it.accept(this) == null
+                }
+            }
+            node.takeIf { it.children?.isNotEmpty() ?: false }
         }
     }
 
