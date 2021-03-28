@@ -122,7 +122,7 @@ private class SimpleAstPath(
 
 	override fun removeNode(root: AstNode): AstNode? {
 		if (root.type == type) return null
-		selectWithParent(root).forEach { (parent, childIndex) ->
+		selectWithParent(root).sortedByDescending { (_, n) -> n }.forEach { (parent, childIndex) ->
 			check(parent is BasicAstRuleNode)
 			parent.children.removeAt(childIndex)
 		}
