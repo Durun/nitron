@@ -31,7 +31,20 @@ abstract class AstPath {
 	}
 
 	abstract fun select(ast: AstNode): List<AstNode>
-	abstract fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode)
+
+	/**
+	 * [root]を根とする構文木から、XPathの指すノードを[replacement]に従って置換します。
+	 * 置換対象が根の場合は置換後の根を返します。
+	 * このメソッドは[root]に変更を与えます。
+	 */
+	abstract fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode): AstNode
+
+	/**
+	 * [root]を根とする構文木から、XPathの指すノードを削除します。
+	 * 削除対象が根の場合はnullを返します。
+	 * このメソッドは[root]に変更を与えます。
+	 */
+	abstract fun removeNode(root: AstNode): AstNode?
 }
 
 private class AstXPath(expression: String) : AstPath() {
@@ -53,14 +66,28 @@ private class AstXPath(expression: String) : AstPath() {
 		}
 	}
 
-	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode) {
+	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode): AstNode {
 		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
 		nodes.forEach {
 			val path = it.getIndexPath().drop(1)
+			if (path.isEmpty()) return replacement(root)
 			val parent = root.resolve(path.dropLast(1)) as BasicAstRuleNode
 			val childIndex = path.last()
 			parent.children[childIndex] = replacement(parent.children[childIndex])
 		}
+		return root
+	}
+
+	override fun removeNode(root: AstNode): AstNode? {
+		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
+		nodes.forEach {
+			val path = it.getIndexPath().drop(1)
+			if (path.isEmpty()) return null
+			val parent = root.resolve(path.dropLast(1)) as BasicAstRuleNode
+			val childIndex = path.last()
+			parent.children.removeAt(childIndex)
+		}
+		return root
 	}
 
 	private fun NodeList.toList(): List<Node> = (0 until this.length).map { item(it) }
@@ -84,10 +111,22 @@ private class SimpleAstPath(
 		TODO("Not yet implemented")
 	}
 
-	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode) {
+	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode): AstNode {
+		if (root.type == type) return replacement(root)
 		selectWithParent(root).forEach { (parent, childIndex) ->
-			if (parent is BasicAstRuleNode) parent.children[childIndex] = replacement(parent.children[childIndex])
+			check(parent is BasicAstRuleNode)
+			parent.children[childIndex] = replacement(parent.children[childIndex])
 		}
+		return root
+	}
+
+	override fun removeNode(root: AstNode): AstNode? {
+		if (root.type == type) return null
+		selectWithParent(root).forEach { (parent, childIndex) ->
+			check(parent is BasicAstRuleNode)
+			parent.children.removeAt(childIndex)
+		}
+		return root
 	}
 
 	private fun selectWithParent(ast: AstNode): List<Pair<AstNode, Int>> {

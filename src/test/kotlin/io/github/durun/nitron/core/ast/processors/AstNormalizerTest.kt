@@ -21,7 +21,8 @@ class AstNormalizerTest : FreeSpec({
 		println(ast)
 		val normalizer = AstNormalizer(
 			mapOf(AstPath.of("IntegerLiteral", types) to "N"),
-			numberedMapping = mapOf(AstPath.of("//expressionName", types) to "V")
+			numberedMapping = mapOf(AstPath.of("//expressionName", types) to "V"),
+			ignoreRules = listOf(AstPath.of("EOF", types))
 		)
 		val normalized = normalizer.process(ast)
 		println(normalized)
@@ -32,7 +33,8 @@ class AstNormalizerTest : FreeSpec({
 		println(ast)
 		val normalizer = AstNormalizer(
 			mapOf(AstPath.of("//ifThenStatement/expression") to "COND"),
-			numberedMapping = emptyMap()
+			numberedMapping = emptyMap(),
+			ignoreRules = listOf()
 		)
 		val normalized = normalizer.process(ast)
 		println(normalized)
@@ -48,6 +50,6 @@ public class HelloWorld {
 } 
 """
 private const val normalizedCode1 =
-	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( false ) V0 = V1 * V0 + N ; } } <EOF>"""
+	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( false ) V0 = V1 * V0 + N ; } }"""
 private const val normalizedCode2 =
 	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( COND ) x = y * x + 1 ; } } <EOF>"""
