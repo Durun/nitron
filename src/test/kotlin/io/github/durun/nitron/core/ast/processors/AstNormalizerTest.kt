@@ -20,8 +20,8 @@ class AstNormalizerTest : FreeSpec({
 		val ast = javaAst.copy()
 		println(ast)
 		val normalizer = AstNormalizer(
-			mapOf(AstPath.fromOneType(types.getType("IntegerLiteral")!!) to "N"),
-			numberedMapping = mapOf(AstPath.fromXPath("//expressionName") to "V")
+			mapOf(AstPath.of("IntegerLiteral", types) to "N"),
+			numberedMapping = mapOf(AstPath.of("//expressionName", types) to "V")
 		)
 		val normalized = normalizer.process(ast)
 		println(normalized)
@@ -31,7 +31,7 @@ class AstNormalizerTest : FreeSpec({
 		val ast = javaAst.copy()
 		println(ast)
 		val normalizer = AstNormalizer(
-			mapOf(AstPath.fromXPath("//ifThenStatement/expression") to "COND"),
+			mapOf(AstPath.of("//ifThenStatement/expression") to "COND"),
 			numberedMapping = emptyMap()
 		)
 		val normalized = normalizer.process(ast)

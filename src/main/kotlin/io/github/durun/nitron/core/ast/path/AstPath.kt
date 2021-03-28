@@ -3,6 +3,7 @@ package io.github.durun.nitron.core.ast.path
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeType
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.visitor.AstXmlBuildVisitor
 import org.jaxen.dom.DOMXPath
 import org.w3c.dom.Node
@@ -11,12 +12,21 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class AstPath {
 	companion object {
-		fun fromXPath(expression: String): AstPath {
+		private fun fromXPath(expression: String): AstPath {
 			return AstXPath(expression)
 		}
 
-		fun fromOneType(type: NodeType): AstPath {
+		private fun fromOneType(type: NodeType): AstPath {
 			return SimpleAstPath(type)
+		}
+
+		fun of(expression: String, types: NodeTypePool): AstPath {
+			return types.getType(expression.trim('/'))?.let { fromOneType(it) }
+				?: fromXPath(expression)
+		}
+
+		fun of(expression: String): AstPath {
+			return fromXPath(expression)
 		}
 	}
 
