@@ -3,8 +3,8 @@ package io.github.durun.nitron.binding.cpanalyzer
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.path.AstPath
 import io.github.durun.nitron.core.ast.processors.AstNormalizer
+import io.github.durun.nitron.core.ast.processors.AstSplitter
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.GenericParser
@@ -24,8 +24,8 @@ class CodeProcessor(
     private val nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
     val nodeTypePool: NodeTypePool = nodeBuilder.nodeTypes
     private val startRule: String = config.grammar.startRule
-    private val splitVisitor = ThreadLocal.withInitial {
-        astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
+    private val splitter = ThreadLocal.withInitial {
+        AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
     }
     private val normalizer = ThreadLocal.withInitial {
         AstNormalizer(
@@ -55,7 +55,7 @@ class CodeProcessor(
     }
 
     fun split(input: AstNode): List<AstNode> {
-        return input.accept(splitVisitor.get())
+        return splitter.get().process(input)
     }
 
     fun split(input: String): List<AstNode> {
