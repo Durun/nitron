@@ -43,68 +43,80 @@ private constructor(
 				utilityJavaFiles: Collection<Path> = emptySet(),
 				toolCustomizer: Tool.() -> Unit = {}
 		): GenericParser {
-			val tool = InmemantlrTool()
-					.apply(toolCustomizer)
-					.apply {
-						val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
-						// NOTE: Don't change order of sortGrammarByTokenVocab()
-						sorted.forEach {
-							LOGGER.debug("gast ${it.grammarName}")
-							createPipeline(it)
-						}
-					}
-			check(tool.pipelines.isNotEmpty())
-			return GenericParser(tool, utilityJavaFiles)
-		}
+            val tool = InmemantlrTool()
+                .apply(toolCustomizer)
+                .apply {
+                    val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
+                    // NOTE: Don't change order of sortGrammarByTokenVocab()
+                    sorted.forEach {
+                        LOGGER.debug("gast ${it.grammarName}")
+                        createPipeline(it)
+                    }
+                }
+            check(tool.pipelines.isNotEmpty())
+            return GenericParser(tool, utilityJavaFiles)
+        }
 
-		/**
-		 * Instantiate [GenericParser] with files
-		 * @param grammarFiles paths to grammar(.g4) files
-		 * @param utilityJavaFiles paths to utility(.java) files
-		 */
-		fun fromFiles(
-				grammarFiles: Collection<Path>,
-				utilityJavaFiles: Collection<Path> = emptySet(),
-				toolCustomizer: Tool.() -> Unit = {}
-		): GenericParser = init(grammarFiles.map { it.toFile().readText() }, utilityJavaFiles, toolCustomizer)
-	}
+        /**
+         * Instantiate [GenericParser] with files
+         * @param grammarFiles paths to grammar(.g4) files
+         * @param utilityJavaFiles paths to utility(.java) files
+         */
+        fun fromFiles(
+            grammarFiles: Collection<Path>,
+            utilityJavaFiles: Collection<Path> = emptySet(),
+            toolCustomizer: Tool.() -> Unit = {}
+        ): GenericParser = init(grammarFiles.map { it.toFile().readText() }, utilityJavaFiles, toolCustomizer)
+    }
 
-	private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
-	private val compiler: StringCompiler by lazy {
-		LOGGER.debug("compile")
-		val cUnits: Set<CunitProvider> = setOfNotNull(fileProvider.takeIf { it.hasItems() }) +
-				antlr.compilationUnits
-		StringCompiler().apply { compile(cUnits, compilerOptions) }
-	}
-	private val streamProvider: StreamProvider = DefaultStreamProvider()
-	private val fileProvider: FileProvider = FileProvider().apply {
-		utilityJavaFiles.forEach {
-			val name = it.toFile().nameWithoutExtension
-			val content = it.toFile().readText()
-			LOGGER.debug("add utility ")
-			addFiles(MemorySource(name, content))
-		}
-	}
-	private val listener = DefaultListener()
-	private val activeLexer: String
+    private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
 
-	init {
-		LOGGER.debug("process")
-		antlr.pipelines.flatMap { it.items }.forEach {
-			LOGGER.debug("${it.name} $it")
-		}
-		val (parser, lexer) = antlr.process()
-		activeLexer = lexer
-	}
+    // Non thread-local
+    private val masterCompilerObj by lazy {
+        LOGGER.debug("compile")
+        val cUnits: Set<CunitProvider> = setOfNotNull(fileProvider.takeIf { it.hasItems() }) + antlr.compilationUnits
+        StringCompiler()
+            .apply { compile(cUnits, compilerOptions) }
+            .allCompiledObjects
+    }
 
-	/**
-	 * internal parser
-	 * @see Parser
-	 */
-	val antlrParser: Parser by lazy {
-		antlr.pipelines.asSequence().mapNotNull {
-			runCatching {
-				loadParser(
+    // Thread-local
+    private val compiler: ThreadLocal<StringCompiler> by lazy {
+        ThreadLocal.withInitial {
+            StringCompiler()
+                .apply { load(masterCompilerObj) }
+        }
+    }
+
+    private val streamProvider: StreamProvider = DefaultStreamProvider()
+    private val fileProvider: FileProvider = FileProvider().apply {
+        utilityJavaFiles.forEach {
+            val name = it.toFile().nameWithoutExtension
+            val content = it.toFile().readText()
+            LOGGER.debug("add utility ")
+            addFiles(MemorySource(name, content))
+        }
+    }
+    private val listener = DefaultListener()
+    private val activeLexer: String
+
+    init {
+        LOGGER.debug("process")
+        antlr.pipelines.flatMap { it.items }.forEach {
+            LOGGER.debug("${it.name} $it")
+        }
+        val (parser, lexer) = antlr.process()
+        activeLexer = lexer
+    }
+
+    /**
+     * internal parser
+     * @see Parser
+     */
+    val antlrParser: Parser by lazy {
+        antlr.pipelines.asSequence().mapNotNull {
+            runCatching {
+                loadParser(
 						parserName = it.parserName,
 						lexer = loadLexer(input = "".reader(), lexerName = activeLexer)
 				)
@@ -123,36 +135,37 @@ private constructor(
 	 * @throws ParsingException
 	 */
 	fun parse(input: Reader, entryPoint: String): ParserRuleContext {
-		listener.reset()
 
-		val errorListener = InmemantlrErrorListener()
-		val parser = loadParser(
-				parserName = selectParser(entryPoint),
-				lexer = loadLexer(
-						input,
-						lexerName = activeLexer
-				).apply { addErrorListener(errorListener) }
-		).apply { addErrorListener(errorListener) }
+        listener.reset()
 
-		listener.setParser(parser)
+        val errorListener = InmemantlrErrorListener()
+        val parser = loadParser(
+            parserName = selectParser(entryPoint),
+            lexer = loadLexer(
+                input,
+                lexerName = activeLexer
+            ).apply { addErrorListener(errorListener) }
+        ).apply { addErrorListener(errorListener) }
 
-		val rules = parser.ruleNames
-		require(rules.contains(entryPoint))
+        listener.setParser(parser)
 
-		val data: ParserRuleContext = runCatching {
-			val method: Method = parser.javaClass
-					.getDeclaredMethod(entryPoint)
-			method(parser) as ParserRuleContext
-		}.getOrThrow()
+        val rules = parser.ruleNames
+        require(rules.contains(entryPoint))
 
-		val messages = errorListener.log
-				.filterKeys { it == InmemantlrErrorListener.Type.SYNTAX_ERROR }
-				.values
-		if (messages.isNotEmpty()) throw ParsingException(messages.joinToString(""))
+        val data: ParserRuleContext = runCatching {
+            val method: Method = parser.javaClass.getDeclaredMethod(entryPoint)
+            method(parser) as ParserRuleContext
+        }.getOrThrow()
 
-		ParseTreeWalker.DEFAULT.walk(listener, data)
-		return data
-	}
+        val messages = errorListener.log
+            .filterKeys { it == InmemantlrErrorListener.Type.SYNTAX_ERROR }
+            .values
+        if (messages.isNotEmpty()) throw ParsingException(messages.joinToString(""))
+
+        ParseTreeWalker.DEFAULT.walk(listener, data)
+
+        return data
+    }
 
 	private fun selectParser(ruleName: String): String {
 		val p = antlr.pipelines.find {
@@ -162,23 +175,23 @@ private constructor(
 	}
 
 	private fun loadLexer(input: Reader, lexerName: String): Lexer {
-		LOGGER.debug("load lexer $lexerName")
-		val stream: CharStream = streamProvider.getCharStream(input.readText())
-		return compiler.instanciateLexer(stream, lexerName, useCached)
-	}
+        LOGGER.debug("load lexer $lexerName")
+        val stream: CharStream = streamProvider.getCharStream(input.readText())
+        return compiler.get().instanciateLexer(stream, lexerName, useCached)
+    }
 
 	private fun loadParser(lexer: Lexer, parserName: String): Parser {
-		LOGGER.debug("load parser $parserName")
-		val tokens: CommonTokenStream = CommonTokenStream(lexer)
-				.apply { fill() }
-		return (compiler.instanciateParser(tokens, parserName)
-				?: throw IllegalStateException("failed to instantiate parser"))
-				.apply {
-					removeErrorListeners()
-					interpreter.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION
-					buildParseTree = true
-					tokenStream = tokens
-				}
-	}
+        LOGGER.debug("load parser $parserName")
+        val tokens: CommonTokenStream = CommonTokenStream(lexer)
+            .apply { fill() }
+        return (compiler.get().instanciateParser(tokens, parserName)
+            ?: throw IllegalStateException("failed to instantiate parser"))
+            .apply {
+                removeErrorListeners()
+                interpreter.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION
+                buildParseTree = true
+                tokenStream = tokens
+            }
+    }
 }
 
