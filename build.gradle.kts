@@ -26,7 +26,7 @@ dependencies {
     val kotestVersion = "4.4.3"
     val cliktVersion = "2.4.0"
     val sqliteJdbcVersion = "3.34.0"
-    val exposedVersion = "0.17.9"
+    val exposedVersion = "0.17.10"
     val kotlinSerializationVersion = "1.0.1"
     val jgitVersion = "5.11.0.202103091610-r"
     val kotlinCoroutineVersion = "1.4.3"
