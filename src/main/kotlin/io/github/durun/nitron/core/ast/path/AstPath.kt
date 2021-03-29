@@ -21,9 +21,10 @@ abstract class AstPath {
 		}
 
 		fun of(expression: String, types: NodeTypePool): AstPath {
-			return types.getType(expression.trim('/'))?.let { fromOneType(it) }
-				?: fromXPath(expression)
-		}
+            val typeName = if (expression.startsWith('/')) expression.drop(1) else expression
+            return types.getType(typeName)?.let { fromOneType(it) }
+                ?: fromXPath(expression)
+        }
 
 		fun of(expression: String): AstPath {
 			return fromXPath(expression)
