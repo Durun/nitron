@@ -1,6 +1,7 @@
 package io.github.durun.nitron.core.ast.processors
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeType
 
@@ -13,7 +14,7 @@ class AstSplitter(
     }
 
     private fun AstNode.isSelectedBy(): Boolean {
-        return types.any { it == type }
+        return (this is AstRuleNode) && types.any { it == type }
     }
 
     private fun split(ast: AstNode): List<AstNode> = when (ast) {
