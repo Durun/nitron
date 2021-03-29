@@ -14,40 +14,16 @@
 			"splitRules": ["statement"]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["stringLiteral"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["CharacterLiteral"],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["IntegerLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["RealLiteral"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"atomicExpression",
-						"simpleIdentifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"variableDeclaration",
-						"simpleIdentifier"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"stringLiteral": "\"S\"",
+				"CharacterLiteral": "'C'",
+				"IntegerLiteral": "N",
+				"RealLiteral": "N"
+			},
+			"indexedMapping": {
+				"atomicExpression/simpleIdentifier": "$V",
+				"variableDeclaration/simpleIdentifier": "$V"
+			},
 			"ignoreRules": [
 				"annotation",
 				"preamble"

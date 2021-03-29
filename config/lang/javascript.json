@@ -18,34 +18,16 @@
       ]
     },
     "normalizeConfig": {
-      "nonNumberedRuleMap": [
-        {
-          "fromRules": ["StringLiteral"],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": ["TemplateStringLiteral"],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": ["numericLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["bigintLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["BooleanLiteral"],
-          "toSymbol": "$L"
-        }
-      ],
-      "numberedRuleMap": [
-        {
-          "fromRules": ["Identifier"],
-          "toSymbol": "$V"
-        }
-      ],
+      "mapping": {
+        "StringLiteral": "\"S\"",
+        "TemplateStringLiteral": "\"S\"",
+        "numericLiteral": "N",
+        "bigintLiteral": "N",
+        "BooleanLiteral": "$L"
+      },
+      "indexedMapping": {
+        "Identifier": "$V"
+      },
       "ignoreRules": [
         "importStatement",
         "EOF"

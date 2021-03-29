@@ -2,9 +2,9 @@ package io.github.durun.nitron.core.ast.node
 
 import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.core.ast.visitor.AstVisitor
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * 構文木の終端ノード
@@ -45,6 +45,8 @@ class AstTerminalNode(
 
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
+
+    override fun copy(): AstNode = AstTerminalNode(token, type, line)
 
     override fun toString(): String = getText()
 

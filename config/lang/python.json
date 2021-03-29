@@ -12,33 +12,15 @@
 			"splitRules": ["stmt"]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["STRING"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["NUMBER"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["INDENT"],
-					"toSymbol": "INDENT"
-				},
-				{
-					"fromRules": ["DEDENT"],
-					"toSymbol": "DEDENT"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"atom",
-						"NAME"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"STRING": "\"S\"",
+				"NUMBER": "N",
+				"INDENT": "INDENT",
+				"DEDENT": "DEDENT"
+			},
+			"indexedMapping": {
+				"atom/NAME": "$V"
+			},
 			"ignoreRules": [
 				"import_stmt",
 				"pass_stmt",

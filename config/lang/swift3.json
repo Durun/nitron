@@ -22,48 +22,17 @@
 			]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["string_literal"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["numeric_literal"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["boolean_literal"],
-					"toSymbol": "$L"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["variable_name"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"postfix_expression",
-						"primary_expression",
-						"declaration_identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"identifier_pattern",
-						"declaration_identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"function_call_argument",
-						"label_identifier"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"string_literal": "\"S\"",
+				"numeric_literal": "N",
+				"boolean_literal": "$L"
+			},
+			"indexedMapping": {
+				"variable_name": "$V",
+				"postfix_expression/primary_expression/declaration_identifier": "$V",
+				"identifier_pattern/declaration_identifier": "$V",
+				"function_call_argument/label_identifier": "$V"
+			},
 			"ignoreRules": [
 				"import_declaration",
 				"EOF"

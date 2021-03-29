@@ -16,26 +16,14 @@
 			]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["tokString"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["tokChar"],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["tokFloat"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["tokVar"],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"tokString": "\"S\"",
+				"tokChar": "'C'",
+				"tokFloat": "N"
+			},
+			"indexedMapping": {
+				"tokVar": "$V"
+			},
 			"ignoreRules": [
 				"EOF"
 			]

@@ -13,7 +13,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 class BasicAstRuleNodeTest : FreeSpec({
-	fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toList())
+	fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toMutableList())
 	fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode(text, type, line)
 	fun nodeOf(type: RuleType, text: String) = NormalAstRuleNode(type, text)
 
@@ -21,9 +21,10 @@ class BasicAstRuleNodeTest : FreeSpec({
 		val rule = RuleType(1, "Rule")
 		val token = TokenType(2, "Token")
 		val children = arrayOf(
-				nodeOf(token, "text1", 0),
-				nodeOf(rule,
-						nodeOf(token, "text2", 1),
+			nodeOf(token, "text1", 0),
+			nodeOf(
+				rule,
+				nodeOf(token, "text2", 1),
 						nodeOf(token, "text3", 2),
 						nodeOf(rule,
 								nodeOf(token, "text4", 3)
