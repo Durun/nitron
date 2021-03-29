@@ -1,6 +1,5 @@
 package io.github.durun.nitron.core.ast.processors
 
-import io.github.durun.nitron.core.ast.path.AstPath
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.AstBuildVisitor
@@ -21,7 +20,6 @@ class AstSplitterTest : FreeSpec({
         println(ast)
         config.process.splitConfig.splitRules
         val splitter = AstSplitter(
-            config.process.splitConfig.splitRules.map { AstPath.of(it, types) },
             config.process.splitConfig.splitRules.mapNotNull { types.getType(it) }
         )
         val splitted = splitter.process(ast)

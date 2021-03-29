@@ -2,30 +2,23 @@ package io.github.durun.nitron.core.ast.processors
 
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.path.AstPath
 import io.github.durun.nitron.core.ast.type.NodeType
 
 class AstSplitter(
-    private val paths: Collection<AstPath>,
     private val types: Collection<NodeType>
 ) : AstProcessor<List<AstNode>> {
     override fun process(ast: AstNode): List<AstNode> {
         val copied = ast.copy()
-        val selected = paths.flatMap { it.select(copied) }
-        return split(copied, selected)
-    }
-
-    private fun AstNode.isSelectedBy(selected: Collection<AstNode>): Boolean {
-        return selected.any { this === it }
+        return split(copied)
     }
 
     private fun AstNode.isSelectedBy(): Boolean {
         return types.any { it == type }
     }
 
-    private fun split(ast: AstNode, selected: Collection<AstNode>): List<AstNode> = when (ast) {
+    private fun split(ast: AstNode): List<AstNode> = when (ast) {
         is BasicAstRuleNode -> {
-            val children = ast.children.flatMap { split(it, selected) }
+            val children = ast.children.flatMap { split(it) }
             val buf: MutableList<MutableList<AstNode>> = mutableListOf(mutableListOf())
             children.forEach {
                 if (it.isSelectedBy()) buf.add(mutableListOf())
