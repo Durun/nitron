@@ -30,7 +30,8 @@ abstract class AstPath {
 		}
 	}
 
-	abstract fun select(ast: AstNode): List<AstNode>
+    abstract fun select(ast: AstNode): List<AstNode>
+    abstract fun selectPath(ast: AstNode): List<List<Int>>
 
 	/**
 	 * [root]を根とする構文木から、XPathの指すノードを[replacement]に従って置換します。
@@ -58,13 +59,18 @@ private class AstXPath(expression: String) : AstPath() {
 
 	private val xpath = DOMXPath(expression)
 
-	override fun select(ast: AstNode): List<AstNode> {
-		val nodes: List<Node> = xpath.selectNodes(ast.toXml()).filterIsInstance<Node>()
-		return nodes.mapNotNull {
-			val indices = it.getIndexPath()
-			ast.resolve(indices)
-		}
-	}
+    override fun select(ast: AstNode): List<AstNode> {
+        val nodes: List<Node> = xpath.selectNodes(ast.toXml()).filterIsInstance<Node>()
+        return nodes.mapNotNull {
+            val path = it.getIndexPath().drop(1)
+            ast.resolve(path)
+        }
+    }
+
+    override fun selectPath(ast: AstNode): List<List<Int>> {
+        val nodes: List<Node> = xpath.selectNodes(ast.toXml()).filterIsInstance<Node>()
+        return nodes.map { it.getIndexPath().drop(1) }
+    }
 
 	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode): AstNode {
 		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
@@ -114,9 +120,21 @@ private class AstXPath(expression: String) : AstPath() {
 private class SimpleAstPath(
 	private val type: NodeType
 ) : AstPath() {
-	override fun select(ast: AstNode): List<AstNode> {
-		TODO("Not yet implemented")
-	}
+    override fun select(ast: AstNode): List<AstNode> {
+        val selects: MutableList<AstNode> = mutableListOf()
+        val queue = ArrayDeque<AstNode>()
+        queue.add(ast)
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            current.children?.let { queue.addAll(it) }
+            if (current.type == type) selects.add(current)
+        }
+        return selects
+    }
+
+    override fun selectPath(ast: AstNode): List<List<Int>> {
+        TODO()
+    }
 
 	override fun replaceNode(root: AstNode, replacement: (AstNode) -> AstNode): AstNode {
 		if (root.type == type) return replacement(root)
