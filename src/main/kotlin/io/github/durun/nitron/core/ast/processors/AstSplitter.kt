@@ -1,7 +1,6 @@
 package io.github.durun.nitron.core.ast.processors
 
 import io.github.durun.nitron.core.ast.node.AstNode
-import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.path.AstPath
 import io.github.durun.nitron.core.ast.type.NodeType
@@ -24,23 +23,21 @@ class AstSplitter(
         return types.any { it == type }
     }
 
-    private fun split(ast: AstNode, selected: Collection<AstNode>): List<AstNode> {
-        if (ast is AstTerminalNode) return listOf(ast)
-        val children = ast.children?.flatMap { split(it, selected) }
-        val buf: MutableList<MutableList<AstNode>> = mutableListOf(mutableListOf())
-        children?.forEach {
-            if (it.isSelectedBy()) buf.add(mutableListOf())
-            buf.last().add(it)
-            if (it.isSelectedBy()) buf.add(mutableListOf())
-        }
-        return buf
-            .filter { it.isNotEmpty() }
-            .map { newChildren ->
-                if (newChildren.first().isSelectedBy()) newChildren.first()
-                else when (ast) {
-                    is BasicAstRuleNode -> BasicAstRuleNode(ast.type, newChildren.toMutableList())
-                    else -> ast
-                }
+    private fun split(ast: AstNode, selected: Collection<AstNode>): List<AstNode> = when (ast) {
+        is BasicAstRuleNode -> {
+            val children = ast.children.flatMap { split(it, selected) }
+            val buf: MutableList<MutableList<AstNode>> = mutableListOf(mutableListOf())
+            children.forEach {
+                if (it.isSelectedBy()) buf.add(mutableListOf())
+                buf.last().add(it)
+                if (it.isSelectedBy()) buf.add(mutableListOf())
             }
+            buf.filter { it.isNotEmpty() }
+                .map { newChildren ->
+                    if (newChildren.first().isSelectedBy()) newChildren.first()
+                    else BasicAstRuleNode(ast.type, newChildren.toMutableList())
+                }
+        }
+        else -> listOf(ast)
     }
 }
