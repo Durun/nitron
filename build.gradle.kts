@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
     implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutineVersion")
-    implementation("jaxen:jaxen:1.2.0")
+    implementation("jaxen:jaxen:1.2.0-atlassian-2")
     implementation("org.apache.commons:commons-text:1.9")
 
     // Align versions of all Kotlin components
