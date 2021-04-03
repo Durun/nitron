@@ -16,7 +16,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
 import java.sql.Blob
-import java.text.ParseException
 
 class Extractor(
     val config: NitronConfig,
@@ -82,9 +81,9 @@ class Extractor(
     }
 
     fun getAst(checksum: String, langName: String, types: NodeTypePool): AstNode? {
-        val langId: EntityID<Int>? = getLangId(langName)
-        val fileId: EntityID<Int>? = getFileId(checksum)
-        val blob = langId?.let { fileId?.let { getBlob(langId, fileId) } } ?: return null
+        val langId: EntityID<Int> = getLangId(langName) ?: run { println("DB: lang not found: $langName"); return null }
+        val fileId: EntityID<Int> = getFileId(checksum) ?: run { println("DB: file not found: $checksum"); return null }
+        val blob = getBlob(langId, fileId) ?: return null
         val json = blob.toByteArray().ungzip()
         return AstSerializers.json(types).decodeFromString(json)
     }
