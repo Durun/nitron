@@ -170,10 +170,11 @@ class ParseCommand : CliktCommand(name = "preparse") {
 }
 
 private fun String.parseToDateTime(): DateTime {
+    println(this)
     val (day, month, year) = this.split(':').map { it.toInt() }
     val hour = 0
     val min = 0
-    check(day in 1..30)
-    check(month in 1..12)
+    check(day in 1..31) { "Day must be in 1..31" }
+    check(month in 1..12) { "Month must be in 1..12" }
     return DateTime(year, month, day, hour, min)
 }
