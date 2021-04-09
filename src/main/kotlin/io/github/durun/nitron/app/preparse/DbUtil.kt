@@ -133,26 +133,24 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
-        var count = 0
-        do {
-            val processed = transaction(db) {
-                FileTable.selectAll()
-                    .limit(10000, count)
-                    .onEach {
-                        if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count" }
-                        val path = it[FileTable.path]
-                        val langName = detectLangFromExtension(path, config)
-                        val langId = langs[langName]!!
+        langs.entries.forEach { (lang, langId) ->
+            val extensions = config.langConfig[lang]!!.extensions
+            transaction(db) {
+                FileTable.select {  // files with correct extension
+                    extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
+                        expr or (FileTable.path like "%$ext")
+                    }
+                }
+                    .forEachIndexed { i, it ->
+                        if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }
                         val fileId = it[FileTable.id]
                         AstTable.insertIgnore {
                             it[file] = fileId
                             it[language] = langId
                         }
-                        count++
                     }
-                    .count()
             }
-        } while (0 < processed)
+        }
         log.info { "Inserted 'asts' rows" }
     }
 
