@@ -139,7 +139,7 @@ internal class DbUtil(
                 FileTable.select {  // files with correct extension
                     extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
                         expr or (FileTable.path like "%$ext")
-                    }
+                    } and notExists(AstTable.slice(AstTable.file).selectAll())
                 }
                     .forEachIndexed { i, it ->
                         if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }
