@@ -8,6 +8,7 @@ import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import java.net.URL
 import kotlin.io.path.readText
 
@@ -151,25 +152,38 @@ internal class DbUtil(
         log.info { "Inserted 'asts' rows" }
     }
 
-    fun queryAbsentAst(repositoryId: EntityID<Int>, limit: Int = 100): List<ParseJobInfo> {
+    fun queryAbsentAst(
+        repositoryId: EntityID<Int>,
+        limit: Int = 100,
+        timeRange: ClosedRange<DateTime> = DateTime(0)..DateTime(Long.MAX_VALUE)
+    ): List<ParseJobInfo> {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
-            .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
-            .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .select {
+                CommitTable.repository eq repositoryId and
+                        AstTable.content.isNull() and
+                        CommitTable.date.between(timeRange.start, timeRange.endInclusive)
+            }
             .limit(limit)
             .reversed()
             .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }
 
-    fun countAbsentAst(repositoryId: EntityID<Int>): Int {
+    fun countAbsentAst(
+        repositoryId: EntityID<Int>,
+        timeRange: ClosedRange<DateTime> = DateTime(0)..DateTime(Long.MAX_VALUE)
+    ): Int {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
-            .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
-            .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .select {
+                CommitTable.repository eq repositoryId and
+                        AstTable.content.isNull() and
+                        CommitTable.date.between(timeRange.start, timeRange.endInclusive)
+            }
             .count()
     }
 }
