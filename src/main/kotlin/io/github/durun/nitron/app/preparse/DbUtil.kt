@@ -164,7 +164,8 @@ internal class DbUtil(
             .select {
                 CommitTable.repository eq repositoryId and
                         AstTable.content.isNull() and
-                        CommitTable.date.between(timeRange.start, timeRange.endInclusive)
+                        (CommitTable.date greaterEq timeRange.start) and
+                        (CommitTable.date lessEq timeRange.endInclusive)
             }
             .limit(limit)
             .reversed()
@@ -182,7 +183,8 @@ internal class DbUtil(
             .select {
                 CommitTable.repository eq repositoryId and
                         AstTable.content.isNull() and
-                        CommitTable.date.between(timeRange.start, timeRange.endInclusive)
+                        (CommitTable.date greaterEq timeRange.start) and
+                        (CommitTable.date lessEq timeRange.endInclusive)
             }
             .count()
     }
