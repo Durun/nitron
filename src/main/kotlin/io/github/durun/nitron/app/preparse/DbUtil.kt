@@ -7,6 +7,10 @@ import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.net.URL
@@ -162,10 +166,10 @@ internal class DbUtil(
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
             .select {
-                CommitTable.repository eq repositoryId and
-                        AstTable.content.isNull() and
-                        (CommitTable.date greaterEq timeRange.start) and
-                        (CommitTable.date lessEq timeRange.endInclusive)
+                whereAbsentAst(
+                    repositoryId = repositoryId,
+                    timeRange = timeRange
+                )
             }
             .limit(limit)
             .reversed()
@@ -181,11 +185,18 @@ internal class DbUtil(
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
             .select {
-                CommitTable.repository eq repositoryId and
-                        AstTable.content.isNull() and
-                        (CommitTable.date greaterEq timeRange.start) and
-                        (CommitTable.date lessEq timeRange.endInclusive)
+                whereAbsentAst(
+                    repositoryId = repositoryId,
+                    timeRange = timeRange
+                )
             }
             .count()
+    }
+
+    private fun whereAbsentAst(repositoryId: EntityID<Int>, timeRange: ClosedRange<DateTime>): Op<Boolean> {
+        return CommitTable.repository eq repositoryId and
+                AstTable.content.isNull() and
+                (CommitTable.date greaterEq timeRange.start) and
+                (CommitTable.date lessEq timeRange.endInclusive)
     }
 }
