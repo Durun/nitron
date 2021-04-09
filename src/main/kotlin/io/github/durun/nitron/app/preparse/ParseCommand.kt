@@ -11,6 +11,7 @@ import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
+import io.github.durun.nitron.util.parseToDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -167,14 +168,4 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
         log.verbose { "Done: $job" }
     }
-}
-
-private fun String.parseToDateTime(): DateTime {
-    println(this)
-    val (day, month, year) = this.split(':').map { it.toInt() }
-    val hour = 0
-    val min = 0
-    check(day in 1..31) { "Day must be in 1..31" }
-    check(month in 1..12) { "Month must be in 1..12" }
-    return DateTime(year, month, day, hour, min)
 }
