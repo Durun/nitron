@@ -52,9 +52,10 @@ detail: [RegisterCommand.kt](https://github.com/Durun/nitron/blob/master/src/mai
 - *Options:*
     - `--dir` (optional: default=`tmp`) Working directory to clone the repository
     - `--branch` (optional: default=`master`or`main`) Branch to analyze
+    - `--start-date dd:mm:yyyy` `--end-date dd:mm:yyyy` (optional) filter commits by date
 - *Args:*
     1. Database file named `cache.db` to save parsetrees
-- *Usage:* `preparse-fetch --branch master cache.db`
+- *Usage:* `preparse-fetch --branch master --start-date 01:01:2012 cache.db`
 
 for
 detail: [FetchCommand.kt](https://github.com/Durun/nitron/blob/master/src/main/kotlin/io/github/durun/nitron/app/preparse/FetchCommand.kt)
@@ -65,6 +66,7 @@ detail: [FetchCommand.kt](https://github.com/Durun/nitron/blob/master/src/main/k
 - *Options:*
     - `--repository` Repository URL to analyze
     - `--dir` (optional: default=`tmp`) Working directory to clone the repository
+    - `--start-date dd:mm:yyyy` `--end-date dd:mm:yyyy` (optional) filter commits by date
 - *Args:*
     1. Database file named `cache.db` to save parsetrees
 - *Usage:* `preparse --repository https://github.com/githubtraining/hellogitworld cache.db`
