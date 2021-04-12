@@ -59,6 +59,53 @@ class ParseCommandTest : FreeSpec({
                 }
             AstContentTable.selectAll() shouldHaveSize 17
         }
+    }
 
+    "specify date range" {
+        val dir = createTempDirectory("cache")
+            .apply { toFile().deleteOnExit() }
+        println("Created temp directory: $dir")
+
+        val db = dir.resolve("cache.db")
+        println("Created temp database: $db")
+
+        execCommand("preparse-register --remote https://github.com/githubtraining/hellogitworld --lang java $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            RepositoryTable.selectAll() shouldHaveSize 1
+            RepositoryTable.selectAll().first()
+        }.let {
+            it[RepositoryTable.name] shouldBe "githubtraining/hellogitworld.git"
+            it[RepositoryTable.url] shouldBe "https://github.com/githubtraining/hellogitworld.git"
+            it[RepositoryTable.langs] shouldBe "java"
+        }
+
+        execCommand("preparse-fetch --branch master --start-date 01:01:2012 --end-date 31:12:2013 --dir $dir $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            CommitTable.selectAll() shouldHaveSize 8
+            FileTable.selectAll() shouldHaveSize 4
+        }
+
+        execCommand("preparse --repository https://github.com/githubtraining/hellogitworld --start-date 01:01:2012 --end-date 31:12:2013 --dir $dir $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            AstTable.selectAll() shouldHaveSize 4
+            AstContentTable.selectAll() shouldHaveSize 4
+        }
+
+        // rerun
+        execCommand("preparse-fetch --branch master --dir $dir $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            CommitTable.selectAll() shouldHaveSize 55
+            FileTable.selectAll() shouldHaveSize 20
+        }
+        execCommand("preparse --repository https://github.com/githubtraining/hellogitworld --start-date 01:01:2012 --end-date 31:12:2013 --dir $dir $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            AstTable.selectAll() shouldHaveSize 4
+            AstContentTable.selectAll() shouldHaveSize 4
+        }
+        execCommand("preparse --repository https://github.com/githubtraining/hellogitworld --dir $dir $db")
+        transaction(SQLiteDatabase.connect(db)) {
+            AstTable.selectAll() shouldHaveSize 20
+            AstContentTable.selectAll() shouldHaveSize 17
+        }
     }
 })
