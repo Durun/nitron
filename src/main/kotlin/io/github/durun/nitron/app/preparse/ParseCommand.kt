@@ -11,6 +11,7 @@ import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
+import io.github.durun.nitron.util.parseToDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import java.io.File
 import java.net.URL
 import java.nio.file.Path
@@ -42,6 +44,14 @@ class ParseCommand : CliktCommand(name = "preparse") {
             val gitUrl = if (it.endsWith(".git")) it else "$it.git"
             URL(gitUrl)
         }.multiple()
+
+    private val startDate: DateTime by option("--start-date", help = "date (dd:mm:yyyy)")
+        .convert { it.parseToDateTime() }
+        .defaultLazy { DateTime(0) }
+    private val endDate: DateTime by option("--end-date", help = "date (dd:mm:yyyy)")
+        .convert { it.parseToDateTime() }
+        .defaultLazy { DateTime(Long.MAX_VALUE) }
+
     private val bufferSize: Int by option("-b")
         .int()
         .default(1000)
@@ -75,7 +85,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.info { "Language check OK" }
 
         // list asts table
-        dbUtil.prepareAstTable(config)
+        dbUtil.prepareAstTable(config, startDate..endDate)
 
         // normalize
         log.info { "Normalizing 'asts' table" }
@@ -114,10 +124,11 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.info { "Opened: $url" }
 
         val parseUtil = ParseUtil(config)
-        val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId) }
+        val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId, timeRange = startDate..endDate) }
         val count = AtomicInteger(0)
         do {
-            val jobs: List<ParseJobInfo> = transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize) }
+            val jobs: List<ParseJobInfo> =
+                transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate) }
             log.verbose { "Got ${jobs.size} jobs" }
 
             runBlocking(Dispatchers.Default) {
