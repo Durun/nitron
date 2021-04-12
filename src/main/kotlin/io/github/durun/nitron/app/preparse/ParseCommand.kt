@@ -85,7 +85,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.info { "Language check OK" }
 
         // list asts table
-        dbUtil.prepareAstTable(config)
+        dbUtil.prepareAstTable(config, startDate..endDate)
 
         // normalize
         log.info { "Normalizing 'asts' table" }

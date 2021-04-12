@@ -119,13 +119,7 @@ internal class DbUtil(
         }
     }
 
-    fun detectLangFromExtension(path: String, config: NitronConfig): String? {
-        return config.langConfig.entries.find { (_, config) ->
-            config.extensions.any { path.endsWith(it) }
-        }?.let { (name, _) -> name }
-    }
-
-    fun prepareAstTable(config: NitronConfig) {
+    fun prepareAstTable(config: NitronConfig, timeRange: ClosedRange<DateTime>) {
 
         // Language name : id
         val langs = transaction(db) {
@@ -136,10 +130,15 @@ internal class DbUtil(
         langs.entries.forEach { (lang, langId) ->
             val extensions = config.langConfig[lang]!!.extensions
             transaction(db) {
-                FileTable.select {  // files with correct extension
+                FileTable.innerJoin(CommitTable).select {  // files with correct extension
                     extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
                         expr or (FileTable.path like "%$ext")
-                    } and notExists(AstTable.slice(AstTable.file).selectAll())
+                    } and notExists(
+                        AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }
+                    ) and
+                            (CommitTable.date greaterEq timeRange.start) and
+                            (CommitTable.date lessEq timeRange.endInclusive)
+
                 }
                     .forEachIndexed { i, it ->
                         if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }
