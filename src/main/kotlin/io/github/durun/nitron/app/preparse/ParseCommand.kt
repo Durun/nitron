@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.eclipse.jgit.api.Git
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -131,41 +130,40 @@ class ParseCommand : CliktCommand(name = "preparse") {
                 transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate) }
             log.verbose { "Got ${jobs.size} jobs" }
 
-            runBlocking(Dispatchers.Default) {
-                jobs.map {
-                    async {
-                        processJob(git, parseUtil, db, it)
-                        log.info { "Done: $repoUrl ${count.addAndGet(1)} / $jobCount" }
-                    }
+            val parseResults = runBlocking(Dispatchers.Default) {
+                jobs
+                    .map { async { calcJob(git, parseUtil, it) } }
+                    .mapNotNull { it.await() }
+            }
+
+            transaction(db) {
+                parseResults.forEach { (astId, parseResult) ->
+                    val contentId = parseResult
+                        ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
+                        ?: AstTable.FAILED_TO_PARSE
+                    AstTable.updateContent(astId, contentId)
                 }
-                    .map { it.await() }
+                log.info { "Done: $repoUrl ${count.addAndGet(parseResults.size)} / $jobCount" }
             }
         } while (jobs.isNotEmpty())
-
-
     }
 
-    private fun processJob(git: Git, parseUtil: ParseUtil, db: Database, job: ParseJobInfo) {
+    private fun calcJob(git: Git, parseUtil: ParseUtil, job: ParseJobInfo): ParseJobResult? {
         val code = git.readFile(job.fileObjectId)
-            ?: return log.warn { "Can't read file: $job" }
+            ?: run {
+                log.warn { "Can't read file: $job" }
+                return null
+            }
         val langConfig = config.langConfig[job.lang]
-            ?: return log.warn { "Can't get language config: $job" }
+            ?: run {
+                log.warn { "Can't get language config: $job" }
+                return null
+            }
         val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
             .onFailure {
                 log.warn { "Failed to parse: $job ${it.message}" }
-                synchronized(db) {
-                    transaction(db) {
-                        AstTable.updateContent(job.astId, AstTable.FAILED_TO_PARSE)
-                    }
-                }
             }
-            .getOrNull() ?: return
-        synchronized(db) {
-            transaction(db) {
-                val contentId = AstContentTable.insertIfAbsentAndGetId(parsed)
-                AstTable.updateContent(job.astId, contentId)
-            }
-        }
-        log.verbose { "Done: $job" }
+            .getOrNull()
+        return ParseJobResult(job.astId, parsed)
     }
 }
