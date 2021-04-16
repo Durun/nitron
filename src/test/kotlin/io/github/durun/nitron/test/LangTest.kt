@@ -56,16 +56,13 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 		}
 		"uses correct rule/token name" {
 			val usedRules: List<String> = (
-					config.process.normalizeConfig.ignoreRules +
-							config.process.normalizeConfig.mapping.keys +
-							config.process.normalizeConfig.indexedMapping.keys +
-							config.process.splitConfig.splitRules
-					).flatMap {
-					when {
-						it.contains("[^a-zA-Z/]") -> null
-						else -> it.split('/').filter(String::isNotEmpty)
-					}
-				}
+                    config.process.normalizeConfig.ignoreRules +
+                            config.process.normalizeConfig.mapping.keys +
+                            config.process.normalizeConfig.indexedMapping.keys +
+                            config.process.splitConfig.splitRules
+                    )
+                .flatMap { it.split('/').filter(String::isNotEmpty) }
+                .filterNot { it.contains(Regex("[^a-zA-Z]")) }
 			val antlrParser = parser!!.antlrParser
 			val allowedRules = antlrParser.ruleNames + antlrParser.tokenTypeMap.keys
 			runCatching {

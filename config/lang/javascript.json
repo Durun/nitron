@@ -26,7 +26,9 @@
         "BooleanLiteral": "$L"
       },
       "indexedMapping": {
-        "Identifier": "$V"
+        "//singleExpression[./*[@tag='Dot']]/*[1]": "$V",
+        "//identifier[../../*[2]/@tag!='arguments' and ../../*[2]/@tag!='Dot']": "$V",
+        "//argument/singleExpression[./*[@tag!='Dot']]/identifier": "$V"
       },
       "ignoreRules": [
         "importStatement",

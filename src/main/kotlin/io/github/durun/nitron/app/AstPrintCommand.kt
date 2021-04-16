@@ -53,12 +53,13 @@ class AstPrintCommand : CliktCommand(
                 utilityJavaFiles = config.grammar.utilJavaFilePaths
         )
         inputs
-                .forEach { input ->
-                    val tree = parser.parse(input.bufferedReader(), config.grammar.startRule)
-                    val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser))
-                    val text = ast.accept(AstPrintVisitor)
-                    output.appendLine("\n@ ${input.path}")
-                    output.appendLine(text)
-                }
+            .forEach { input ->
+                val tree = parser.parse(input.bufferedReader(), config.grammar.startRule)
+                val ast = tree.accept(AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser))
+                val text = ast.accept(AstPrintVisitor)
+                output.appendLine("\n@ ${input.path}")
+                output.appendLine(text)
+            }
+        output.flush()
     }
 }

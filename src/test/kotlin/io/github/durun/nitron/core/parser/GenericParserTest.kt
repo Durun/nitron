@@ -8,26 +8,31 @@ import io.kotest.core.spec.style.freeSpec
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.readText
 
 @ExperimentalPathApi
 class GenericParserTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
-	val config = NitronConfigLoader.load(configPath)
+    val config = NitronConfigLoader.load(configPath)
 
-	include(tests("javascript",
-			config.langConfig["javascript"]!!.grammar,
-			src = """console.log("Hello");"""
-	))
+    include(
+        tests(
+            "javascript",
+            config.langConfig["javascript"]!!.grammar,
+            src = """console.log("Hello");"""
+        )
+    )
 
-	include(tests("C#",
-			config.langConfig["C#"]!!.grammar,
-			src = """
+    include(
+        tests(
+            "csharp",
+            config.langConfig["csharp"]!!.grammar,
+            src = """
 				class HelloClass {
 				    void hello() { }
 				}
 			""".trimIndent()
-	))
+        )
+    )
 })
 
 @ExperimentalPathApi
