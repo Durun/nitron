@@ -77,10 +77,11 @@ private class AstXPath(expression: String) : AstPath() {
 		val nodes: List<Node> = xpath.selectNodes(root.toXml()).filterIsInstance<Node>()
 		nodes.forEach {
 			val path = it.getIndexPath().drop(1)
-			if (path.isEmpty()) return replacement(root)
-			val parent = root.resolve(path.dropLast(1)) as BasicAstRuleNode
-			val childIndex = path.last()
-			parent.children[childIndex] = replacement(parent.children[childIndex])
+            if (path.isEmpty()) return replacement(root)
+            val childIndex = path.last()
+            when (val parent = root.resolve(path.dropLast(1))) {
+                is BasicAstRuleNode -> parent.children[childIndex] = replacement(parent.children[childIndex])
+            }
 		}
 		return root
 	}
