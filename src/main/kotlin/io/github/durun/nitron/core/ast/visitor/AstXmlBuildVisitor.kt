@@ -13,13 +13,15 @@ object AstXmlBuildVisitor : AstVisitor<String> {
     override fun visitRule(node: AstRuleNode): String {
         val tag = node.type.name
         val children = node.children.orEmpty().joinToString("") { it.accept(this) }
-        return if (children.isNotEmpty()) "<$tag>${children}</$tag>"
-        else "<$tag>${node.getText()}</$tag>"
+        return if (children.isNotEmpty())
+            """<$tag tag="$tag">${children}</$tag>"""
+        else
+            """<$tag tag="$tag">${node.getText()}</$tag>"""
     }
 
     override fun visitTerminal(node: AstTerminalNode): String {
         val tag = node.type.name
         val value = StringEscapeUtils.escapeXml10(node.token)
-        return """<$tag>$value</$tag>"""
+        return """<$tag tag="$tag">$value</$tag>"""
     }
 }
