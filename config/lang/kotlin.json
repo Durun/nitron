@@ -21,13 +21,14 @@
 				"RealLiteral": "N"
 			},
 			"indexedMapping": {
-				"atomicExpression/simpleIdentifier": "$V",
-				"variableDeclaration/simpleIdentifier": "$V"
-			},
+              "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V"
+            },
 			"ignoreRules": [
-				"annotation",
-				"preamble"
-			]
+              "annotation",
+              "preamble",
+              "NL",
+              "EOF"
+            ]
 		}
 	}
 }
