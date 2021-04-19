@@ -51,12 +51,12 @@ abstract class AstPath {
 
 private class AstXPath(expression: String) : AstPath() {
 	companion object {
-		private val xmlBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-		private fun AstNode.toXml(): Node {
-			val str = this.accept(AstXmlBuildVisitor)
-			return xmlBuilder.parse(str.byteInputStream())
-		}
-	}
+        private val xmlBuilder = ThreadLocal.withInitial { DocumentBuilderFactory.newInstance().newDocumentBuilder() }
+        private fun AstNode.toXml(): Node {
+            val str = this.accept(AstXmlBuildVisitor)
+            return xmlBuilder.get().parse(str.byteInputStream())
+        }
+    }
 
 	private val xpath = DOMXPath(expression)
 
