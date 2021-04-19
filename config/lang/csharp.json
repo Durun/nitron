@@ -29,10 +29,10 @@
 				"REAL_LITERAL": "N"
 			},
 			"indexedMapping": {
-				"primary_expression_start/identifier": "$V",
-				"variable_declarator/identifier": "$V",
-				"local_variable_declarator/identifier": "$V",
-				"constant_declarator/identifier": "$V"
+			  "//primary_expression[./*[2]/.[@tag!='method_invocation'] or count(./*)=1]/primary_expression_start/identifier": "$V",
+			  "//variable_declarator/identifier": "$V",
+			  "//local_variable_declarator/identifier": "$V",
+			  "//constant_declarator/identifier": "$V"
 			},
 			"ignoreRules": [
 				"global_attribute_section",
