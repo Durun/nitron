@@ -1,15 +1,17 @@
 {
-    "extensions": [".kt"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/kotlin/kotlin/KotlinLexer.g4",
-			"../grammars/kotlin/kotlin/KotlinParser.g4",
-			"../grammars/kotlin/kotlin/UnicodeClasses.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "kotlinFile"
-	},
-	"processConfig": {
+  "extensions": [
+	".kt"
+  ],
+  "grammarConfig": {
+	"grammarFiles": [
+	  "../grammars/kotlin/kotlin/KotlinLexer.g4",
+	  "../grammars/kotlin/kotlin/KotlinParser.g4",
+	  "../grammars/kotlin/kotlin/UnicodeClasses.g4"
+	],
+	"utilJavaFiles": [],
+	"startRule": "kotlinFile"
+  },
+  "processConfig": {
 		"splitConfig": {
 			"splitRules": ["statement"]
 		},
@@ -21,16 +23,16 @@
 				"RealLiteral": "N"
 			},
 			"indexedMapping": {
-              "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V",
-              "//variableDeclaration/simpleIdentifier": "$V",
-              "//multiVariableDeclaration/simpleIdentifier": "$V"
-            },
+			  "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V",
+			  "//variableDeclaration/simpleIdentifier": "$V",
+			  "//multiVariableDeclaration/simpleIdentifier": "$V"
+			},
 			"ignoreRules": [
-              "annotation",
-              "preamble",
-              "NL",
-              "EOF"
-            ]
+			  "annotation",
+			  "preamble",
+			  "NL",
+			  "EOF"
+			]
 		}
 	}
 }
