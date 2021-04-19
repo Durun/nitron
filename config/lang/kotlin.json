@@ -21,7 +21,9 @@
 				"RealLiteral": "N"
 			},
 			"indexedMapping": {
-              "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V"
+              "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V",
+              "//variableDeclaration/simpleIdentifier": "$V",
+              "//multiVariableDeclaration/simpleIdentifier": "$V"
             },
 			"ignoreRules": [
               "annotation",
