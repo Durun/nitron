@@ -1,13 +1,14 @@
 {
     "langConfigFiles": {
-      "java": "lang/java.json",
-      "kotlin": "lang/kotlin.json",
-      "python": "lang/python.json",
-      "csharp": "lang/csharp.json",
-      "r": "lang/r.json",
-      "javascript": "lang/javascript.json",
-      "swift": "lang/swift3.json",
-      "matlab": "lang/matlab.json",
-      "erlang": "lang/erlang.json"
-    }
+	  "java": "lang/java.json",
+	  "kotlin": "lang/kotlin.json",
+	  "python": "lang/python.json",
+	  "cpp": "lang/cpp.json",
+	  "csharp": "lang/csharp.json",
+	  "r": "lang/r.json",
+	  "javascript": "lang/javascript.json",
+	  "swift": "lang/swift3.json",
+	  "matlab": "lang/matlab.json",
+	  "erlang": "lang/erlang.json"
+	}
 }

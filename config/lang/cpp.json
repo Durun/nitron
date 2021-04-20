@@ -1,0 +1,44 @@
+{
+  "extensions": [
+	".h",
+	".hpp",
+	".c",
+	".cpp"
+  ],
+  "grammarConfig": {
+	"grammarFiles": [
+	  "../grammars/cpp/CPP14Lexer.g4",
+	  "../grammars/cpp/CPP14Parser.g4"
+	],
+	"utilJavaFiles": [],
+	"startRule": "translationUnit"
+  },
+  "processConfig": {
+	"splitConfig": {
+	  "splitRules": [
+		"statement"
+	  ]
+	},
+	"normalizeConfig": {
+	  "mapping": {
+		"Literal": "L"
+	  },
+	  "indexedMapping": {
+		"//declarator[..[@tag!='functionDefinition']]/*/*/*/*/*/Identifier": "$V",
+		"//className/Identifier": "$V",
+		"//postfixExpression[../*[2]/.[@tag='Dot' or @tag='Arrow']]/primaryExpression/idExpression/unqualifiedId": "$V",
+		"//postfixExpression[../*[2]/.[@tag!='LeftParen'] or count(../*)=1]/primaryExpression/idExpression/unqualifiedId": "$V"
+	  },
+	  "ignoreRules": [
+		"usingDirective",
+		"Const",
+		"Constexpr",
+		"Friend",
+		"storageClassSpecifier",
+		"functionSpecifier",
+		"accessSpecifier",
+		"EOF"
+	  ]
+	}
+  }
+}
