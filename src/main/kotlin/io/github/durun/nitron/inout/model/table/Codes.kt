@@ -1,11 +1,13 @@
 package io.github.durun.nitron.inout.model.table
 
 import io.github.durun.nitron.core.ast.node.lineRangeOf
+import io.github.durun.nitron.core.toBlob
 import io.github.durun.nitron.inout.model.Code
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.InsertStatement
+import java.sql.Blob
 
 
 object Codes : ReadWritableTable<Code>("codes") {
@@ -13,7 +15,7 @@ object Codes : ReadWritableTable<Code>("codes") {
     val id: Column<Int> = integer("id").autoIncrement().primaryKey()
     val rText: Column<String> = text("rText")
     val nText: Column<String> = text("nText")
-    val hash: Column<String> = text("hash")
+    val hash: Column<Blob> = blob("hash")
     val start: Column<Int> = integer("start")
     val end: Column<Int> = integer("end")
 
@@ -35,7 +37,7 @@ object Codes : ReadWritableTable<Code>("codes") {
         it[software] = value.softwareName
         it[rText] = value.rawText
         it[nText] = value.normalizedText
-        it[hash] = value.hash.toString()
+        it[hash] = value.hash.toBlob()
         it[start] = value.range.first
         it[end] = value.range.last
     }
