@@ -12,6 +12,9 @@ import io.github.durun.nitron.inout.model.metrics.GlobalPatternsTable
 import io.github.durun.nitron.util.Log
 import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
@@ -64,23 +67,27 @@ class MetricsCommand : CliktCommand(name = "metrics") {
         log.debug { "Softwares: ${softwares.keys}" }
 
 
-        val metricses = patterns.mapIndexed { i, pattern ->
-            val sup = changes.count { it.pattern.hash == pattern.hash }
-            val left = changes.count { it.pattern.hash.first == pattern.hash.first }
+        val metricses = runBlocking(Dispatchers.Default) {
+            patterns.mapIndexed { i, pattern ->
+                async {
+                    val sup = changes.count { it.pattern.hash == pattern.hash }
+                    val left = changes.count { it.pattern.hash.first == pattern.hash.first }
 
-            // idf
-            val d = softwares.count { (_, changeList) ->
-                changeList.any { it.pattern.hash == pattern.hash }
-            }
+                    // idf
+                    val d = softwares.count { (_, changeList) ->
+                        changeList.any { it.pattern.hash == pattern.hash }
+                    }
 
-            if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
+                    if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
 
-            Metrics(
-                pattern,
-                support = sup,
-                confidence = sup.toDouble() / left,
-                idf = ln(nDocuments.toDouble() / d)
-            )
+                    Metrics(
+                        pattern,
+                        support = sup,
+                        confidence = sup.toDouble() / left,
+                        idf = ln(nDocuments.toDouble() / d)
+                    )
+                }
+            }.map { it.await() }
         }
 
         transaction(db) {
