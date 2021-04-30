@@ -63,25 +63,35 @@ class MetricsCommand : CliktCommand(name = "metrics") {
         val nDocuments = softwares.size
         log.debug { "Softwares: ${softwares.keys}" }
 
+
+        val metricses = patterns.mapIndexed { i, pattern ->
+            val sup = changes.count { it.pattern.hash == pattern.hash }
+            val left = changes.count { it.pattern.hash.first == pattern.hash.first }
+
+            // idf
+            val d = softwares.count { (_, changeList) ->
+                changeList.any { it.pattern.hash == pattern.hash }
+            }
+
+            if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
+
+            Metrics(
+                pattern,
+                support = sup,
+                confidence = sup.toDouble() / left,
+                idf = ln(nDocuments.toDouble() / d)
+            )
+        }
+
         transaction(db) {
-            patterns.forEachIndexed { i, (hash, blob) ->
-                val sup = changes.count { it.pattern.hash == hash }
-                val left = changes.count { it.pattern.hash.first == hash.first }
-                val conf = sup.toDouble() / left
-
-                // idf
-                val d = softwares.count { (_, changeList) ->
-                    changeList.any { it.pattern.hash == hash }
-                }
-
+            metricses.forEach { metrics ->
                 GlobalPatternsTable.insert {
-                    it[beforeHash] = blob.first
-                    it[afterHash] = blob.second
-                    it[support] = sup
-                    it[confidence] = conf
-                    it[idf] = ln(nDocuments.toDouble() / d)
+                    it[beforeHash] = metrics.pattern.blob.first
+                    it[afterHash] = metrics.pattern.blob.second
+                    it[support] = metrics.support
+                    it[confidence] = metrics.confidence
+                    it[idf] = metrics.idf
                 }
-                if (i % 1000 == 0) log.info { "Done: $i / ${patterns.size}" }
             }
         }
     }
@@ -112,3 +122,10 @@ private data class Pattern(
         return hash.hashCode()
     }
 }
+
+private data class Metrics(
+    val pattern: Pattern,
+    val support: Int,
+    val confidence: Double,
+    val idf: Double
+)
