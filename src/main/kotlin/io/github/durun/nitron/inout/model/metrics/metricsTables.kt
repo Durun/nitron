@@ -25,13 +25,13 @@ object ChangesTable : Table("changes") {
     val revision: Column<String> = text("revision")
 }
 
-object PatternsTable : Table("patterns") {
+object GlobalPatternsTable : Table("globalPatterns") {
     // id
-    val software: Column<String> = text("software")
     val beforeHash: Column<Blob?> = blob("beforeHash").nullable()
     val afterHash: Column<Blob?> = blob("afterHash").nullable()
 
     // metrics
     val support: Column<Int> = integer("support")
     val confidence: Column<Double> = double("confidence")
+    // TODO: more metrics
 }
