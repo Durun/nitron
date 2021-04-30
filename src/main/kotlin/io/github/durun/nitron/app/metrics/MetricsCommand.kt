@@ -56,9 +56,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
 
                 }
         }
-        transaction(db) {
-            GlobalPatternsTable.deleteAll()
-        }
+
         val patterns = changes.map { it.pattern }.distinct()
         log.debug { "nPatterns: ${patterns.size}" }
 
@@ -90,6 +88,9 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             }.map { it.await() }
         }
 
+        transaction(db) {
+            GlobalPatternsTable.deleteAll()
+        }
         transaction(db) {
             metricses.forEach { metrics ->
                 GlobalPatternsTable.insert {
