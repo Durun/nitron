@@ -33,5 +33,6 @@ object GlobalPatternsTable : Table("globalPatterns") {
     // metrics
     val support: Column<Int> = integer("support")
     val confidence: Column<Double> = double("confidence")
+    val idf: Column<Double> = double("idf")
     // TODO: more metrics
 }

@@ -9,11 +9,14 @@ import io.github.durun.nitron.core.toMD5
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.metrics.ChangesTable
 import io.github.durun.nitron.inout.model.metrics.GlobalPatternsTable
+import io.github.durun.nitron.util.Log
+import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
 import java.sql.Blob
+import kotlin.math.ln
 
 class MetricsCommand : CliktCommand(name = "metrics") {
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
@@ -23,6 +26,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
     private val log by logger()
 
     override fun run() {
+        LogLevel = Log.Level.VERBOSE
         dbFiles.forEach { dbFile ->
             val db = SQLiteDatabase.connect(dbFile)
             processOneDb(db)
@@ -53,16 +57,29 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             GlobalPatternsTable.deleteAll()
         }
         val patterns = changes.map { it.pattern }.distinct()
+        log.debug { "nPatterns: ${patterns.size}" }
+
+        val softwares = changes.groupBy { it.software }
+        val nDocuments = softwares.size
+        log.debug { "Softwares: ${softwares.keys}" }
+
         transaction(db) {
             patterns.forEachIndexed { i, (hash, blob) ->
                 val sup = changes.count { it.pattern.hash == hash }
                 val left = changes.count { it.pattern.hash.first == hash.first }
                 val conf = sup.toDouble() / left
+
+                // idf
+                val d = softwares.count { (_, changeList) ->
+                    changeList.any { it.pattern.hash == hash }
+                }
+
                 GlobalPatternsTable.insert {
                     it[beforeHash] = blob.first
                     it[afterHash] = blob.second
                     it[support] = sup
                     it[confidence] = conf
+                    it[idf] = ln(nDocuments.toDouble() / d)
                 }
                 if (i % 1000 == 0) log.info { "Done: $i / ${patterns.size}" }
             }
