@@ -55,12 +55,14 @@ class MetricsCommand : CliktCommand(name = "metrics") {
         val patterns = changes.map { it.pattern }.distinct()
         transaction(db) {
             patterns.forEachIndexed { i, (hash, blob) ->
-                val sup = changes.count { it.pattern.hash.first == hash.first }
+                val sup = changes.count { it.pattern.hash == hash }
+                val left = changes.count { it.pattern.hash.first == hash.first }
+                val conf = sup.toDouble() / left
                 GlobalPatternsTable.insert {
                     it[beforeHash] = blob.first
                     it[afterHash] = blob.second
                     it[support] = sup
-                    it[confidence] = 0.0    // TODO
+                    it[confidence] = conf
                 }
                 if (i % 1000 == 0) log.info { "Done: $i / ${patterns.size}" }
             }
