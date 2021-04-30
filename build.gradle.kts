@@ -29,7 +29,7 @@ dependencies {
     val exposedVersion = "0.17.13"
     val kotlinSerializationVersion = "1.0.1"
     val jgitVersion = "5.11.0.202103091610-r"
-    val kotlinCoroutineVersion = "1.4.3"
+    val kotlinCoroutineVersion = "1.4.3-native-mt"
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:$antlrVersion")
