@@ -6,11 +6,11 @@ SCRIPT_DIR=`dirname $0`
 LANG=$1
 
 echo "create: ${LANG}.db"
-sqlite3 $LANG.db < $SCRIPT_DIR/multi-project-patterns-init.sql
+sqlite3 $LANG.db < $SCRIPT_DIR/multi-project-changes-init.sql
 for DB in `ls $LANG/*.db` ; do
     echo "merging: ${LANG}.db <- ${DB}"
     (
         echo "ATTACH DATABASE \"${DB}\" AS guest;"
-        cat $SCRIPT_DIR/multi-project-patterns-merge.sql
+        cat $SCRIPT_DIR/multi-project-changes-merge.sql
     ) | sqlite3 $LANG.db
 done

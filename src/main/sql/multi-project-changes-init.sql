@@ -30,6 +30,14 @@ CREATE TABLE patterns
     confidence real,
     primary key (software, beforeHash, afterHash)
 );
+CREATE TABLE globalPatterns
+(
+    beforeHash blob,
+    afterHash  blob,
+    support    integer,
+    confidence real,
+    primary key (beforeHash, afterHash)
+);
 
 CREATE
 INDEX index_patterns_beforeHash on patterns(beforeHash);
