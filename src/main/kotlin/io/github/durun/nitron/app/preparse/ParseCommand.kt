@@ -59,7 +59,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val log by logger()
 
-    override fun toString(): String = "<preparse $dbFiles --repository=$repoUrl>"
+    override fun toString(): String = "<preparse>"
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
