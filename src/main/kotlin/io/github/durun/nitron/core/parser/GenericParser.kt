@@ -85,7 +85,11 @@ private constructor(
         ThreadLocal.withInitial {
             LOGGER.info { "Loading compiler object" }
             StringCompiler()
-                .apply { load(masterCompilerObj) }
+                .apply {
+                    synchronized(masterCompilerObj) {
+                        load(masterCompilerObj)
+                    }
+                }
         }
     }
 
