@@ -154,7 +154,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
                     doneIndices.asReversed().forEach { i ->
                         parsing.removeAt(i).await()?.let { doneList += it }
                     }
-                    if (doneList.size > bufferSize) {
+                    if (doneList.isNotEmpty()) {
                         writeJobResult(db, doneList)
                         log.info { "Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
                     }
