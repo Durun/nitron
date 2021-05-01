@@ -155,7 +155,6 @@ internal class DbUtil(
 
     fun queryAbsentAst(
         repositoryId: EntityID<Int>,
-        limit: Int = 100,
         timeRange: ClosedRange<DateTime> = DateTime(0)..DateTime(Long.MAX_VALUE)
     ): List<ParseJobInfo> {
         return AstTable
@@ -168,7 +167,7 @@ internal class DbUtil(
                     timeRange = timeRange
                 )
             }
-            .limit(limit)
+            //.limit(limit)
             .reversed()
             .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }
