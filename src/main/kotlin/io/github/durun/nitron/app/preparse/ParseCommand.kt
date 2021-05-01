@@ -14,9 +14,7 @@ import io.github.durun.nitron.util.Log
 import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
 import io.github.durun.nitron.util.parseToDateTime
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.eclipse.jgit.api.Git
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
@@ -136,22 +134,32 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
 
         runBlocking(Dispatchers.Default) {
-            val parsing = jobs
+            val parsing: MutableList<Deferred<ParseJobResult?>> = jobs
                 .mapIndexed { index, it ->
                     async {
                         val result = calcJob(git, parseUtil, it) ?: return@async null
                         log.verbose { "Parsed: $repoUrl $index / $jobCount: $it" }
                         result
                     }
-                }
+                }.toMutableList()
 
-            parsing.windowed(bufferSize, step = bufferSize, partialWindows = true) { parsingList ->
-                async {
-                    val doneList = parsingList.mapNotNull { it.await() }
-                    synchronized(db) { writeJobResult(db, doneList) }
-                    log.info { "Wrote ${doneList.size}" }
+            runBlocking(Dispatchers.IO) {
+                while (parsing.isNotEmpty()) {
+                    log.verbose { "Wait..." }
+                    delay(5000)
+                    val doneIndices = parsing.mapIndexedNotNull { i, job ->
+                        i.takeIf { job.isCompleted }
+                    }
+                    val doneList: MutableList<ParseJobResult> = mutableListOf()
+                    doneIndices.asReversed().forEach { i ->
+                        parsing.removeAt(i).await()?.let { doneList += it }
+                    }
+                    if (doneList.size > bufferSize) {
+                        writeJobResult(db, doneList)
+                        log.info { "Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
+                    }
                 }
-            }.forEach { it.await() }
+            }
         }
     }
 
