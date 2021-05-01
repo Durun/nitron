@@ -10,6 +10,8 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
+import io.github.durun.nitron.util.Log
+import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
 import io.github.durun.nitron.util.parseToDateTime
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +55,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val bufferSize: Int by option("-b")
         .int()
-        .default(1000)
+        .default(100)
 
     private val log by logger()
 
@@ -61,6 +63,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
+        LogLevel = Log.Level.VERBOSE
         dbFiles.forEach { dbFile->
             runCatching {
                 log.info { "Start DB=$dbFile" }
@@ -164,6 +167,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
                 log.warn { "Failed to parse: $job ${it.message}" }
             }
             .getOrNull()
+        log.verbose { "Success parsing: $job" }
         return ParseJobResult(job.astId, parsed)
     }
 }

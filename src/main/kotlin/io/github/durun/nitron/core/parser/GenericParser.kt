@@ -73,7 +73,7 @@ private constructor(
 
     // Non thread-local
     private val masterCompilerObj by lazy {
-        LOGGER.debug("compile")
+        LOGGER.info("Compiling")
         val cUnits: Set<CunitProvider> = setOfNotNull(fileProvider.takeIf { it.hasItems() }) + antlr.compilationUnits
         StringCompiler()
             .apply { compile(cUnits, compilerOptions) }
@@ -83,6 +83,7 @@ private constructor(
     // Thread-local
     private val compiler: ThreadLocal<StringCompiler> by lazy {
         ThreadLocal.withInitial {
+            LOGGER.info("Loading compiler object")
             StringCompiler()
                 .apply { load(masterCompilerObj) }
         }
