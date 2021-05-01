@@ -63,7 +63,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
-        LogLevel = Log.Level.VERBOSE
+        LogLevel = Log.Level.DEBUG
         dbFiles.forEach { dbFile->
             runCatching {
                 log.info { "Start DB=$dbFile" }
@@ -128,27 +128,44 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val parseUtil = ParseUtil(config)
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId, timeRange = startDate..endDate) }
         val count = AtomicInteger(0)
-        do {
-            val jobs: List<ParseJobInfo> =
-                transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate) }
-            log.verbose { "Got ${jobs.size} jobs" }
 
-            val parseResults = runBlocking(Dispatchers.Default) {
-                jobs
-                    .map { async { calcJob(git, parseUtil, it) } }
-                    .mapNotNull { it.await() }
-            }
 
-            transaction(db) {
-                parseResults.forEach { (astId, parseResult) ->
-                    val contentId = parseResult
-                        ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
-                        ?: AstTable.FAILED_TO_PARSE
-                    AstTable.updateContent(astId, contentId)
+        val jobs = sequence {
+            do {
+                val buf = transaction(db) {
+                    dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate)
                 }
-                log.info { "Done: $repoUrl ${count.addAndGet(parseResults.size)} / $jobCount" }
-            }
-        } while (jobs.isNotEmpty())
+                yieldAll(buf)
+            } while (buf.isNotEmpty())
+        }
+
+        runBlocking(Dispatchers.Default) {
+            jobs
+                .map {
+                    async {
+                        val result = calcJob(git, parseUtil, it) ?: return@async null
+                        log.info { "Parsed: $repoUrl ${count.addAndGet(1)} / $jobCount" }
+                        result
+                    }
+                }
+                .windowed(bufferSize, step = bufferSize, partialWindows = true) { deferredResults ->
+                    async {
+                        val results = deferredResults.mapNotNull { it.await() }
+                        synchronized(db) {
+                            transaction(db) {
+                                results.forEach { (astId, parseResult) ->
+                                    val contentId = parseResult
+                                        ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
+                                        ?: AstTable.FAILED_TO_PARSE
+                                    AstTable.updateContent(astId, contentId)
+                                }
+                            }
+                        }
+                        log.info { "Wrote ${results.size}" }
+                    }
+                }
+                .forEach { it.await() }
+        }
     }
 
     private fun calcJob(git: Git, parseUtil: ParseUtil, job: ParseJobInfo): ParseJobResult? {
