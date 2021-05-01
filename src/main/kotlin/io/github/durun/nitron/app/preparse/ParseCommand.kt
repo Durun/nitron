@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.eclipse.jgit.api.Git
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -63,7 +64,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
-        LogLevel = Log.Level.DEBUG
+        LogLevel = Log.Level.INFO
         dbFiles.forEach { dbFile->
             runCatching {
                 log.info { "Start DB=$dbFile" }
@@ -130,41 +131,38 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val count = AtomicInteger(0)
 
 
-        val jobs = sequence {
-            do {
-                val buf = transaction(db) {
-                    dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate)
-                }
-                yieldAll(buf)
-            } while (buf.isNotEmpty())
+        val jobs = transaction(db) {
+            dbUtil.queryAbsentAst(repoId, timeRange = startDate..endDate)
         }
 
         runBlocking(Dispatchers.Default) {
-            jobs
-                .map {
+            val parsing = jobs
+                .mapIndexed { index, it ->
                     async {
                         val result = calcJob(git, parseUtil, it) ?: return@async null
-                        log.info { "Parsed: $repoUrl ${count.addAndGet(1)} / $jobCount" }
+                        log.verbose { "Parsed: $repoUrl $index / $jobCount: $it" }
                         result
                     }
                 }
-                .windowed(bufferSize, step = bufferSize, partialWindows = true) { deferredResults ->
-                    async {
-                        val results = deferredResults.mapNotNull { it.await() }
-                        synchronized(db) {
-                            transaction(db) {
-                                results.forEach { (astId, parseResult) ->
-                                    val contentId = parseResult
-                                        ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
-                                        ?: AstTable.FAILED_TO_PARSE
-                                    AstTable.updateContent(astId, contentId)
-                                }
-                            }
-                        }
-                        log.info { "Wrote ${results.size}" }
-                    }
+
+            parsing.windowed(bufferSize, step = bufferSize, partialWindows = true) { parsingList ->
+                async {
+                    val doneList = parsingList.mapNotNull { it.await() }
+                    synchronized(db) { writeJobResult(db, doneList) }
+                    log.info { "Wrote ${doneList.size}" }
                 }
-                .forEach { it.await() }
+            }.forEach { it.await() }
+        }
+    }
+
+    private fun writeJobResult(db: Database, jobs: Collection<ParseJobResult>) {
+        transaction(db) {
+            jobs.forEach { (astId, parseResult) ->
+                val contentId = parseResult
+                    ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
+                    ?: AstTable.FAILED_TO_PARSE
+                AstTable.updateContent(astId, contentId)
+            }
         }
     }
 
@@ -181,7 +179,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
             }
         val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
             .onFailure {
-                log.warn { "Failed to parse: $job ${it.message}" }
+                System.err.println("Failed to parse: $job ${it.message}")
             }
             .getOrNull()
         log.verbose { "Success parsing: $job" }
