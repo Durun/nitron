@@ -52,6 +52,8 @@ class ParseCommand : CliktCommand(name = "preparse") {
         .convert { it.parseToDateTime() }
         .defaultLazy { DateTime(Long.MAX_VALUE) }
 
+    private val isVerbose: Boolean by option("--verbose").flag()
+    private val isDebug: Boolean by option("--debug").flag()
     private val bufferSize: Int by option("-b")
         .int()
         .default(100)
@@ -62,8 +64,14 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
-        LogLevel = Log.Level.INFO
-        dbFiles.forEach { dbFile->
+        LogLevel = when {
+            isVerbose -> Log.Level.VERBOSE
+            isDebug -> Log.Level.DEBUG
+            else -> Log.Level.INFO
+        }
+
+        log.info { "Available languages: ${config.langConfig.keys}" }
+        dbFiles.forEach { dbFile ->
             runCatching {
                 log.info { "Start DB=$dbFile" }
                 processOneDB(dbFile)
@@ -79,17 +87,16 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
 
-        log.info { "Available languages: ${config.langConfig.keys}" }
         config.langConfig.entries.forEach { (name, config) ->
             check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
         }
-        log.info { "Language check OK" }
+        log.debug { "Language check OK" }
 
         // list asts table
         dbUtil.prepareAstTable(config, startDate..endDate)
 
         // normalize
-        log.info { "Normalizing 'asts' table" }
+        log.debug { "Normalizing 'asts' table" }
         transaction(db) {
             AstTable.setNullOnAbsentContent()
         }
@@ -126,12 +133,13 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
         val parseUtil = ParseUtil(config)
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId, timeRange = startDate..endDate) }
+        log.debug { "Counted remain jobs: $jobCount" }
+
         val count = AtomicInteger(0)
-
-
         val jobs = transaction(db) {
             dbUtil.queryAbsentAst(repoId, timeRange = startDate..endDate)
         }
+        log.debug { "Loaded jobs: ${jobs.size}" }
 
         runBlocking(Dispatchers.Default) {
             val parsing: MutableList<Deferred<ParseJobResult?>> = jobs
@@ -156,7 +164,7 @@ class ParseCommand : CliktCommand(name = "preparse") {
                     }
                     if (doneList.isNotEmpty()) {
                         writeJobResult(db, doneList)
-                        log.info { "Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
+                        log.info { "($url) Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
                     }
                 }
             }
