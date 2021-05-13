@@ -82,6 +82,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         pattern,
                         support = sup,
                         confidence = sup.toDouble() / left,
+                        projects = d,
                         idf = ln(nDocuments.toDouble() / d)
                     )
                 }
@@ -98,6 +99,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[afterHash] = metrics.pattern.blob.second
                     it[support] = metrics.support
                     it[confidence] = metrics.confidence
+                    it[projects] = metrics.projects
                     it[idf] = metrics.idf
                 }
             }
@@ -135,5 +137,6 @@ private data class Metrics(
     val pattern: Pattern,
     val support: Int,
     val confidence: Double,
+    val projects: Int,
     val idf: Double
 )
