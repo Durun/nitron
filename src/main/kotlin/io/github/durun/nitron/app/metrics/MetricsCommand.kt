@@ -39,9 +39,6 @@ class MetricsCommand : CliktCommand(name = "metrics") {
     }
 
     private fun processOneDb(db: Database) {
-        transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(GlobalPatternsTable)
-        }
         val changes = transaction(db) {
             val c1 = CodesTable.alias("c1")
             val c2 = CodesTable.alias("c2")
@@ -104,7 +101,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
         }
 
         transaction(db) {
-            GlobalPatternsTable.deleteAll()
+            SchemaUtils.drop(GlobalPatternsTable)
+            SchemaUtils.createMissingTablesAndColumns(GlobalPatternsTable)
         }
         transaction(db) {
             metricses.forEach { metrics ->
