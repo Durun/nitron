@@ -8,6 +8,7 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.toMD5
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.metrics.ChangesTable
+import io.github.durun.nitron.inout.model.metrics.CodesTable
 import io.github.durun.nitron.inout.model.metrics.GlobalPatternsTable
 import io.github.durun.nitron.util.Log
 import io.github.durun.nitron.util.LogLevel
@@ -42,7 +43,14 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             SchemaUtils.createMissingTablesAndColumns(GlobalPatternsTable)
         }
         val changes = transaction(db) {
+            val c1 = CodesTable.alias("c1")
+            val c2 = CodesTable.alias("c2")
             ChangesTable
+                .innerJoin(otherTable = c1, onColumn = { beforeHash }, otherColumn = { c1[CodesTable.hash] })
+                .innerJoin(
+                    otherTable = c2,
+                    onColumn = { ChangesTable.afterHash },
+                    otherColumn = { c2[CodesTable.hash] })
                 .selectAll()
                 .map {
                     Change(
@@ -50,7 +58,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         filePath = it[ChangesTable.filepath],
                         pattern = Pattern(
                             hash = it[ChangesTable.beforeHash]?.toMD5() to it[ChangesTable.afterHash]?.toMD5(),
-                            blob = it[ChangesTable.beforeHash] to it[ChangesTable.afterHash]
+                            blob = it[ChangesTable.beforeHash] to it[ChangesTable.afterHash],
+                            text = it[c1[CodesTable.text]] to it[c2[CodesTable.text]]
                         )
                     )
 
@@ -76,6 +85,9 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         changeList.any { it.pattern.hash == pattern.hash }
                     }
 
+                    val beforeText = pattern.text.first
+                    val afterText = pattern.text.second
+
                     if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
 
                     Metrics(
@@ -83,7 +95,9 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         support = sup,
                         confidence = sup.toDouble() / left,
                         projects = d,
-                        idf = ln(nDocuments.toDouble() / d)
+                        idf = ln(nDocuments.toDouble() / d),
+                        dChars = afterText.length - beforeText.length,
+                        dTokens = afterText.split(' ').size - beforeText.split(' ').size
                     )
                 }
             }.map { it.await() }
@@ -101,6 +115,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[confidence] = metrics.confidence
                     it[projects] = metrics.projects
                     it[idf] = metrics.idf
+                    it[dChars] = metrics.dChars
+                    it[dTokens] = metrics.dTokens
                 }
             }
         }
@@ -115,7 +131,8 @@ private data class Change(
 
 private data class Pattern(
     val hash: Pair<MD5?, MD5?>,
-    val blob: Pair<Blob?, Blob?>
+    val blob: Pair<Blob?, Blob?>,
+    val text: Pair<String, String>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -138,5 +155,7 @@ private data class Metrics(
     val support: Int,
     val confidence: Double,
     val projects: Int,
-    val idf: Double
+    val idf: Double,
+    val dChars: Int,    // Pattern前後の文字数の増減
+    val dTokens: Int,   // Pattern前後のトークン数の増減
 )
