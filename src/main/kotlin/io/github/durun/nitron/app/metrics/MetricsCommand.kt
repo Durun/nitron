@@ -92,7 +92,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         support = sup,
                         confidence = sup.toDouble() / left,
                         projects = d,
-                        idf = ln(nDocuments.toDouble() / d),
+                        projectIdf = ln(nDocuments.toDouble() / d),
                         dChars = afterText.length - beforeText.length,
                         dTokens = afterText.split(' ').size - beforeText.split(' ').size
                     )
@@ -112,7 +112,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[support] = metrics.support
                     it[confidence] = metrics.confidence
                     it[projects] = metrics.projects
-                    it[idf] = metrics.idf
+                    it[projectIdf] = metrics.projectIdf
                     it[dChars] = metrics.dChars
                     it[dTokens] = metrics.dTokens
                 }
@@ -153,7 +153,7 @@ private data class Metrics(
     val support: Int,
     val confidence: Double,
     val projects: Int,
-    val idf: Double,
+    val projectIdf: Double,
     val dChars: Int,    // Pattern前後の文字数の増減
     val dTokens: Int,   // Pattern前後のトークン数の増減
 )
