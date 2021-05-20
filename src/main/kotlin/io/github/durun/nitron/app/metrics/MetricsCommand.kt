@@ -134,6 +134,20 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             }
         }
     }
+
+    companion object {
+        private val bugfixKeywords = listOf(
+            "fix",
+            "bug",
+            "error",
+            "fault",
+            "issue",
+            "mistake",
+            "incorrect",
+            "defect",
+            "flaw"
+        ).flatMap { listOf(it, it.first().toUpperCase() + it.drop(1)) }
+    }
 }
 
 private data class Revision(
