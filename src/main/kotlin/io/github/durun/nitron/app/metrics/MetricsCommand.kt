@@ -10,6 +10,7 @@ import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.metrics.ChangesTable
 import io.github.durun.nitron.inout.model.metrics.CodesTable
 import io.github.durun.nitron.inout.model.metrics.GlobalPatternsTable
+import io.github.durun.nitron.inout.model.metrics.RevisionsTable
 import io.github.durun.nitron.util.Log
 import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
@@ -43,11 +44,9 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             val c1 = CodesTable.alias("c1")
             val c2 = CodesTable.alias("c2")
             ChangesTable
-                .innerJoin(otherTable = c1, onColumn = { beforeHash }, otherColumn = { c1[CodesTable.hash] })
-                .innerJoin(
-                    otherTable = c2,
-                    onColumn = { ChangesTable.afterHash },
-                    otherColumn = { c2[CodesTable.hash] })
+                .innerJoin(c1, onColumn = { beforeHash }, otherColumn = { c1[CodesTable.hash] })
+                .innerJoin(c2, onColumn = { ChangesTable.afterHash }, otherColumn = { c2[CodesTable.hash] })
+                .innerJoin(RevisionsTable, onColumn = { ChangesTable.revision }, otherColumn = { id })
                 .selectAll()
                 .map {
                     Change(
@@ -57,6 +56,11 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                             hash = it[ChangesTable.beforeHash]?.toMD5() to it[ChangesTable.afterHash]?.toMD5(),
                             blob = it[ChangesTable.beforeHash] to it[ChangesTable.afterHash],
                             text = it[c1[CodesTable.text]] to it[c2[CodesTable.text]]
+                        ),
+                        revision = Revision(
+                            id = it[ChangesTable.revision],
+                            author = it[RevisionsTable.author],
+                            message = it[RevisionsTable.message]
                         )
                     )
 
@@ -101,7 +105,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         files = files,
                         fileIdf = ln(nFiles.toDouble() / files),
                         dChars = afterText.length - beforeText.length,
-                        dTokens = afterText.split(' ').size - beforeText.split(' ').size
+                        dTokens = afterText.split(' ').size - beforeText.split(' ').size,
+                        authors = supportingChanges.distinctBy { it.revision.author }.count(),
                     )
                 }
             }.map { it.await() }
@@ -124,16 +129,24 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[fileIdf] = metrics.fileIdf
                     it[dChars] = metrics.dChars
                     it[dTokens] = metrics.dTokens
+                    it[authors] = metrics.authors
                 }
             }
         }
     }
 }
 
+private data class Revision(
+    val id: String,
+    val author: String,
+    val message: String
+)
+
 private data class Change(
     val software: String,
     val filePath: String,
-    val pattern: Pattern
+    val pattern: Pattern,
+    val revision: Revision
 )
 
 private data class Pattern(
@@ -167,4 +180,5 @@ private data class Metrics(
     val fileIdf: Double,
     val dChars: Int,    // Pattern前後の文字数の増減
     val dTokens: Int,   // Pattern前後のトークン数の増減
+    val authors: Int,
 )

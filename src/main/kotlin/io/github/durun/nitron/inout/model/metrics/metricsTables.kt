@@ -39,5 +39,6 @@ object GlobalPatternsTable : Table("globalPatterns") {
     val fileIdf: Column<Double> = double("fileIdf")
     val dChars: Column<Int> = integer("dChars")
     val dTokens: Column<Int> = integer("dTokens")
+    val authors: Column<Int> = integer("authors")
     // TODO: more metrics
 }
