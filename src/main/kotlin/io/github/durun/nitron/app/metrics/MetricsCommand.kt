@@ -68,19 +68,24 @@ class MetricsCommand : CliktCommand(name = "metrics") {
 
         val softwares = changes.groupBy { it.software }
         val nDocuments = softwares.size
+        val nFiles = changes.distinctBy { it.filePath }.count()
         log.debug { "Softwares: ${softwares.keys}" }
 
 
         val metricses = runBlocking(Dispatchers.Default) {
             patterns.mapIndexed { i, pattern ->
                 async {
-                    val sup = changes.count { it.pattern.hash == pattern.hash }
+                    val supportingChanges = changes.filter { it.pattern.hash == pattern.hash }
+                    val sup = supportingChanges.count()
                     val left = changes.count { it.pattern.hash.first == pattern.hash.first }
 
                     // idf
-                    val d = softwares.count { (_, changeList) ->
+                    val projects = softwares.count { (_, changeList) ->
                         changeList.any { it.pattern.hash == pattern.hash }
                     }
+                    val files = supportingChanges
+                        .distinctBy { it.filePath }
+                        .count()
 
                     val beforeText = pattern.text.first
                     val afterText = pattern.text.second
@@ -91,8 +96,10 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         pattern,
                         support = sup,
                         confidence = sup.toDouble() / left,
-                        projects = d,
-                        projectIdf = ln(nDocuments.toDouble() / d),
+                        projects = projects,
+                        projectIdf = ln(nDocuments.toDouble() / projects),
+                        files = files,
+                        fileIdf = ln(nFiles.toDouble() / files),
                         dChars = afterText.length - beforeText.length,
                         dTokens = afterText.split(' ').size - beforeText.split(' ').size
                     )
@@ -113,6 +120,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[confidence] = metrics.confidence
                     it[projects] = metrics.projects
                     it[projectIdf] = metrics.projectIdf
+                    it[files] = metrics.files
+                    it[fileIdf] = metrics.fileIdf
                     it[dChars] = metrics.dChars
                     it[dTokens] = metrics.dTokens
                 }
@@ -154,6 +163,8 @@ private data class Metrics(
     val confidence: Double,
     val projects: Int,
     val projectIdf: Double,
+    val files: Int,
+    val fileIdf: Double,
     val dChars: Int,    // Pattern前後の文字数の増減
     val dTokens: Int,   // Pattern前後のトークン数の増減
 )
