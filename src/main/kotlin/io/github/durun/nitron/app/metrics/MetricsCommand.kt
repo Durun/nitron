@@ -98,6 +98,16 @@ class MetricsCommand : CliktCommand(name = "metrics") {
 
                     val beforeText = pattern.text.first
                     val afterText = pattern.text.second
+                    val beforeTokens = beforeText.split(' ')
+                    val afterTokens = afterText.split(' ')
+
+                    // count operators
+                    val beforeLt = beforeTokens.count { it == "<" || it == "<=" }
+                    val afterLt = afterTokens.count { it == "<" || it == "<=" }
+                    val beforeGt = beforeTokens.count { it == ">" || it == ">=" }
+                    val afterGt = afterTokens.count { it == ">" || it == ">=" }
+                    val dLessThan = afterLt - beforeLt
+                    val dGreaterThan = afterGt - beforeGt
 
                     if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
 
@@ -110,9 +120,10 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         files = files,
                         fileIdf = ln(nFiles.toDouble() / files),
                         dChars = afterText.length - beforeText.length,
-                        dTokens = afterText.split(' ').size - beforeText.split(' ').size,
+                        dTokens = afterTokens.size - beforeTokens.size,
                         authors = supportingChanges.distinctBy { it.revision.author }.count(),
-                        bugfixWords = bugfixWords.toDouble() / sup
+                        bugfixWords = bugfixWords.toDouble() / sup,
+                        changeToLessThan = if (dLessThan == -dGreaterThan) dLessThan else 0
                     )
                 }
             }.map { it.await() }
@@ -137,6 +148,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[dTokens] = metrics.dTokens
                     it[authors] = metrics.authors
                     it[bugfixWords] = metrics.bugfixWords
+                    it[changeToLessThan] = metrics.changeToLessThan
                 }
             }
         }
@@ -203,4 +215,5 @@ private data class Metrics(
     val dTokens: Int,   // Pattern前後のトークン数の増減
     val authors: Int,
     val bugfixWords: Double,// コミットメッセージに bugfix keyword が含まれているchangesの数
+    val changeToLessThan: Int,  // >, >= から <, <= への変更がされた数
 )
