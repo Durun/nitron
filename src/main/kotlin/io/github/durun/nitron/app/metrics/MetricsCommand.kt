@@ -91,6 +91,11 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         .distinctBy { it.filePath }
                         .count()
 
+                    // bugfix words
+                    val bugfixWords = supportingChanges.count { change ->
+                        bugfixKeywords.any { change.revision.message.contains(it, ignoreCase = true) }
+                    }
+
                     val beforeText = pattern.text.first
                     val afterText = pattern.text.second
 
@@ -107,13 +112,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         dChars = afterText.length - beforeText.length,
                         dTokens = afterText.split(' ').size - beforeText.split(' ').size,
                         authors = supportingChanges.distinctBy { it.revision.author }.count(),
-                        bugfixWords = supportingChanges.count { change ->
-                            bugfixKeywords.any {
-                                change.revision.message.contains(
-                                    it
-                                )
-                            }
-                        }
+                        bugfixWords = bugfixWords.toDouble() / sup
                     )
                 }
             }.map { it.await() }
@@ -154,7 +153,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             "incorrect",
             "defect",
             "flaw"
-        ).flatMap { listOf(it, it.first().toUpperCase() + it.drop(1)) }
+        )
     }
 }
 
@@ -203,5 +202,5 @@ private data class Metrics(
     val dChars: Int,    // Pattern前後の文字数の増減
     val dTokens: Int,   // Pattern前後のトークン数の増減
     val authors: Int,
-    val bugfixWords: Int,// コミットメッセージに bugfix keyword が含まれているchangesの数
+    val bugfixWords: Double,// コミットメッセージに bugfix keyword が含まれているchangesの数
 )
