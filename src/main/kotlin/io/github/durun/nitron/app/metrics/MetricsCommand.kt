@@ -40,6 +40,9 @@ class MetricsCommand : CliktCommand(name = "metrics") {
     }
 
     private fun processOneDb(db: Database) {
+        val patterns: MutableMap<Pair<MD5?, MD5?>, Pattern> = mutableMapOf()
+        val revisions: MutableMap<String, Revision> = mutableMapOf()
+
         val changes = transaction(db) {
             val c1 = CodesTable.alias("c1")
             val c2 = CodesTable.alias("c2")
@@ -49,25 +52,31 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                 .innerJoin(RevisionsTable, onColumn = { ChangesTable.revision }, otherColumn = { id })
                 .selectAll()
                 .map {
+                    val hashPair = it[ChangesTable.beforeHash]?.toMD5() to it[ChangesTable.afterHash]?.toMD5()
+                    val revisionId = it[ChangesTable.revision]
                     Change(
                         software = it[ChangesTable.software],
                         filePath = it[ChangesTable.filepath],
-                        pattern = Pattern(
-                            hash = it[ChangesTable.beforeHash]?.toMD5() to it[ChangesTable.afterHash]?.toMD5(),
-                            blob = it[ChangesTable.beforeHash] to it[ChangesTable.afterHash],
-                            text = it[c1[CodesTable.text]] to it[c2[CodesTable.text]]
-                        ),
-                        revision = Revision(
-                            id = it[ChangesTable.revision],
-                            author = it[RevisionsTable.author],
-                            message = it[RevisionsTable.message]
-                        )
+                        pattern = patterns.computeIfAbsent(hashPair) { _ ->
+                            Pattern(
+                                hash = hashPair,
+                                blob = it[ChangesTable.beforeHash] to it[ChangesTable.afterHash],
+                                text = it[c1[CodesTable.text]] to it[c2[CodesTable.text]]
+                            )
+                        },
+                        revision = revisions.computeIfAbsent(revisionId) { _ ->
+                            Revision(
+                                id = revisionId,
+                                author = it[RevisionsTable.author],
+                                message = it[RevisionsTable.message]
+                            )
+                        }
                     )
 
                 }
         }
 
-        val patterns = changes.map { it.pattern }.distinct()
+        //val patterns = changes.map { it.pattern }.distinct()
         log.debug { "nPatterns: ${patterns.size}" }
 
         val softwares = changes.groupBy { it.software }
@@ -77,7 +86,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
 
 
         val metricses = runBlocking(Dispatchers.Default) {
-            patterns.mapIndexed { i, pattern ->
+            patterns.values.mapIndexed { i, pattern ->
                 async {
                     val supportingChanges = changes.filter { it.pattern.hash == pattern.hash }
                     val sup = supportingChanges.count()
