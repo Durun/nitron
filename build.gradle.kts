@@ -4,32 +4,32 @@ version = "0.1"
 plugins {
     `maven-publish`
 
-    kotlin("jvm") version "1.4.32"
-    kotlin("plugin.serialization") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
 
     application
 
-    id("org.jetbrains.dokka") version "1.4.30"
+    id("org.jetbrains.dokka") version "1.4.32"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     // Versions
     val antlrVersion = "4.9.2"
     val inmemantlrVersion = "1.7.0"
-    val kotestVersion = "4.4.3"
+    val kotestVersion = "4.6.0"
     val cliktVersion = "2.4.0"
     val sqliteJdbcVersion = "3.34.0"
     val exposedVersion = "0.17.13"
-    val kotlinSerializationVersion = "1.0.1"
+    val kotlinSerializationVersion = "1.2.1"
     val jgitVersion = "5.11.0.202103091610-r"
-    val kotlinCoroutineVersion = "1.4.3"
+    val kotlinCoroutineVersion = "1.5.0-native-mt"
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:$antlrVersion")

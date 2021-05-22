@@ -3,6 +3,7 @@ package io.github.durun.nitron.core
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.edgecases
 import io.kotest.property.arbitrary.string
 
 class MD5Test : FreeSpec({
