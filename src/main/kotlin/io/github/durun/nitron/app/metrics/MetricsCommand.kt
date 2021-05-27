@@ -67,8 +67,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         revision = revisions.computeIfAbsent(revisionId) { _ ->
                             Revision(
                                 id = revisionId,
-                                author = it[RevisionsTable.author],
-                                message = it[RevisionsTable.message]
+                                author = runCatching { it[RevisionsTable.author] }.getOrDefault("null"),
+                                message = runCatching { it[RevisionsTable.message] }.getOrDefault("null")
                             )
                         }
                     )
