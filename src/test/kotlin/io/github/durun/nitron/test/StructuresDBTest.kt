@@ -6,10 +6,10 @@ import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.node.digest
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.github.durun.nitron.core.parser.ParserStore
+import io.github.durun.nitron.core.parser.antlr.nodeTypePoolOf
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
