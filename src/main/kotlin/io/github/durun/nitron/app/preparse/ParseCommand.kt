@@ -164,8 +164,8 @@ class ParseCommand : CliktCommand(name = "preparse") {
                     }
                     if (doneList.isNotEmpty()) {
                         writeJobResult(db, doneList)
-                        log.info { "($url) Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
                     }
+                    log.info { "($url) Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
                 }
             }
         }
