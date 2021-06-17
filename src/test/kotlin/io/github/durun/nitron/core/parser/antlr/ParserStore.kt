@@ -1,7 +1,6 @@
-package io.github.durun.nitron.core.parser
+package io.github.durun.nitron.core.parser.antlr
 
 import io.github.durun.nitron.core.config.GrammarConfig
-import io.github.durun.nitron.core.parser.antlr.GenericParser
 import io.kotest.mpp.log
 import java.nio.file.Path
 
