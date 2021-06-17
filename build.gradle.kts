@@ -47,7 +47,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     // Use the Kotlin JDK 8 standard library.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(kotlin("stdlib-jdk8"))
 
     // Use the Kotlin test library.
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
@@ -56,8 +56,8 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClass.set("io.github.durun.nitron.app.AppKt")
     mainClassName = "io.github.durun.nitron.app.AppKt"
+    mainClass.set(mainClassName)
 }
 
 tasks {
