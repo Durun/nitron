@@ -29,16 +29,16 @@ internal class GitUtil(
 
     fun openRepository(repoUrl: URL): Git {
         val repoDir = workingDir.resolve(repoUrl.file.trim('/'))
-        return runCatching {
+        return if (repoDir.exists()) {
             log.info { "Opening: $repoUrl" }
             Git.open(repoDir)
-        }.recover {
+        } else {
             log.info { "Cloning: $repoUrl" }
             Git.cloneRepository()
                 .setDirectory(repoDir)
                 .setURI(repoUrl.toString())
                 .call()
-        }.getOrThrow()
+        }
     }
 
     fun checkoutMainBranch(git: Git) {
