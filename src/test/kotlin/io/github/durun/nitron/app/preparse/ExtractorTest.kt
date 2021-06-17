@@ -3,8 +3,8 @@ package io.github.durun.nitron.app.preparse
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
-import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.ParserStore
+import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
 import io.github.durun.nitron.inout.database.MemoryDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.kotest.core.spec.style.FreeSpec

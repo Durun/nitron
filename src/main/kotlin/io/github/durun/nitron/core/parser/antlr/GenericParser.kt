@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.parser
+package io.github.durun.nitron.core.parser.antlr
 
 import io.github.durun.nitron.util.logger
 import org.antlr.v4.Tool

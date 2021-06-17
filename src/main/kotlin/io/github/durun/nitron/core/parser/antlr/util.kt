@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.parser
+package io.github.durun.nitron.core.parser.antlr
 
 import org.snt.inmemantlr.utils.Tuple
 

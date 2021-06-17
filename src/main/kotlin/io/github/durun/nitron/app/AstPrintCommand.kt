@@ -9,8 +9,8 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
+import io.github.durun.nitron.core.parser.antlr.GenericParser
 import java.io.BufferedWriter
 import java.io.File
 import java.nio.file.Path
@@ -21,24 +21,24 @@ class AstPrintCommand : CliktCommand(
         name = "print"
 ) {
     private val inputs: List<File> by argument(
-            name = "input",
-            help = "input file to parse"
+        name = "input",
+        help = "input file to parse"
     ).file(
-            readable = true
+        mustBeReadable = true
     ).multiple()
 
     private val configPath: Path by option(
-            "--config", "-c",
-            help = "config file (.json)"
+        "--config", "-c",
+        help = "config file (.json)"
     ).path(
-            readable = true
+        mustBeReadable = true
     ).required()
 
     private val outputPath: Path? by option(
-            "--output", "-o",
-            help = "output file"
+        "--output", "-o",
+        help = "output file"
     ).path(
-            writable = true
+        mustBeWritable = true
     )
 
     @ExperimentalPathApi

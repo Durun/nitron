@@ -6,8 +6,8 @@ import io.github.durun.nitron.core.ast.processors.AstNormalizer
 import io.github.durun.nitron.core.ast.processors.AstSplitter
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.config.LangConfig
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
+import io.github.durun.nitron.core.parser.antlr.GenericParser
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter

@@ -4,11 +4,9 @@ import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.NitronConfig
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
+import io.github.durun.nitron.core.parser.antlr.GenericParser
 import kotlinx.serialization.encodeToString
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.ObjectId
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
 import java.util.zip.GZIPInputStream

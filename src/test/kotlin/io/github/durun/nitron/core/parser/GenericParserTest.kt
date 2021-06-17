@@ -2,6 +2,7 @@ package io.github.durun.nitron.core.parser
 
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
+import io.github.durun.nitron.core.parser.antlr.GenericParser
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.spec.style.freeSpec
