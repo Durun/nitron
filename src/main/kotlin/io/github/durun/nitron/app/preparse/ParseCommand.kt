@@ -10,12 +10,13 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
+import io.github.durun.nitron.util.Log
+import io.github.durun.nitron.util.LogLevel
 import io.github.durun.nitron.util.logger
 import io.github.durun.nitron.util.parseToDateTime
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.eclipse.jgit.api.Git
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -51,17 +52,26 @@ class ParseCommand : CliktCommand(name = "preparse") {
         .convert { it.parseToDateTime() }
         .defaultLazy { DateTime(Long.MAX_VALUE) }
 
+    private val isVerbose: Boolean by option("--verbose").flag()
+    private val isDebug: Boolean by option("--debug").flag()
     private val bufferSize: Int by option("-b")
         .int()
-        .default(1000)
+        .default(100)
 
     private val log by logger()
 
-    override fun toString(): String = "<preparse $dbFiles --repository=$repoUrl>"
+    override fun toString(): String = "<preparse>"
 
     @kotlin.io.path.ExperimentalPathApi
     override fun run() {
-        dbFiles.forEach { dbFile->
+        LogLevel = when {
+            isVerbose -> Log.Level.VERBOSE
+            isDebug -> Log.Level.DEBUG
+            else -> Log.Level.INFO
+        }
+
+        log.info { "Available languages: ${config.langConfig.keys}" }
+        dbFiles.forEach { dbFile ->
             runCatching {
                 log.info { "Start DB=$dbFile" }
                 processOneDB(dbFile)
@@ -77,17 +87,16 @@ class ParseCommand : CliktCommand(name = "preparse") {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
 
-        log.info { "Available languages: ${config.langConfig.keys}" }
         config.langConfig.entries.forEach { (name, config) ->
             check(dbUtil.isLanguageConsistent(name, config)) { "Invalid language: $name" }
         }
-        log.info { "Language check OK" }
+        log.debug { "Language check OK" }
 
         // list asts table
         dbUtil.prepareAstTable(config, startDate..endDate)
 
         // normalize
-        log.info { "Normalizing 'asts' table" }
+        log.debug { "Normalizing 'asts' table" }
         transaction(db) {
             AstTable.setNullOnAbsentContent()
         }
@@ -124,28 +133,53 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
         val parseUtil = ParseUtil(config)
         val jobCount = transaction(db) { dbUtil.countAbsentAst(repoId, timeRange = startDate..endDate) }
+        log.debug { "Counted remain jobs: $jobCount" }
+
         val count = AtomicInteger(0)
-        do {
-            val jobs: List<ParseJobInfo> =
-                transaction(db) { dbUtil.queryAbsentAst(repoId, limit = bufferSize, timeRange = startDate..endDate) }
-            log.verbose { "Got ${jobs.size} jobs" }
+        val jobs = transaction(db) {
+            dbUtil.queryAbsentAst(repoId, timeRange = startDate..endDate)
+        }
+        log.debug { "Loaded jobs: ${jobs.size}" }
 
-            val parseResults = runBlocking(Dispatchers.Default) {
-                jobs
-                    .map { async { calcJob(git, parseUtil, it) } }
-                    .mapNotNull { it.await() }
-            }
+        runBlocking(Dispatchers.Default) {
+            val parsing: MutableList<Deferred<ParseJobResult?>> = jobs
+                .mapIndexed { index, it ->
+                    async {
+                        val result = calcJob(git, parseUtil, it) ?: return@async null
+                        log.verbose { "Parsed: $repoUrl $index / $jobCount: $it" }
+                        result
+                    }
+                }.toMutableList()
 
-            transaction(db) {
-                parseResults.forEach { (astId, parseResult) ->
-                    val contentId = parseResult
-                        ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
-                        ?: AstTable.FAILED_TO_PARSE
-                    AstTable.updateContent(astId, contentId)
+            runBlocking(Dispatchers.IO) {
+                while (parsing.isNotEmpty()) {
+                    log.verbose { "Wait..." }
+                    delay(5000)
+                    val doneIndices = parsing.mapIndexedNotNull { i, job ->
+                        i.takeIf { job.isCompleted }
+                    }
+                    val doneList: MutableList<ParseJobResult> = mutableListOf()
+                    doneIndices.asReversed().forEach { i ->
+                        parsing.removeAt(i).await()?.let { doneList += it }
+                    }
+                    if (doneList.isNotEmpty()) {
+                        writeJobResult(db, doneList)
+                    }
+                    log.info { "($url) Wrote ${doneList.size} (${count.addAndGet(doneList.size)}/$jobCount)" }
                 }
-                log.info { "Done: $repoUrl ${count.addAndGet(parseResults.size)} / $jobCount" }
             }
-        } while (jobs.isNotEmpty())
+        }
+    }
+
+    private fun writeJobResult(db: Database, jobs: Collection<ParseJobResult>) {
+        transaction(db) {
+            jobs.forEach { (astId, parseResult) ->
+                val contentId = parseResult
+                    ?.let { AstContentTable.insertIfAbsentAndGetId(it) }
+                    ?: AstTable.FAILED_TO_PARSE
+                AstTable.updateContent(astId, contentId)
+            }
+        }
     }
 
     private fun calcJob(git: Git, parseUtil: ParseUtil, job: ParseJobInfo): ParseJobResult? {
@@ -161,9 +195,10 @@ class ParseCommand : CliktCommand(name = "preparse") {
             }
         val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
             .onFailure {
-                log.warn { "Failed to parse: $job ${it.message}" }
+                System.err.println("Failed to parse: $job ${it.message}")
             }
             .getOrNull()
+        log.verbose { "Success parsing: $job" }
         return ParseJobResult(job.astId, parsed)
     }
 }

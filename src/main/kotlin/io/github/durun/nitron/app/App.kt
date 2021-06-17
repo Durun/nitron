@@ -2,6 +2,7 @@ package io.github.durun.nitron.app
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
+import io.github.durun.nitron.app.metrics.MetricsCommand
 import io.github.durun.nitron.app.preparse.FetchCommand
 import io.github.durun.nitron.app.preparse.ParseCommand
 import io.github.durun.nitron.app.preparse.RegisterCommand
@@ -17,11 +18,12 @@ class App : CliktCommand() {
 fun main(args: Array<String>) {
 	LogLevel = Log.Level.INFO
     App().subcommands(
-		AstPrintCommand(),
-		CodeNormalizeCommand(),
-		AstJsonImportCommand(),
-		RegisterCommand(),
-		FetchCommand(),
-		ParseCommand()
-	).main(args)
+        AstPrintCommand(),
+        CodeNormalizeCommand(),
+        AstJsonImportCommand(),
+        RegisterCommand(),
+        FetchCommand(),
+        ParseCommand(),
+        MetricsCommand()
+    ).main(args)
 }
