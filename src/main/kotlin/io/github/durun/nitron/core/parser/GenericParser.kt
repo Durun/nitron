@@ -1,11 +1,11 @@
 package io.github.durun.nitron.core.parser
 
+import io.github.durun.nitron.util.logger
 import org.antlr.v4.Tool
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.tool.ast.GrammarRootAST
-import org.slf4j.LoggerFactory
 import org.snt.inmemantlr.comp.CunitProvider
 import org.snt.inmemantlr.comp.DefaultCompilerOptionsProvider
 import org.snt.inmemantlr.comp.FileProvider
@@ -31,25 +31,25 @@ private constructor(
 		private val useCached: Boolean = true
 ) {
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(GenericParser::class.java)
+        private val LOGGER by logger()
 
-		/**
-		 * Instantiate [GenericParser]
-		 * @param grammarContent contents of grammar(.g4) files
-		 * @param utilityJavaFiles paths to utility(.java) files
-		 */
-		fun init(
-				grammarContent: Collection<String>,
-				utilityJavaFiles: Collection<Path> = emptySet(),
-				toolCustomizer: Tool.() -> Unit = {}
-		): GenericParser {
+        /**
+         * Instantiate [GenericParser]
+         * @param grammarContent contents of grammar(.g4) files
+         * @param utilityJavaFiles paths to utility(.java) files
+         */
+        fun init(
+            grammarContent: Collection<String>,
+            utilityJavaFiles: Collection<Path> = emptySet(),
+            toolCustomizer: Tool.() -> Unit = {}
+        ): GenericParser {
             val tool = InmemantlrTool()
                 .apply(toolCustomizer)
                 .apply {
                     val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
                     // NOTE: Don't change order of sortGrammarByTokenVocab()
                     sorted.forEach {
-                        LOGGER.debug("gast ${it.grammarName}")
+                        LOGGER.debug { "gast ${it.grammarName}" }
                         createPipeline(it)
                     }
                 }
@@ -73,7 +73,7 @@ private constructor(
 
     // Non thread-local
     private val masterCompilerObj by lazy {
-        LOGGER.debug("compile")
+        LOGGER.debug { "Compiling" }
         val cUnits: Set<CunitProvider> = setOfNotNull(fileProvider.takeIf { it.hasItems() }) + antlr.compilationUnits
         StringCompiler()
             .apply { compile(cUnits, compilerOptions) }
@@ -83,8 +83,13 @@ private constructor(
     // Thread-local
     private val compiler: ThreadLocal<StringCompiler> by lazy {
         ThreadLocal.withInitial {
+            LOGGER.debug { "Loading compiler object" }
             StringCompiler()
-                .apply { load(masterCompilerObj) }
+                .apply {
+                    synchronized(masterCompilerObj) {
+                        load(masterCompilerObj)
+                    }
+                }
         }
     }
 
@@ -93,7 +98,7 @@ private constructor(
         utilityJavaFiles.forEach {
             val name = it.toFile().nameWithoutExtension
             val content = it.toFile().readText()
-            LOGGER.debug("add utility ")
+            LOGGER.debug { "add utility" }
             addFiles(MemorySource(name, content))
         }
     }
@@ -101,9 +106,9 @@ private constructor(
     private val activeLexer: String
 
     init {
-        LOGGER.debug("process")
+        LOGGER.debug { "process" }
         antlr.pipelines.flatMap { it.items }.forEach {
-            LOGGER.debug("${it.name} $it")
+            LOGGER.debug { "${it.name} $it" }
         }
         val (parser, lexer) = antlr.process()
         activeLexer = lexer
@@ -175,13 +180,11 @@ private constructor(
 	}
 
 	private fun loadLexer(input: Reader, lexerName: String): Lexer {
-        LOGGER.debug("load lexer $lexerName")
         val stream: CharStream = streamProvider.getCharStream(input.readText())
         return compiler.get().instanciateLexer(stream, lexerName, useCached)
     }
 
 	private fun loadParser(lexer: Lexer, parserName: String): Parser {
-        LOGGER.debug("load parser $parserName")
         val tokens: CommonTokenStream = CommonTokenStream(lexer)
             .apply { fill() }
         return (compiler.get().instanciateParser(tokens, parserName)
