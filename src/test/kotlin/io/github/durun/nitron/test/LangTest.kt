@@ -33,11 +33,11 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 		val parser = ParserStore.getOrNull(config.grammar)
 		"grammar files exist" {
 			val files = config.grammar.grammarFilePaths + config.grammar.utilJavaFilePaths
-			log("${config.fileName}: files=$files")
-			files shouldHaveAtLeastSize 1
-			files.forAll {
-				it.shouldBeReadable()
-			}
+            log { "${config.fileName}: files=$files" }
+            files shouldHaveAtLeastSize 1
+            files.forAll {
+                it.shouldBeReadable()
+            }
 		}
 		"defines parser settings" {
 			shouldNotThrowAny {
@@ -45,20 +45,24 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 			}
 		}
 		"defines start rule" {
-			val startRule = config.grammar.startRule
-			log("${config.fileName}: startRule=$startRule")
-			startRule shouldBeIn parser!!.antlrParser.ruleNames
-		}
+            val startRule = config.grammar.startRule
+            log { "${config.fileName}: startRule=$startRule" }
+            startRule shouldBeIn parser!!.antlrParser.ruleNames
+        }
 		"defines at least 1 extension of sourcecode" {
-			val extensions = config.extensions
-			log("${config.fileName}: extensions=$extensions")
-			extensions shouldHaveAtLeastSize 1
-		}
+            val extensions = config.extensions
+            log { "${config.fileName}: extensions=$extensions" }
+            extensions shouldHaveAtLeastSize 1
+        }
 		"uses correct rule/token name" {
-			val usedRules = config.process.normalizeConfig.ignoreRules +
-					config.process.normalizeConfig.nonNumberedRuleMap.flatMap { it.key } +
-					config.process.normalizeConfig.numberedRuleMap.flatMap { it.key } +
-					config.process.splitConfig.splitRules
+			val usedRules: List<String> = (
+                    config.process.normalizeConfig.ignoreRules +
+                            config.process.normalizeConfig.mapping.keys +
+                            config.process.normalizeConfig.indexedMapping.keys +
+                            config.process.splitConfig.splitRules
+                    )
+                .flatMap { it.split('/').filter(String::isNotEmpty) }
+                .filterNot { it.contains(Regex("[^a-zA-Z]")) }
 			val antlrParser = parser!!.antlrParser
 			val allowedRules = antlrParser.ruleNames + antlrParser.tokenTypeMap.keys
 			runCatching {

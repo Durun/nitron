@@ -1,12 +1,10 @@
 package io.github.durun.nitron.binding.cpanalyzer
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.path.AstPath
+import io.github.durun.nitron.core.ast.processors.AstNormalizer
+import io.github.durun.nitron.core.ast.processors.AstSplitter
 import io.github.durun.nitron.core.ast.type.NodeTypePool
-import io.github.durun.nitron.core.ast.visitor.AstVisitor
-import io.github.durun.nitron.core.ast.visitor.astIgnoreVisitorOf
-import io.github.durun.nitron.core.ast.visitor.astSplitVisitorOf
-import io.github.durun.nitron.core.ast.visitor.normalizing.AstNormalizeVisitor
-import io.github.durun.nitron.core.ast.visitor.normalizing.astNormalizeVisitorOf
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.parser.AstBuildVisitor
 import io.github.durun.nitron.core.parser.GenericParser
@@ -19,46 +17,36 @@ class CodeProcessor(
     config: LangConfig,
     outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-    val nodeTypePool: NodeTypePool
-    private val parser: GenericParser
-    private val nodeBuilder: AstBuildVisitor
-    private val startRule: String
-    private val splitVisitor: ThreadLocal<AstVisitor<List<AstNode>>>
-    private val ignoreVisitor: AstVisitor<AstNode?>
-    private val normalizer: ThreadLocal<AstNormalizeVisitor>
-    private val recorder: JsonCodeRecorder? // TODO recording feature should be separated
-
-    init {
-        parser = GenericParser.fromFiles(
-            grammarFiles = config.grammar.grammarFilePaths,
-            utilityJavaFiles = config.grammar.utilJavaFilePaths
+    private val parser: GenericParser = GenericParser.fromFiles(
+        grammarFiles = config.grammar.grammarFilePaths,
+        utilityJavaFiles = config.grammar.utilJavaFilePaths
+    )
+    private val nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
+    val nodeTypePool: NodeTypePool = nodeBuilder.nodeTypes
+    private val startRule: String = config.grammar.startRule
+    private val splitter = ThreadLocal.withInitial {
+        AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
+    }
+    private val normalizer = ThreadLocal.withInitial {
+        AstNormalizer(
+            mapping = config.process.normalizeConfig.mapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, nodeTypePool) to symbol
+            },
+            numberedMapping = config.process.normalizeConfig.indexedMapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, nodeTypePool) to symbol
+            },
+            ignoreRules = config.process.normalizeConfig.ignoreRules.map {
+                AstPath.of(it, nodeTypePool)
+            }
         )
-        nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
-        nodeTypePool = nodeBuilder.nodeTypes
-        startRule = config.grammar.startRule
-        ignoreVisitor =
-            astIgnoreVisitorOf(types = nodeTypePool, ignoreTypes = config.process.normalizeConfig.ignoreRules)
+    }
 
-        splitVisitor = object : ThreadLocal<AstVisitor<List<AstNode>>>() {
-            override fun initialValue() =
-                astSplitVisitorOf(types = nodeTypePool, splitTypes = config.process.splitConfig.splitRules)
-        }
-
-        normalizer = object : ThreadLocal<AstNormalizeVisitor>() {
-            override fun initialValue() =
-                astNormalizeVisitorOf(
-                    nonNumberedRuleMap = config.process.normalizeConfig.nonNumberedRuleMap,
-                    numberedRuleMap = config.process.normalizeConfig.numberedRuleMap,
-                    types = nodeTypePool
-                )
-        }
-
-        recorder = outputPath?.let {
-            JsonCodeRecorder(
-                nodeTypePool = nodeTypePool,
-                destination = it
-            )
-        }
+    // TODO recording feature should be separated
+    private val recorder: JsonCodeRecorder? = outputPath?.let {
+        JsonCodeRecorder(
+            nodeTypePool = nodeTypePool,
+            destination = it
+        )
     }
 
     fun parse(input: String): AstNode {
@@ -67,7 +55,7 @@ class CodeProcessor(
     }
 
     fun split(input: AstNode): List<AstNode> {
-        return input.accept(splitVisitor.get())
+        return splitter.get().process(input)
     }
 
     fun split(input: String): List<AstNode> {
@@ -75,18 +63,12 @@ class CodeProcessor(
         return split(ast)
     }
 
-    private fun dropIgnore(input: AstNode): AstNode? {
-        return input
-            .accept(ignoreVisitor)
-    }
-
-    private fun normalize(input: AstNode): AstNode {
-        return normalizer.get().normalize(input)
+    private fun normalize(input: AstNode): AstNode? {
+        return normalizer.get().process(input)
     }
 
     fun proceess(input: AstNode): AstNode? {
-        return dropIgnore(input)
-            ?.let { normalize(it) }
+        return normalize(input)
     }
 
     fun proceess(input: List<AstNode>): List<AstNode> {

@@ -21,58 +21,19 @@
 			]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["string_literal"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["CHARACTER_LITERAL"],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["INTEGER_LITERAL"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["HEX_INTEGER_LITERAL"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["REAL_LITERAL"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"primary_expression_start",
-						"identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"variable_declarator",
-						"identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"local_variable_declarator",
-						"identifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"constant_declarator",
-						"identifier"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"string_literal": "\"S\"",
+				"CHARACTER_LITERAL": "'C'",
+				"INTEGER_LITERAL": "N",
+				"HEX_INTEGER_LITERAL": "N",
+				"REAL_LITERAL": "N"
+			},
+			"indexedMapping": {
+			  "//primary_expression[./*[2]/.[@tag!='method_invocation'] or count(./*)=1]/primary_expression_start/identifier": "$V",
+			  "//variable_declarator/identifier": "$V",
+			  "//local_variable_declarator/identifier": "$V",
+			  "//constant_declarator/identifier": "$V"
+			},
 			"ignoreRules": [
 				"global_attribute_section",
 				"extern_alias_directive",

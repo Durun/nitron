@@ -18,34 +18,18 @@
       ]
     },
     "normalizeConfig": {
-      "nonNumberedRuleMap": [
-        {
-          "fromRules": ["StringLiteral"],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": ["TemplateStringLiteral"],
-          "toSymbol": "\"S\""
-        },
-        {
-          "fromRules": ["numericLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["bigintLiteral"],
-          "toSymbol": "N"
-        },
-        {
-          "fromRules": ["BooleanLiteral"],
-          "toSymbol": "$L"
-        }
-      ],
-      "numberedRuleMap": [
-        {
-          "fromRules": ["Identifier"],
-          "toSymbol": "$V"
-        }
-      ],
+      "mapping": {
+        "StringLiteral": "\"S\"",
+        "TemplateStringLiteral": "\"S\"",
+        "numericLiteral": "N",
+        "bigintLiteral": "N",
+        "BooleanLiteral": "$L"
+      },
+      "indexedMapping": {
+        "//singleExpression[./*[@tag='Dot']]/*[1]": "$V",
+        "//identifier[../../*[2]/@tag!='arguments' and ../../*[2]/@tag!='Dot']": "$V",
+        "//argument/singleExpression[./*[@tag!='Dot']]/identifier": "$V"
+      },
       "ignoreRules": [
         "importStatement",
         "EOF"

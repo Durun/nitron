@@ -1,56 +1,37 @@
 {
-    "extensions": [".kt"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/kotlin/kotlin/KotlinLexer.g4",
-			"../grammars/kotlin/kotlin/KotlinParser.g4",
-			"../grammars/kotlin/kotlin/UnicodeClasses.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "kotlinFile"
-	},
-	"processConfig": {
+  "extensions": [
+	".kt"
+  ],
+  "grammarConfig": {
+	"grammarFiles": [
+	  "../grammars/kotlin/kotlin/KotlinLexer.g4",
+	  "../grammars/kotlin/kotlin/KotlinParser.g4",
+	  "../grammars/kotlin/kotlin/UnicodeClasses.g4"
+	],
+	"utilJavaFiles": [],
+	"startRule": "kotlinFile"
+  },
+  "processConfig": {
 		"splitConfig": {
 			"splitRules": ["statement"]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["stringLiteral"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["CharacterLiteral"],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["IntegerLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["RealLiteral"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"atomicExpression",
-						"simpleIdentifier"
-					],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": [
-						"variableDeclaration",
-						"simpleIdentifier"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"stringLiteral": "\"S\"",
+				"CharacterLiteral": "'C'",
+				"IntegerLiteral": "N",
+				"RealLiteral": "N"
+			},
+			"indexedMapping": {
+			  "//postfixUnaryExpression[../*[1]/.[@tag!='memberAccessOperator'] and ./*[2]/*/*[@tag!='valueArguments']]/*[1]/simpleIdentifier": "$V",
+			  "//variableDeclaration/simpleIdentifier": "$V",
+			  "//multiVariableDeclaration/simpleIdentifier": "$V"
+			},
 			"ignoreRules": [
-				"annotation",
-				"preamble"
+			  "annotation",
+			  "preamble",
+			  "NL",
+			  "EOF"
 			]
 		}
 	}

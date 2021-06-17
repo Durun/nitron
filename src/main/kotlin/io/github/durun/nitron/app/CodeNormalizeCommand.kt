@@ -49,11 +49,12 @@ class CodeNormalizeCommand : CliktCommand(
         val config = LangConfigLoader.load(configPath)
         val processor = CodeProcessor(config)
         inputs
-                .forEach { input ->
-                    val text = processor.processText(input.readText())
-                    output.appendLine("\n@ ${input.path}")
-                    output.appendLine(text)
-                }
+            .forEach { input ->
+                val text = processor.processText(input.readText())
+                output.appendLine("\n@ ${input.path}")
+                output.appendLine(text)
+            }
+        output.flush()
     }
 
 	@ExperimentalPathApi

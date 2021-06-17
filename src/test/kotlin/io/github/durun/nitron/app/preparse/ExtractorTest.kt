@@ -4,7 +4,7 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.ParserStore
 import io.github.durun.nitron.inout.database.MemoryDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.kotest.core.spec.style.FreeSpec
@@ -87,10 +87,7 @@ class ExtractorTest : FreeSpec({
 
 private val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
 private val javaConfig = config.langConfig["java"]!!.grammar
-private val parser = GenericParser.fromFiles(
-    javaConfig.grammarFilePaths,
-    javaConfig.utilJavaFilePaths
-)
+private val parser = ParserStore.getOrThrow(javaConfig)
 private val converter = AstBuildVisitor(parser.antlrParser.grammarFileName, parser.antlrParser)
 private val testCode = """
     class Sample {

@@ -4,32 +4,32 @@ version = "0.1"
 plugins {
     `maven-publish`
 
-    kotlin("jvm") version "1.4.31"
-    kotlin("plugin.serialization") version "1.4.31"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
 
     application
 
-    id("org.jetbrains.dokka") version "1.4.20"
+    id("org.jetbrains.dokka") version "1.4.32"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     // Versions
-    val antlrVersion = "4.9.1"
+    val antlrVersion = "4.9.2"
     val inmemantlrVersion = "1.7.0"
-    val kotestVersion = "4.4.3"
+    val kotestVersion = "4.6.0"
     val cliktVersion = "2.4.0"
     val sqliteJdbcVersion = "3.34.0"
-    val exposedVersion = "0.17.9"
-    val kotlinSerializationVersion = "1.0.1"
-    val jgitVersion = "5.10.0.202012080955-r"
-    val kotlinCoroutineVersion = "1.4.3"
+    val exposedVersion = "0.17.13"
+    val kotlinSerializationVersion = "1.2.1"
+    val jgitVersion = "5.12.0.202106070339-r"
+    val kotlinCoroutineVersion = "1.5.0-native-mt"
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:$antlrVersion")
@@ -40,6 +40,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
     implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutineVersion")
+    implementation("jaxen:jaxen:1.2.0")
+    implementation("org.apache.commons:commons-text:1.9")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))

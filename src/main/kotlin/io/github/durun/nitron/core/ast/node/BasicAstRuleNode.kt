@@ -8,25 +8,18 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("r")
 class BasicAstRuleNode(
-        @Contextual
+    @Contextual
         @SerialName("t")
         override val type: RuleType,
 
-        @SerialName("c")
-        override var children: List<AstNode>
+    @SerialName("c")
+    override val children: MutableList<AstNode>
 ) : AstRuleNode {
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
     }
 
-    override fun replaceChildren(newChildren: List<AstNode>): AstRuleNode {
-        this.children = newChildren
-        return this
-    }
-
-    override fun copyWithChildren(children: List<AstNode>): AstRuleNode {
-        return BasicAstRuleNode(type, children)
-    }
+    override fun copy() = BasicAstRuleNode(type, children.map { it.copy() }.toMutableList())
 
     override fun toString(): String = getText()
 

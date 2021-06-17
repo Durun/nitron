@@ -23,7 +23,7 @@ class RegisterCommand : CliktCommand(name = "preparse-register") {
 		.path(readable = true)
 	private val config = (customConfig ?: Path.of("config/nitron.json"))
 		.let { NitronConfigLoader.load(it) }
-	private val dbFile: Path by argument(name = "--database", help = "Database file")
+	private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
 		.path(folderOkay = false)
 	private val remote: URL? by option("--remote", help = "Git repository URL")
 		.convert {

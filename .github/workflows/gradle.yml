@@ -27,7 +27,7 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: nitron.jar
-        path: build/libs/nitron-0.1-SNAPSHOT-all.jar
+        name: build
+        path: build
     - name: Test
       run: ./gradlew test

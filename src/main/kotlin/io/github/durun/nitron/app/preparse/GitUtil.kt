@@ -17,10 +17,15 @@ import java.io.File
 import java.net.URL
 
 internal class GitUtil(
-    val workingDir: File
+    val workingDir: File,
+    branch: String? = null
 ) {
+    companion object {
+        private val defaultMainBranches = listOf("main", "master")
+    }
+
+    private val branchNames: List<String> = branch?.let { listOf(it) } ?: defaultMainBranches
     private val log by logger()
-    private val mainBranchNames: List<String> = listOf("main", "master")
 
     fun openRepository(repoUrl: URL): Git {
         val repoDir = workingDir.resolve(repoUrl.file.trim('/'))
@@ -43,7 +48,7 @@ internal class GitUtil(
         val mainBranch = branches
             .find {
                 val simpleName = it.name.split('/').last()
-                mainBranchNames.contains(simpleName)
+                branchNames.contains(simpleName)
             }
         log.info { "Detected main branch: $mainBranch" }
         mainBranch?.let {

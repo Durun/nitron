@@ -19,42 +19,18 @@
 			]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["StringLiteral"],
-					"toSymbol": "\"S\""
-				},
-				{
-					"fromRules": ["CharacterLiteral"],
-					"toSymbol": "'C'"
-				},
-				{
-					"fromRules": ["IntegerLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["FloatingPointLiteral"],
-					"toSymbol": "N"
-				},
-				{
-					"fromRules": ["BooleanLiteral"],
-					"toSymbol": "$L"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": ["expressionName"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": ["variableDeclaratorId"],
-					"toSymbol": "$V"
-				},
-				{
-					"fromRules": ["typeName"],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"StringLiteral": "\"S\"",
+				"CharacterLiteral": "'C'",
+				"IntegerLiteral": "N",
+				"FloatingPointLiteral": "N",
+				"BooleanLiteral": "$L"
+			},
+			"indexedMapping": {
+				"expressionName": "$V",
+				"variableDeclaratorId": "$V",
+				"typeName": "$V"
+			},
 			"ignoreRules": [
 				"annotation",
 				"packageDeclaration",

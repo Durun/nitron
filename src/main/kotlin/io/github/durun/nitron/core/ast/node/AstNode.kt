@@ -23,4 +23,9 @@ interface AstNode {
      * @return 元のソースコード
      */
     fun getText(): String
+
+    /**
+     * deep copy
+     */
+    fun copy(): AstNode
 }

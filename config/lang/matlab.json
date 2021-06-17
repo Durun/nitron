@@ -16,26 +16,13 @@
 			]
 		},
 		"normalizeConfig": {
-			"nonNumberedRuleMap": [
-				{
-					"fromRules": ["STRING_LITERAL"],
-					"toSymbol": "'S'"
-				},
-				{
-					"fromRules": ["CONSTANT"],
-					"toSymbol": "N"
-				}
-			],
-			"numberedRuleMap": [
-				{
-					"fromRules": [
-						"postfix_expression",
-						"primary_expression",
-						"IDENTIFIER"
-					],
-					"toSymbol": "$V"
-				}
-			],
+			"mapping": {
+				"STRING_LITERAL": "'S'",
+				"CONSTANT": "N"
+			},
+			"indexedMapping": {
+				"postfix_expression/primary_expression/IDENTIFIER": "$V"
+			},
 			"ignoreRules": [
 				"EOF"
 			]

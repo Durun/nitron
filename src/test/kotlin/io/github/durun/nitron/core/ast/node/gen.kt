@@ -27,8 +27,8 @@ fun Arb.Companion.ruleNode(typeSet: NodeTypePool, maxDepth: Int = 5, maxWidth: I
 		)
 	return arbitrary { rs ->
 		BasicAstRuleNode(
-				type = typeSet.ruleTypes.random(rs.random),
-				children = list(gen = child, range = 1..maxWidth).sample(rs).value
+			type = typeSet.ruleTypes.random(rs.random),
+			children = list(gen = child, range = 1..maxWidth).sample(rs).value.toMutableList()
 		)
 	}
 }

@@ -55,3 +55,8 @@ internal data class ParseJobInfo(
     val fileObjectId: String,
     val lang: String
 )
+
+internal data class ParseJobResult(
+    val astId: EntityID<Int>,
+    val parseResult: String?
+)

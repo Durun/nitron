@@ -7,7 +7,12 @@ import io.github.durun.nitron.inout.model.preparse.*
 import io.github.durun.nitron.util.logger
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import java.net.URL
 import kotlin.io.path.readText
 
@@ -114,13 +119,7 @@ internal class DbUtil(
         }
     }
 
-    fun detectLangFromExtension(path: String, config: NitronConfig): String? {
-        return config.langConfig.entries.find { (_, config) ->
-            config.extensions.any { path.endsWith(it) }
-        }?.let { (name, _) -> name }
-    }
-
-    fun prepareAstTable(config: NitronConfig) {
+    fun prepareAstTable(config: NitronConfig, timeRange: ClosedRange<DateTime>) {
 
         // Language name : id
         val langs = transaction(db) {
@@ -128,48 +127,73 @@ internal class DbUtil(
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
-        var count = 0
-        do {
-            val processed = transaction(db) {
-                FileTable.selectAll()
-                    .limit(10000, count)
-                    .onEach {
-                        if (count % 10000 == 0) log.info { "Preparing 'asts' rows: $count" }
-                        val path = it[FileTable.path]
-                        val langName = detectLangFromExtension(path, config)
-                        val langId = langs[langName]!!
+        langs.entries.forEach { (lang, langId) ->
+            val extensions = config.langConfig[lang]!!.extensions
+            transaction(db) {
+                FileTable.innerJoin(CommitTable).select {  // files with correct extension
+                    extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
+                        expr or (FileTable.path like "%$ext")
+                    } and notExists(
+                        AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }
+                    ) and
+                            (CommitTable.date greaterEq timeRange.start) and
+                            (CommitTable.date lessEq timeRange.endInclusive)
+
+                }
+                    .forEachIndexed { i, it ->
+                        if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }
                         val fileId = it[FileTable.id]
                         AstTable.insertIgnore {
                             it[file] = fileId
                             it[language] = langId
                         }
-                        count++
                     }
-                    .count()
             }
-        } while (0 < processed)
+        }
         log.info { "Inserted 'asts' rows" }
     }
 
-    fun queryAbsentAst(repositoryId: EntityID<Int>, limit: Int = 100): List<ParseJobInfo> {
+    fun queryAbsentAst(
+        repositoryId: EntityID<Int>,
+        limit: Int = 100,
+        timeRange: ClosedRange<DateTime> = DateTime(0)..DateTime(Long.MAX_VALUE)
+    ): List<ParseJobInfo> {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
-            .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
-            .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .select {
+                whereAbsentAst(
+                    repositoryId = repositoryId,
+                    timeRange = timeRange
+                )
+            }
             .limit(limit)
             .reversed()
             .map { ParseJobInfo(repositoryId, it[AstTable.id], it[FileTable.objectId], it[LanguageTable.name]) }
     }
 
-    fun countAbsentAst(repositoryId: EntityID<Int>): Int {
+    fun countAbsentAst(
+        repositoryId: EntityID<Int>,
+        timeRange: ClosedRange<DateTime> = DateTime(0)..DateTime(Long.MAX_VALUE)
+    ): Int {
         return AstTable
             .innerJoin(FileTable, { file }, { id })
             .innerJoin(CommitTable, { FileTable.commit }, { id })
             .innerJoin(LanguageTable, { AstTable.language }, { id })
-            .slice(CommitTable.repository, AstTable.id, FileTable.objectId, LanguageTable.name, AstTable.content)
-            .select { CommitTable.repository eq repositoryId and AstTable.content.isNull() }
+            .select {
+                whereAbsentAst(
+                    repositoryId = repositoryId,
+                    timeRange = timeRange
+                )
+            }
             .count()
+    }
+
+    private fun whereAbsentAst(repositoryId: EntityID<Int>, timeRange: ClosedRange<DateTime>): Op<Boolean> {
+        return CommitTable.repository eq repositoryId and
+                AstTable.content.isNull() and
+                (CommitTable.date greaterEq timeRange.start) and
+                (CommitTable.date lessEq timeRange.endInclusive)
     }
 }

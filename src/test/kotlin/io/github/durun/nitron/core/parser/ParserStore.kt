@@ -10,8 +10,8 @@ object ParserStore {
 	private val mapping: (Pair<Set<Path>, Set<Path>>) -> Result<GenericParser> = { (grammarFiles, utilityJavaFiles) ->
 		runCatching {
 			val p = GenericParser.fromFiles(grammarFiles, utilityJavaFiles)
-			log("Compiled grammar: ${p.antlrParser.grammarFileName}")
-			p
+            log { "Compiled grammar: ${p.antlrParser.grammarFileName}" }
+            p
 		}
 	}
 
