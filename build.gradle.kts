@@ -4,7 +4,7 @@ version = "0.1"
 plugins {
     `maven-publish`
 
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     kotlin("plugin.serialization") version "1.5.0"
 
     application
