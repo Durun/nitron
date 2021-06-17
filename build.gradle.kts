@@ -24,7 +24,7 @@ dependencies {
     val antlrVersion = "4.9.2"
     val inmemantlrVersion = "1.7.0"
     val kotestVersion = "4.6.0"
-    val cliktVersion = "2.4.0"
+    val cliktVersion = "2.8.0"
     val sqliteJdbcVersion = "3.34.0"
     val exposedVersion = "0.17.13"
     val kotlinSerializationVersion = "1.2.1"
