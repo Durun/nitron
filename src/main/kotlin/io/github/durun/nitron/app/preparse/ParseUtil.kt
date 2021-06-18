@@ -1,11 +1,11 @@
 package io.github.durun.nitron.app.preparse
 
 import io.github.durun.nitron.core.AstSerializers
-import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.NitronConfig
-import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
-import io.github.durun.nitron.core.parser.antlr.GenericParser
+import io.github.durun.nitron.core.parser.AstBuilder
+import io.github.durun.nitron.core.parser.AstBuilders
+import io.github.durun.nitron.core.parser.antlr.antlr
 import kotlinx.serialization.encodeToString
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
@@ -16,37 +16,23 @@ import java.util.zip.Inflater
 class ParseUtil(
     val config: NitronConfig
 ) {
-    private val parsers: MutableMap<String, GenericParser> = mutableMapOf()
-    private val visitors: MutableMap<String, AstBuildVisitor> = mutableMapOf()
+    private val astBuilders: MutableMap<String, AstBuilder> = mutableMapOf()
     private val encoder = AstSerializers.encodeOnlyJson
 
-    private fun initParser(langConfig: LangConfig): GenericParser {
-        return GenericParser.fromFiles(
-            langConfig.grammar.grammarFilePaths,
-            langConfig.grammar.utilJavaFilePaths
-        )
-    }
-
-    private fun getOrInitParser(langName: String, langConfig: LangConfig): GenericParser {
-        return parsers[langName] ?: initParser(langConfig)
-            .also {
-                parsers[langName] = it
-                val visitor = AstBuildVisitor(it.antlrParser.grammarFileName, it.antlrParser)
-                visitors[langName] = visitor
-            }
-
-    }
-
     fun parseText(text: String, langName: String, langConfig: LangConfig): String {
-        val parser = getOrInitParser(langName, langConfig)
-        val converter = visitors[langName]!!
-
-        val parseTree = parser.parse(text.reader(), langConfig.grammar.startRule)
-        val ast: AstNode = parseTree.accept(converter)
+        val astBuilder = synchronized(astBuilders) {
+            astBuilders.computeIfAbsent(langName) {
+                AstBuilders.antlr(
+                    grammarName = langConfig.fileName,
+                    entryPoint = langConfig.grammar.startRule,
+                    grammarFiles = langConfig.grammar.grammarFilePaths,
+                    utilityJavaFiles = langConfig.grammar.utilJavaFilePaths
+                )
+            }
+        }
+        val ast = astBuilder.parse(text.reader())
         return encoder.encodeToString(ast)
     }
-
-
 }
 
 fun ByteArray.deflate(): ByteArray {
