@@ -3,6 +3,7 @@ package io.github.durun.nitron.core.parser.antlr
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.parser.AstBuilder
+import io.github.durun.nitron.core.parser.AstBuilders
 import org.antlr.v4.runtime.tree.ParseTreeVisitor
 import java.io.BufferedReader
 import java.nio.file.Path
@@ -15,7 +16,7 @@ private constructor(
     private val defaultEntryPoint: String
 ) : AstBuilder {
     companion object {
-        fun init(
+        internal fun init(
             grammarName: String,
             entryPoint: String,
             grammarFiles: Collection<Path>,
@@ -32,3 +33,10 @@ private constructor(
         return tree.accept(buildVisitor)
     }
 }
+
+fun AstBuilders.antlr(
+    grammarName: String,
+    entryPoint: String,
+    grammarFiles: Collection<Path>,
+    utilityJavaFiles: Collection<Path> = emptySet()
+): AstBuilder = AntlrAstBuilder.init(grammarName, entryPoint, grammarFiles, utilityJavaFiles)

@@ -8,3 +8,5 @@ interface AstBuilder {
     val nodeTypes: NodeTypePool
     fun parse(reader: BufferedReader, entryPoint: String? = null): AstNode
 }
+
+object AstBuilders
