@@ -21,6 +21,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
+import org.snt.inmemantlr.exceptions.ParsingException
 import java.io.File
 import java.net.URL
 import java.nio.file.Path
@@ -195,7 +196,8 @@ class ParseCommand : CliktCommand(name = "preparse") {
             }
         val parsed = runCatching { parseUtil.parseText(code, job.lang, langConfig) }
             .onFailure {
-                System.err.println("Failed to parse: $job ${it.message}")
+                System.err.println("Failed to parse: $job $it")
+                if (it !is ParsingException) it.printStackTrace(System.err)
             }
             .getOrNull()
         log.verbose { "Success parsing: $job" }
