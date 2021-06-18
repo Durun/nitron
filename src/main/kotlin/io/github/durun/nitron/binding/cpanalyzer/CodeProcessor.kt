@@ -6,8 +6,8 @@ import io.github.durun.nitron.core.ast.processors.AstNormalizer
 import io.github.durun.nitron.core.ast.processors.AstSplitter
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.config.LangConfig
-import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
-import io.github.durun.nitron.core.parser.antlr.GenericParser
+import io.github.durun.nitron.core.parser.AstBuilder
+import io.github.durun.nitron.core.parser.antlr.AntlrAstBuilder
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -17,13 +17,14 @@ class CodeProcessor(
     config: LangConfig,
     outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-    private val parser: GenericParser = GenericParser.fromFiles(
+    private val startRule: String = config.grammar.startRule
+    private val astBuilder: AstBuilder = AntlrAstBuilder.init(
+        grammarName = config.fileName,
+        entryPoint = startRule,
         grammarFiles = config.grammar.grammarFilePaths,
         utilityJavaFiles = config.grammar.utilJavaFilePaths
     )
-    private val nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
-    val nodeTypePool: NodeTypePool = nodeBuilder.nodeTypes
-    private val startRule: String = config.grammar.startRule
+    val nodeTypePool: NodeTypePool = astBuilder.nodeTypes
     private val splitter = ThreadLocal.withInitial {
         AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
     }
@@ -50,8 +51,7 @@ class CodeProcessor(
     }
 
     fun parse(input: String): AstNode {
-        val tree = parser.parse(input.reader(), startRule)
-        return tree.accept(nodeBuilder)
+        return astBuilder.parse(input.reader().buffered())
     }
 
     fun split(input: AstNode): List<AstNode> {
