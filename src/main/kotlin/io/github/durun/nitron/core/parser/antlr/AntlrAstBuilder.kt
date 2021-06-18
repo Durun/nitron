@@ -5,7 +5,7 @@ import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.parser.AstBuilder
 import io.github.durun.nitron.core.parser.AstBuilders
 import org.antlr.v4.runtime.tree.ParseTreeVisitor
-import java.io.BufferedReader
+import java.io.Reader
 import java.nio.file.Path
 
 class AntlrAstBuilder
@@ -28,7 +28,7 @@ private constructor(
         }
     }
 
-    override fun parse(reader: BufferedReader, entryPoint: String?): AstNode {
+    override fun parse(reader: Reader, entryPoint: String?): AstNode {
         val tree = genericParser.parse(reader, entryPoint ?: defaultEntryPoint)
         return tree.accept(buildVisitor)
     }
