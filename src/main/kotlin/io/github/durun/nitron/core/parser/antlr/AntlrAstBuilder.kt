@@ -1,6 +1,7 @@
 package io.github.durun.nitron.core.parser.antlr
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.parser.AstBuilder
 import org.antlr.v4.runtime.tree.ParseTreeVisitor
 import java.io.BufferedReader
@@ -8,6 +9,7 @@ import java.nio.file.Path
 
 class AntlrAstBuilder
 private constructor(
+    override val nodeTypes: NodeTypePool,
     private val genericParser: GenericParser,
     private val buildVisitor: ParseTreeVisitor<AstNode>,
     private val defaultEntryPoint: String
@@ -20,11 +22,8 @@ private constructor(
             utilityJavaFiles: Collection<Path> = emptySet(),
         ): AstBuilder {
             val genericParser = GenericParser.fromFiles(grammarFiles, utilityJavaFiles)
-            return AntlrAstBuilder(
-                genericParser,
-                AstBuildVisitor(grammarName, genericParser.antlrParser),
-                entryPoint
-            )
+            val buildVisitor = AstBuildVisitor(grammarName, genericParser.antlrParser)
+            return AntlrAstBuilder(buildVisitor.nodeTypes, genericParser, buildVisitor, entryPoint)
         }
     }
 
