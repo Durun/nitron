@@ -20,24 +20,24 @@ class CodeNormalizeCommand : CliktCommand(
         name = "normalize"
 ) {
     private val inputs: List<File> by argument(
-            name = "input",
-            help = "input file to parse"
+        name = "input",
+        help = "input file to parse"
     ).file(
-            readable = true
+        mustBeReadable = true
     ).multiple()
 
     private val configPath: Path by option(
-            "--config", "-c",
-            help = "config file (.json)"
+        "--config", "-c",
+        help = "config file (.json)"
     ).path(
-            readable = true
+        mustBeReadable = true
     ).required()
 
     private val outputPath: Path? by option(
-            "--output", "-o",
-            help = "output file"
+        "--output", "-o",
+        help = "output file"
     ).path(
-            writable = true
+        mustBeWritable = true
     )
 
     @ExperimentalPathApi
@@ -57,7 +57,6 @@ class CodeNormalizeCommand : CliktCommand(
         output.flush()
     }
 
-	@ExperimentalPathApi
 	private fun CodeProcessor.processText(input: String): String {
 		val ast = this.parse(input)
 		val astList = this.split(ast)

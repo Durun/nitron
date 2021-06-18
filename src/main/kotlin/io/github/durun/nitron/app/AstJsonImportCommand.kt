@@ -21,10 +21,10 @@ class AstJsonImportCommand : CliktCommand(
         name = "importAst"
 ) {
     private val input: File by argument(name = "input", help = "input json file")
-            .file(readable = true)
+        .file(mustBeReadable = true)
 
     private val output: File by argument(name = "output", help = "output Database")
-            .file(writable = true)
+        .file(mustBeWritable = true)
 
     @ExperimentalPathApi
     override fun run() {

@@ -29,14 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger
 class ParseCommand : CliktCommand(name = "preparse") {
 
     private val customConfig: Path? by option("--config")
-        .path(readable = true)
+        .path(mustBeReadable = true)
     private val config = (customConfig ?: Path.of("config/nitron.json"))
         .let { NitronConfigLoader.load(it) }
     private val workingDir: File by option("--dir")
-        .file(folderOkay = true, fileOkay = false)
+        .file(canBeFile = false, canBeDir = true)
         .defaultLazy { Path.of("tmp").toFile() }
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
-        .path(writable = true)
+        .path(mustBeWritable = true)
         .multiple()
 
     private val repoUrl: List<URL> by option("--repository", help = "Git repository name (owner/project)")
