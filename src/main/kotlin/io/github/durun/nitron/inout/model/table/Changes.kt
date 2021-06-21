@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.nio.file.Paths
 import java.sql.Blob
 import java.time.LocalDateTime
-import javax.sql.rowset.serial.SerialBlob
 
 
 object Changes : ReadWritableTable<Change>("changes") {
