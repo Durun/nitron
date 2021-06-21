@@ -1,9 +1,9 @@
 package io.github.durun.nitron.core.ast.processors
 
-import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.ParserStore
+import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
+import io.github.durun.nitron.core.parser.antlr.ParserStore
+import io.github.durun.nitron.core.parser.antlr.nodeTypePoolOf
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths

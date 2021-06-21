@@ -25,7 +25,7 @@ import kotlin.math.ln
 
 class MetricsCommand : CliktCommand(name = "metrics") {
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
-        .path(readable = true)
+        .path(mustBeReadable = true)
         .multiple()
 
     private val log by logger()

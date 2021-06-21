@@ -1,10 +1,8 @@
-package io.github.durun.nitron.core.parser
+package io.github.durun.nitron.core.parser.antlr
 
-import io.github.durun.nitron.core.antlr4util.children
 import io.github.durun.nitron.core.ast.node.AstNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
-import io.github.durun.nitron.core.ast.type.nodeTypePoolOf
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.*
 

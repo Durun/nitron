@@ -2,7 +2,7 @@ package io.github.durun.nitron.test
 
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
-import io.github.durun.nitron.core.parser.ParserStore
+import io.github.durun.nitron.core.parser.antlr.ParserStore
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.spec.style.freeSpec

@@ -20,11 +20,11 @@ import java.nio.file.Path
 class RegisterCommand : CliktCommand(name = "preparse-register") {
 
 	private val customConfig: Path? by option("--config")
-		.path(readable = true)
+        .path(mustBeReadable = true)
 	private val config = (customConfig ?: Path.of("config/nitron.json"))
 		.let { NitronConfigLoader.load(it) }
 	private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
-		.path(folderOkay = false)
+        .path(canBeDir = false)
 	private val remote: URL? by option("--remote", help = "Git repository URL")
 		.convert {
 			val gitUrl = if (it.endsWith(".git")) it else "$it.git"

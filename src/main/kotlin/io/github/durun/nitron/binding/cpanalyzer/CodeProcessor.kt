@@ -6,8 +6,9 @@ import io.github.durun.nitron.core.ast.processors.AstNormalizer
 import io.github.durun.nitron.core.ast.processors.AstSplitter
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.config.LangConfig
-import io.github.durun.nitron.core.parser.AstBuildVisitor
-import io.github.durun.nitron.core.parser.GenericParser
+import io.github.durun.nitron.core.parser.AstBuilder
+import io.github.durun.nitron.core.parser.AstBuilders
+import io.github.durun.nitron.core.parser.antlr.antlr
 import io.github.durun.nitron.inout.model.ast.Structure
 import io.github.durun.nitron.inout.model.ast.merge
 import io.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -17,13 +18,14 @@ class CodeProcessor(
     config: LangConfig,
     outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-    private val parser: GenericParser = GenericParser.fromFiles(
+    private val startRule: String = config.grammar.startRule
+    private val astBuilder: AstBuilder = AstBuilders.antlr(
+        grammarName = config.fileName,
+        entryPoint = startRule,
         grammarFiles = config.grammar.grammarFilePaths,
         utilityJavaFiles = config.grammar.utilJavaFilePaths
     )
-    private val nodeBuilder = AstBuildVisitor(grammarName = config.fileName, parser = parser.antlrParser)
-    val nodeTypePool: NodeTypePool = nodeBuilder.nodeTypes
-    private val startRule: String = config.grammar.startRule
+    val nodeTypePool: NodeTypePool = astBuilder.nodeTypes
     private val splitter = ThreadLocal.withInitial {
         AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
     }
@@ -50,8 +52,7 @@ class CodeProcessor(
     }
 
     fun parse(input: String): AstNode {
-        val tree = parser.parse(input.reader(), startRule)
-        return tree.accept(nodeBuilder)
+        return astBuilder.parse(input.reader().buffered())
     }
 
     fun split(input: AstNode): List<AstNode> {
@@ -73,13 +74,6 @@ class CodeProcessor(
 
     fun proceess(input: List<AstNode>): List<AstNode> {
         return input.mapNotNull { proceess(it) }
-    }
-
-    @Deprecated("This method can return incorrect result.")
-    fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
-        return input.map {
-            it to proceess(it)
-        }
     }
 
     fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated

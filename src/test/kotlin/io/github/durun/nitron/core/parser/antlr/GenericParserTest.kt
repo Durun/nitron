@@ -1,4 +1,4 @@
-package io.github.durun.nitron.core.parser
+package io.github.durun.nitron.core.parser.antlr
 
 import io.github.durun.nitron.core.config.GrammarConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
@@ -7,9 +7,7 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.spec.style.freeSpec
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
 
-@ExperimentalPathApi
 class GenericParserTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
     val config = NitronConfigLoader.load(configPath)
@@ -35,7 +33,6 @@ class GenericParserTest : FreeSpec({
     )
 })
 
-@ExperimentalPathApi
 private fun tests(name: String, config: GrammarConfig, src: String) = freeSpec {
 	val parser by lazy {
 		GenericParser.fromFiles(

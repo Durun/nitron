@@ -4,16 +4,13 @@ import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
 
 
 private val configPath = Paths.get("config/nitron.json")
 private val javaConfig = NitronConfigLoader.load(configPath).langConfig["java"] ?: throw Exception()
 
-@ExperimentalPathApi
 private val processor = CodeProcessor(javaConfig)
 
-@ExperimentalPathApi
 fun main() = TemporaryTest {
     "basic" - {
         "package" {
@@ -146,13 +143,11 @@ private fun normStatements(
         methodBody: String
 ) = normStatements(classBody?.let { listOf(it) }.orEmpty(), listOf(methodBody))
 
-@ExperimentalPathApi
 private fun String.toStatements(): List<String> {
     return processor.split(this)
             .map { it.getText() }
 }
 
-@ExperimentalPathApi
 private fun String.toNormStatements(): List<String> {
     return processor.split(this)
             .mapNotNull { processor.proceess(it)?.getText() }

@@ -42,16 +42,16 @@ class AstTableWriter(
     private fun writeIfNotExist(typeSet: NodeTypePool): Int {
         return transaction {
             NodeTypePools
-                    .select { NodeTypePools.grammar eq typeSet.grammar }
-                    .map { it[NodeTypePools.id] }
-                    .firstOrNull()
-                    ?: kotlin.runCatching {
-                        transaction { NodeTypePools.insert(typeSet) }
-                        NodeTypePools
-                                .select { NodeTypePools.grammar eq typeSet.grammar }
-                                .map { it[NodeTypePools.id] }
-                                .first()
-                    }.getOrThrow()
+                .select { NodeTypePools.grammar eq typeSet.grammar }
+                .map { it[NodeTypePools.id] }
+                .firstOrNull()
+                ?: run {
+                    transaction { NodeTypePools.insert(typeSet) }
+                    NodeTypePools
+                        .select { NodeTypePools.grammar eq typeSet.grammar }
+                        .map { it[NodeTypePools.id] }
+                        .first()
+                }
         }
     }
 }

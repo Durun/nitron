@@ -26,15 +26,15 @@ import java.nio.file.Path
 class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
     private val customConfig: Path? by option("--config")
-        .path(readable = true)
+        .path(mustBeReadable = true)
     private val config = (customConfig ?: Path.of("config/nitron.json"))
         .let { NitronConfigLoader.load(it) }
     private val workingDir: File by option("--dir")
-        .file(folderOkay = true, fileOkay = false)
+        .file(canBeFile = false, canBeDir = true)
         .defaultLazy { Path.of("tmp").toFile() }
     private val branch: String? by option("--branch")
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
-        .path(writable = true)
+        .path(mustBeWritable = true)
         .multiple()
 
     private val startDate: DateTime by option("--start-date", help = "date (dd:mm:yyyy)")

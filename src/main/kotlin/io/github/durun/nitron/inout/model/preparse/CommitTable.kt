@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.joda.time.DateTime
-import java.util.*
 
 object CommitTable : IntIdTable("commits") {
     val repository: Column<EntityID<Int>> = reference("repository", RepositoryTable)

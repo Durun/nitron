@@ -18,14 +18,6 @@ class NormalAstRuleNode(
         @SerialName("s")
         private val text: String? = null
 ) : AstRuleNode {
-    /**
-     *  @param [originalNode] 元の非終端ノード
-     */
-    constructor(originalNode: AstRuleNode, text: String? = null) : this(
-        type = originalNode.type,
-        text = text
-    )
-
     override val children: List<AstNode>?
         get() = null
 
