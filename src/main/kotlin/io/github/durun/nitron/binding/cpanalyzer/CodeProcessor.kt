@@ -76,13 +76,6 @@ class CodeProcessor(
         return input.mapNotNull { proceess(it) }
     }
 
-    @Deprecated("This method can return incorrect result.")
-    fun proceessWithOriginal(input: List<AstNode>): List<Pair<AstNode, AstNode?>> {
-        return input.map {
-            it to proceess(it)
-        }
-    }
-
     fun write(asts: Iterable<AstNode>) {   // TODO recording feature should be separated
         (recorder ?: throw IllegalStateException("CodeRecorder is not initialized."))
             .write(asts)
