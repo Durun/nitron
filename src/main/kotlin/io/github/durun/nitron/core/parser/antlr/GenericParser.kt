@@ -110,7 +110,7 @@ private constructor(
         antlr.pipelines.flatMap { it.items }.forEach {
             LOGGER.debug { "${it.name} $it" }
         }
-        val (parser, lexer) = antlr.process()
+        val (_, lexer) = antlr.process()
         activeLexer = lexer
     }
 
@@ -157,10 +157,10 @@ private constructor(
         val rules = parser.ruleNames
         require(rules.contains(entryPoint))
 
-        val data: ParserRuleContext = runCatching {
+        val data: ParserRuleContext = run {
             val method: Method = parser.javaClass.getDeclaredMethod(entryPoint)
             method(parser) as ParserRuleContext
-        }.getOrThrow()
+        }
 
         val messages = errorListener.log
             .filterKeys { it == InmemantlrErrorListener.Type.SYNTAX_ERROR }

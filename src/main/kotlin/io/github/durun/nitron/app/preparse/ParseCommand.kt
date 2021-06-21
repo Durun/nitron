@@ -5,7 +5,6 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
-import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
@@ -55,9 +54,6 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val isVerbose: Boolean by option("--verbose").flag()
     private val isDebug: Boolean by option("--debug").flag()
-    private val bufferSize: Int by option("-b")
-        .int()
-        .default(100)
 
     private val log by logger()
 

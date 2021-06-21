@@ -34,24 +34,6 @@ internal class DbUtil(
         }
     }
 
-    fun clearOldRows(repoTableID: EntityID<Int>) {
-        transaction(db) {
-            val toDeleteCommits = CommitTable.select { CommitTable.repository eq repoTableID }
-                .adjustSlice { slice(CommitTable.id) }
-            FileTable.deleteWhere {
-                FileTable.commit.inSubQuery(toDeleteCommits)
-            }
-        }
-        log.info { "Cleared 'files' in repository $repoTableID" }
-
-        transaction(db) {
-            CommitTable.deleteWhere {
-                CommitTable.repository eq repoTableID
-            }
-        }
-        log.info { "Cleared 'commits' in repository $repoTableID" }
-    }
-
     fun getRepositoryInfos(): List<RepositoryInfo> = transaction(db) {
         RepositoryTable.selectAll().map {
             RepositoryInfo(

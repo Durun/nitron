@@ -41,13 +41,6 @@ internal fun RevCommit.getDate(): Date {
     return Date(this.commitTime * 1000L)
 }
 
-internal data class FileRowInfo(
-    val fileId: EntityID<Int>,
-    val commitId: EntityID<Int>,
-    val langId: EntityID<Int>?,
-    val path: String
-)
-
 
 internal data class ParseJobInfo(
     val repoId: EntityID<Int>,
