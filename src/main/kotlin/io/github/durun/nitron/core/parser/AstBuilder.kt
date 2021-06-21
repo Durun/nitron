@@ -6,7 +6,7 @@ import java.io.Reader
 
 interface AstBuilder {
     val nodeTypes: NodeTypePool
-    fun parse(reader: Reader, entryPoint: String? = null): AstNode
+    fun parse(reader: Reader): AstNode
 }
 
 object AstBuilders

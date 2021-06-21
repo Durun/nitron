@@ -30,8 +30,8 @@ private constructor(
         }
     }
 
-    override fun parse(reader: Reader, entryPoint: String?): AstNode {
-        val tree = genericParser.parse(reader, entryPoint ?: defaultEntryPoint)
+    override fun parse(reader: Reader): AstNode {
+        val tree = genericParser.parse(reader, defaultEntryPoint)
         return tree.accept(buildVisitor)
     }
 }
