@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor
 import java.io.Reader
 import java.nio.file.Path
 
-class AntlrAstBuilder
+private class AntlrAstBuilder
 private constructor(
     override val nodeTypes: NodeTypePool,
     private val genericParser: GenericParser,
@@ -16,7 +16,7 @@ private constructor(
     private val defaultEntryPoint: String
 ) : AstBuilder {
     companion object {
-        internal fun init(
+        fun init(
             grammarName: String,
             entryPoint: String,
             grammarFiles: Collection<Path>,
