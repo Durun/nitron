@@ -71,8 +71,9 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
         override fun postVisit(node: ASTNode) {
             val parent = stack.lastOrNull()
             if (parent is BasicAstRuleNode && parent.toString() != node.toString()) {
-                val trees = parent.children
-                val tokens = lex(node.toString())
+                // 構文木に不足しているトークンを補う
+                val trees = parent.children         // 構文木(トークンが不足している)
+                val tokens = lex(node.toString())   // 完全なトークン列
                 var k = 0
                 var remainText = ""
                 tokens.forEach { token ->
