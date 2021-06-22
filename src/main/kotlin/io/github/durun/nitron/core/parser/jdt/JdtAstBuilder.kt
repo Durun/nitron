@@ -1,11 +1,13 @@
 package io.github.durun.nitron.core.parser.jdt
 
 import io.github.durun.nitron.core.ast.node.AstNode
+import io.github.durun.nitron.core.ast.node.AstRuleNode
 import io.github.durun.nitron.core.ast.node.AstTerminalNode
 import io.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import io.github.durun.nitron.core.ast.type.NodeTypePool
 import io.github.durun.nitron.core.ast.type.RuleType
 import io.github.durun.nitron.core.ast.type.TokenType
+import io.github.durun.nitron.core.ast.visitor.AstVisitor
 import io.github.durun.nitron.core.parser.AstBuilder
 import io.github.durun.nitron.core.parser.AstBuilders
 import org.eclipse.jdt.core.JavaCore
@@ -67,6 +69,29 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
         }
 
         override fun postVisit(node: ASTNode) {
+            val parent = stack.lastOrNull()
+            if (parent is BasicAstRuleNode && parent.toString() != node.toString()) {
+                val trees = parent.children
+                val tokens = lex(node.toString())
+                var k = 0
+                var remainText = ""
+                tokens.forEach { token ->
+                    if (trees.lastIndex < k) {
+                        trees.add(AstTerminalNode(token, TOKEN, 0))
+                        k++
+                        return@forEach
+                    }
+                    if (remainText.isEmpty()) remainText = trees[k].accept(CatVisitor)
+                    if (remainText.startsWith(token)) {
+                        remainText = remainText.drop(token.length)
+                        if (remainText.isEmpty()) k++
+                    } else {
+                        trees.add(k, AstTerminalNode(token, TOKEN, 0))
+                        k++
+                    }
+                }
+            }
+
             result = stack.removeLast()
         }
 
@@ -190,4 +215,10 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
         )
         val TOKEN = nodeTypes.getTokenType("TOKEN")!!
     }
+}
+
+private object CatVisitor : AstVisitor<String> {
+    override fun visitRule(node: AstRuleNode): String = visit(node)
+    override fun visitTerminal(node: AstTerminalNode): String = node.token
+    override fun visit(node: AstNode): String = node.children?.joinToString("") { it.accept(this) } ?: ""
 }
