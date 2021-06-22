@@ -70,17 +70,16 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
             result = stack.removeLast()
         }
 
-        private fun lex(text: String): List<AstTerminalNode> {
+        private fun lex(text: String): List<String> {
             val scanner = ToolFactory.createScanner(false, false, false, JavaCore.VERSION_16)
             scanner.source = text.replace(Regex("\r\n|\r|\n"), "\n").toCharArray()
-            val list: MutableList<AstTerminalNode> = mutableListOf()
+            val list: MutableList<String> = mutableListOf()
             var tokenType = scanner.nextToken
             while (tokenType != ITerminalSymbols.TokenNameEOF) {
                 val start = scanner.currentTokenStartPosition
                 val end = scanner.currentTokenEndPosition
-                val line = scanner.getLineNumber(start)
                 val token = scanner.source.sliceArray(start..end).joinToString("")
-                list.add(AstTerminalNode(token, TOKEN, line))
+                list.add(token)
                 tokenType = scanner.nextToken
             }
             return list
