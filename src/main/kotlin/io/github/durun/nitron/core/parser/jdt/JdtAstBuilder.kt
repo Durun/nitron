@@ -9,6 +9,8 @@ import io.github.durun.nitron.core.ast.type.TokenType
 import io.github.durun.nitron.core.parser.AstBuilder
 import io.github.durun.nitron.core.parser.AstBuilders
 import org.eclipse.jdt.core.JavaCore
+import org.eclipse.jdt.core.ToolFactory
+import org.eclipse.jdt.core.compiler.ITerminalSymbols
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.ASTParser
@@ -17,6 +19,7 @@ import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import java.io.Reader
 
 
+@Suppress("UNUSED")
 fun AstBuilders.jdt(): AstBuilder = JdtAstBuilder()
 
 private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder {
@@ -66,12 +69,29 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
         override fun postVisit(node: ASTNode) {
             result = stack.removeLast()
         }
+
+        private fun lex(text: String): List<AstTerminalNode> {
+            val scanner = ToolFactory.createScanner(false, false, false, JavaCore.VERSION_16)
+            scanner.source = text.replace(Regex("\r\n|\r|\n"), "\n").toCharArray()
+            val list: MutableList<AstTerminalNode> = mutableListOf()
+            var tokenType = scanner.nextToken
+            while (tokenType != ITerminalSymbols.TokenNameEOF) {
+                val start = scanner.currentTokenStartPosition
+                val end = scanner.currentTokenEndPosition
+                val line = scanner.getLineNumber(start)
+                val token = scanner.source.sliceArray(start..end).joinToString("")
+                list.add(AstTerminalNode(token, TOKEN, line))
+                tokenType = scanner.nextToken
+            }
+            return list
+        }
     }
 
     companion object {
         val nodeTypes: NodeTypePool = NodeTypePool.of(
             "java",
             tokenTypes = mapOf(
+                -1 to "TOKEN",
                 ASTNode.BOOLEAN_LITERAL to "BOOLEAN_LITERAL",
                 ASTNode.CHARACTER_LITERAL to "CHARACTER_LITERAL",
                 ASTNode.NULL_LITERAL to "NULL_LITERAL",
@@ -169,5 +189,6 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
             ),
             synonymTokenTypes = emptyMap()
         )
+        val TOKEN = nodeTypes.getTokenType("TOKEN")!!
     }
 }
