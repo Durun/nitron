@@ -41,16 +41,13 @@ class JdtAstBuilderTest : FreeSpec({
             token should { it is AstTerminalNode }
         }
 
+        /*
         val tokens = ast.flatten().filterIsInstance<AstTerminalNode>()
-        tokens.forEach {
-            println("${it.line}: $it")
-        }
         val src2 = tokens.groupBy { it.line }
             .entries.sortedBy { (line, _) -> line }
             .joinToString("\n") { (_, tokens) -> tokens.joinToString("") }
-        println(src)
-        println(src2)
         src2.filter { it != ' ' } shouldBe src.filter { it != ' ' }
+         */
     }
 })
 
