@@ -128,7 +128,8 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
             val node = trees.flatMap { it.flatten() }
                 .filterIsInstance<AstTerminalNode>().firstOrNull()
                 ?: return null
-            val matched = tokens.first { (_, token) -> token == node.token }
+            val matched = tokens.firstOrNull { (_, token) -> token == node.token }
+                ?: return null
             val absLine = node.line
             val relLine = matched.first
             return absLine - relLine
