@@ -8,6 +8,9 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import org.eclipse.jdt.core.JavaCore
+import org.eclipse.jdt.core.ToolFactory
+import org.eclipse.jdt.core.compiler.ITerminalSymbols
 
 class JdtAstBuilderTest : FreeSpec({
 
@@ -24,8 +27,15 @@ class JdtAstBuilderTest : FreeSpec({
           }
         }
         public class HelloWorld {
-           public static void main(String[] args) { 
+           public static void main(String[] args) {
               y = (x*x) + 1;
+              int t = a
+              // comment
+                * x;
+              call(
+                arg1,
+                arg2
+              );
            }
         }
     """.trimIndent()
@@ -35,20 +45,35 @@ class JdtAstBuilderTest : FreeSpec({
         val ast = parser.parse(src.reader())
         println(ast)
         println(ast.accept(AstPrintVisitor))
-        ast.toString().removeSpaceAndNL() shouldBe src.removeSpaceAndNL()
+        ast.toString().removeComments().removeSpaceAndNL() shouldBe src.removeComments().removeSpaceAndNL()
 
         ast.flatten().forAll { token ->
             token should { it is AstTerminalNode }
         }
 
-        /*
         val tokens = ast.flatten().filterIsInstance<AstTerminalNode>()
         val src2 = tokens.groupBy { it.line }
             .entries.sortedBy { (line, _) -> line }
             .joinToString("\n") { (_, tokens) -> tokens.joinToString("") }
-        src2.filter { it != ' ' } shouldBe src.filter { it != ' ' }
-         */
+        println(src)
+        println(src2)
+        src2.removeSpace() shouldBe src.removeComments().removeSpace()
     }
 })
 
 private fun String.removeSpaceAndNL() = this.filterNot { it in " \n" }
+private fun String.removeSpace() = this.filterNot { it == ' ' }
+private fun String.removeComments(): String {
+    var result = ""
+    val scanner = ToolFactory.createScanner(false, true, true, JavaCore.VERSION_16)
+    scanner.source = this.replace(Regex("\r\n|\r|\n"), "\n").toCharArray()
+    var tokenType = scanner.nextToken
+    while (tokenType != ITerminalSymbols.TokenNameEOF) {
+        val start = scanner.currentTokenStartPosition
+        val end = scanner.currentTokenEndPosition
+        val token = scanner.source.sliceArray(start..end).joinToString("")
+        result += token
+        tokenType = scanner.nextToken
+    }
+    return result
+}
