@@ -47,6 +47,7 @@ class AstTerminalNode(
     override fun getText(): String = token
 
     override fun copy(): AstNode = AstTerminalNode(token, type, line)
+    fun copy(line: Int): AstNode = AstTerminalNode(token, type, line)
 
     override fun toString(): String = getText()
 

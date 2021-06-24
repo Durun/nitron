@@ -49,6 +49,10 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation(kotlin("stdlib-jdk8"))
 
+    //// Dependency for parsing
+    // Java
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.26.0")
+
     // Use the Kotlin test library.
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
