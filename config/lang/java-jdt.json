@@ -1,0 +1,23 @@
+{
+  "extensions": [
+	".java"
+  ],
+  "parserConfig": {
+	"type": "jdt",
+	"version": "16"
+  },
+  "processConfig": {
+	"splitConfig": {
+	  "splitRules": [
+	  ]
+	},
+	"normalizeConfig": {
+	  "mapping": {
+	  },
+	  "indexedMapping": {
+	  },
+	  "ignoreRules": [
+	  ]
+	}
+  }
+}
