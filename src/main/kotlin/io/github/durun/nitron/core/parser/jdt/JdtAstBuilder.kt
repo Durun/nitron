@@ -20,7 +20,7 @@ import java.io.Reader
 
 
 @Suppress("UNUSED")
-fun AstBuilders.jdt(): AstBuilder = JdtAstBuilder()
+fun AstBuilders.jdt(version: String = JavaCore.VERSION_16): AstBuilder = JdtAstBuilder(version)
 
 private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder {
     override val nodeTypes: NodeTypePool = Companion.nodeTypes

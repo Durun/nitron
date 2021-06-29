@@ -4,6 +4,7 @@ import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.parser.AstBuilder
 import io.github.durun.nitron.core.parser.AstBuilders
 import io.github.durun.nitron.core.parser.antlr.antlr
+import io.github.durun.nitron.core.parser.jdt.jdt
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
@@ -43,4 +44,13 @@ data class AntlrParserConfig(
             .reduce { a, b -> a + b }
             .let { MD5.digest(it) }
     }
+}
+
+@Serializable
+@SerialName("jdt")
+data class JdtParserConfig(
+    val version: String
+) : ParserConfig() {
+    override fun getParser(): AstBuilder = AstBuilders.jdt(version)
+    override fun checksum(): MD5 = MD5.digest("JDT Parser $version")
 }
