@@ -46,20 +46,6 @@ data class LangConfig(
 }
 
 @Serializable
-data class GrammarConfig(
-        private val grammarFiles: List<String>,
-        private val utilJavaFiles: List<String>,
-        val startRule: String
-) : ConfigWithDir() {
-    val grammarFilePaths: List<Path> by lazy {
-        grammarFiles.map { dir.resolve(it) }
-    }
-    val utilJavaFilePaths: List<Path> by lazy {
-        utilJavaFiles.map { dir.resolve(it) }
-    }
-}
-
-@Serializable
 data class ProcessConfig(
         val splitConfig: SplitConfig,
         val normalizeConfig: NormalizeConfig
