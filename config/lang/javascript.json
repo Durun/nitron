@@ -1,15 +1,16 @@
 {
   "extensions": [".js"],
   "grammarConfig": {
-    "grammarFiles": [
-      "../grammars/javascript/javascript/JavaScriptParser.g4",
-      "../grammars/javascript/javascript/JavaScriptLexer.g4"
-    ],
-    "utilJavaFiles": [
-      "../grammars/javascript/javascript/Java/JavaScriptParserBase.java",
-      "../grammars/javascript/javascript/Java/JavaScriptLexerBase.java"
-    ],
-    "startRule": "program"
+	"type": "antlr",
+	"grammarFiles": [
+	  "../grammars/javascript/javascript/JavaScriptParser.g4",
+	  "../grammars/javascript/javascript/JavaScriptLexer.g4"
+	],
+	"utilJavaFiles": [
+	  "../grammars/javascript/javascript/Java/JavaScriptParserBase.java",
+	  "../grammars/javascript/javascript/Java/JavaScriptLexerBase.java"
+	],
+	"startRule": "program"
   },
   "processConfig": {
     "splitConfig": {

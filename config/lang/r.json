@@ -1,11 +1,12 @@
 {
   "extensions": [".r"],
   "grammarConfig": {
-    "grammarFiles": [
-      "../grammars/r/R.g4"
-    ],
-    "utilJavaFiles": [],
-    "startRule": "prog"
+	"type": "antlr",
+	"grammarFiles": [
+	  "../grammars/r/R.g4"
+	],
+	"utilJavaFiles": [],
+	"startRule": "prog"
   },
   "processConfig": {
     "splitConfig": {
