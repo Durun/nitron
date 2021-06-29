@@ -1,6 +1,6 @@
 {
     "extensions": [".cs"],
-	"grammarConfig": {
+	"parser": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/csharp/CSharpLexer.g4",

@@ -1,6 +1,6 @@
 {
     "extensions": [".java"],
-	"grammarConfig": {
+	"parser": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/java/java8/Java8Lexer.g4",

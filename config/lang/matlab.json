@@ -1,6 +1,6 @@
 {
     "extensions": [".m"],
-	"grammarConfig": {
+	"parser": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/matlab/matlab.g4"

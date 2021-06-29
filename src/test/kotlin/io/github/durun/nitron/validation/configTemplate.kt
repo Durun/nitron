@@ -18,7 +18,7 @@ fun main() = TemporaryTest {
     "LangConfig" - {
         "ANTLR Grammar" {
             val config = LangConfig(
-                grammarConfig = AntlrParserConfig(emptyList(), emptyList(), "startRule"),
+                parser = AntlrParserConfig(emptyList(), emptyList(), "startRule"),
                 processConfig = ProcessConfig(
                     SplitConfig(emptyList()),
                     NormalizeConfig(emptyMap(), emptyMap(), emptyList())
