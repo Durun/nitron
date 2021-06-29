@@ -9,12 +9,14 @@ import java.nio.file.Path
 class KSerializationConfigLoader<C : ConfigWithDir>(
         private val serializer: KSerializer<C>
 ) : ConfigLoader<C> {
+    val json = Json {
+        ignoreUnknownKeys = true
+        classDiscriminator = "type"
+    }
+
     override fun load(jsonFile: Path): C {
-        val json = jsonFile
-                .toFile()
-                .bufferedReader()
-                .readText()
-        val config = Json.decodeFromString(serializer, json)
+        val jsonString = jsonFile.toFile().readText()
+        val config = json.decodeFromString(serializer, jsonString)
         return config.setPath(jsonFile)
     }
 }
