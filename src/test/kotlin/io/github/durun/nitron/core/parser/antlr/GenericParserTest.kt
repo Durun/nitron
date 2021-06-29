@@ -34,12 +34,7 @@ class GenericParserTest : FreeSpec({
 })
 
 private fun tests(name: String, config: AntlrParserConfig, src: String) = freeSpec {
-    val parser by lazy {
-        GenericParser.fromFiles(
-            config.grammarFilePaths,
-            utilityJavaFiles = config.utilJavaFilePaths
-        )
-    }
+    val parser = ParserStore.getOrThrow(config)
     name - {
         "init" {
             shouldNotThrowAny {

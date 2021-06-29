@@ -27,14 +27,5 @@ object ParserStore {
         }.getOrThrow()
     }
 
-    fun getOrNull(config: ParserConfig): GenericParser? = getOrNull(config as AntlrParserConfig)
-    fun getOrNull(config: AntlrParserConfig): GenericParser? =
-        getOrNull(config.grammarFilePaths, config.utilJavaFilePaths)
-
-    fun getOrNull(grammarFiles: Collection<Path>, utilJavaFiles: Collection<Path> = emptySet()): GenericParser? {
-        val key = grammarFiles.toSet() to utilJavaFiles.toSet()
-        return synchronized(parsers) {
-            parsers.computeIfAbsent(key) { mapping(key) }
-        }.getOrNull()
-    }
+    fun getOrNull(config: ParserConfig): GenericParser? = runCatching { getOrThrow(config) }.getOrNull()
 }
