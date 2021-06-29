@@ -37,12 +37,10 @@ data class NitronConfig(
 @Serializable
 data class LangConfig(
     private val parser: ParserConfig,
-    private val processConfig: ProcessConfig,
+    val processConfig: ProcessConfig,
     val extensions: List<String>
 ) : ConfigWithDir() {
     val parserConfig: ParserConfig by lazy { parser.setPath(path) }
-    val process: ProcessConfig
-        get() = processConfig
 }
 
 @Serializable

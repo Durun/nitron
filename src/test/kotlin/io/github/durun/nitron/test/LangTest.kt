@@ -58,10 +58,10 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
         }
 		"uses correct rule/token name" {
 			val usedRules: List<String> = (
-                    config.process.normalizeConfig.ignoreRules +
-                            config.process.normalizeConfig.mapping.keys +
-                            config.process.normalizeConfig.indexedMapping.keys +
-                            config.process.splitConfig.splitRules
+                    config.processConfig.normalizeConfig.ignoreRules +
+                            config.processConfig.normalizeConfig.mapping.keys +
+                            config.processConfig.normalizeConfig.indexedMapping.keys +
+                            config.processConfig.splitConfig.splitRules
                     )
                 .flatMap { it.split('/').filter(String::isNotEmpty) }
                 .filterNot { it.contains(Regex("[^a-zA-Z]")) }

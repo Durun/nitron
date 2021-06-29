@@ -14,9 +14,9 @@ class AstSplitterTest : FreeSpec({
     "split statement" {
         val ast = javaAst.copy()
         println(ast)
-        config.process.splitConfig.splitRules
+        config.processConfig.splitConfig.splitRules
         val splitter = AstSplitter(
-            config.process.splitConfig.splitRules.mapNotNull { types.getType(it) }
+            config.processConfig.splitConfig.splitRules.mapNotNull { types.getType(it) }
         )
         val splitted = splitter.process(ast)
         println(splitted)

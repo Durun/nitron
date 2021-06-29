@@ -19,17 +19,17 @@ class CodeProcessor(
     private val astBuilder: AstBuilder = config.parserConfig.getParser()
     val nodeTypePool: NodeTypePool = astBuilder.nodeTypes
     private val splitter = ThreadLocal.withInitial {
-        AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
+        AstSplitter(config.processConfig.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
     }
     private val normalizer = ThreadLocal.withInitial {
         AstNormalizer(
-            mapping = config.process.normalizeConfig.mapping.entries.associate { (path, symbol) ->
+            mapping = config.processConfig.normalizeConfig.mapping.entries.associate { (path, symbol) ->
                 AstPath.of(path, nodeTypePool) to symbol
             },
-            numberedMapping = config.process.normalizeConfig.indexedMapping.entries.associate { (path, symbol) ->
+            numberedMapping = config.processConfig.normalizeConfig.indexedMapping.entries.associate { (path, symbol) ->
                 AstPath.of(path, nodeTypePool) to symbol
             },
-            ignoreRules = config.process.normalizeConfig.ignoreRules.map {
+            ignoreRules = config.processConfig.normalizeConfig.ignoreRules.map {
                 AstPath.of(it, nodeTypePool)
             }
         )
