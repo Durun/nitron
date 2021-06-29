@@ -1,5 +1,5 @@
 group = "io.github.durun.nitron"
-version = "0.1"
+version = "0.2-SNAPSHOT"
 
 plugins {
     `maven-publish`
