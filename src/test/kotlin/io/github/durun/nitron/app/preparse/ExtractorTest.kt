@@ -2,9 +2,6 @@ package io.github.durun.nitron.app.preparse
 
 import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
-import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
-import io.github.durun.nitron.core.parser.antlr.ParserStore
-import io.github.durun.nitron.core.parser.antlr.nodeTypePoolOf
 import io.github.durun.nitron.inout.database.MemoryDatabase
 import io.github.durun.nitron.inout.model.preparse.*
 import io.kotest.core.spec.style.FreeSpec
@@ -17,14 +14,12 @@ import java.net.URL
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
 
-@OptIn(ExperimentalPathApi::class)
+@ExperimentalPathApi
 class ExtractorTest : FreeSpec({
     "test" {
-        val tree = parser.parse(testCode.reader(), javaConfig.startRule)
-        val ast = tree.accept(converter)
+        val ast = parser.parse(testCode.reader())
         println(ast)
-
-        val types = nodeTypePoolOf("java", parser.antlrParser)
+        val types = parser.nodeTypes
         val parseUtil = ParseUtil(config)
         val repoUrl = URL("https://github.com/example/testProject.git")
         val commitHash = "1234abcd1234abcd1234abcd1234abcd1234abcd"
@@ -86,9 +81,7 @@ class ExtractorTest : FreeSpec({
 })
 
 private val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
-private val javaConfig = config.langConfig["java"]!!.grammar
-private val parser = ParserStore.getOrThrow(javaConfig)
-private val converter = AstBuildVisitor(parser.antlrParser.grammarFileName, parser.antlrParser)
+private val parser = config.langConfig["java"]!!.grammar.getParser()
 private val testCode = """
     class Sample {
         public static void main(String[] args){

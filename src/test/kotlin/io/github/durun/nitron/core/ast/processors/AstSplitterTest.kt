@@ -1,19 +1,15 @@
 package io.github.durun.nitron.core.ast.processors
 
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
-import io.github.durun.nitron.core.parser.antlr.AstBuildVisitor
-import io.github.durun.nitron.core.parser.antlr.ParserStore
-import io.github.durun.nitron.core.parser.antlr.nodeTypePoolOf
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 
 class AstSplitterTest : FreeSpec({
     val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
-    val parser = ParserStore.getOrThrow(config.grammar)
-    val javaAst = parser.parse(javaCode.reader(), config.grammar.startRule)
-        .accept(AstBuildVisitor("java", parser.antlrParser))
-    val types = nodeTypePoolOf("java", parser.antlrParser)
+    val parser = config.grammar.getParser()
+    val javaAst = parser.parse(javaCode.reader())
+    val types = parser.nodeTypes
 
     "split statement" {
         val ast = javaAst.copy()
