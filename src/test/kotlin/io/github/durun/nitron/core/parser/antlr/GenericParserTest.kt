@@ -15,7 +15,7 @@ class GenericParserTest : FreeSpec({
     include(
         tests(
             "javascript",
-            config.langConfig["javascript"]!!.grammar as AntlrParserConfig,
+            config.langConfig["javascript"]!!.parserConfig as AntlrParserConfig,
             src = """console.log("Hello");"""
         )
     )
@@ -23,7 +23,7 @@ class GenericParserTest : FreeSpec({
     include(
         tests(
             "csharp",
-            config.langConfig["csharp"]!!.grammar as AntlrParserConfig,
+            config.langConfig["csharp"]!!.parserConfig as AntlrParserConfig,
             src = """
 				class HelloClass {
 				    void hello() { }

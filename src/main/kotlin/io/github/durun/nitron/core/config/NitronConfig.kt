@@ -40,7 +40,7 @@ data class LangConfig(
     private val processConfig: ProcessConfig,
     val extensions: List<String>
 ) : ConfigWithDir() {
-    val grammar: ParserConfig by lazy { parser.setPath(path) }
+    val parserConfig: ParserConfig by lazy { parser.setPath(path) }
     val process: ProcessConfig
         get() = processConfig
 }

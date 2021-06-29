@@ -8,7 +8,7 @@ import java.nio.file.Paths
 
 class AstNormalizerTest : FreeSpec({
 	val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
-    val parser = config.grammar.getParser()
+    val parser = config.parserConfig.getParser()
     val javaAst = parser.parse(javaCode.reader())
     val types = parser.nodeTypes
 

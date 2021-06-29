@@ -16,6 +16,6 @@ object LanguageTable : IntIdTable("languages") {
 fun LanguageTable.insertAndGetId(langName: String, langConfig: LangConfig): EntityID<Int> {
     return insertAndGetId {
         it[this.name] = langName
-        it[this.checksum] = langConfig.grammar.checksum().toString()
+        it[this.checksum] = langConfig.parserConfig.checksum().toString()
     }
 }

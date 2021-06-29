@@ -46,7 +46,7 @@ class AstPrintCommand : CliktCommand(
     @ExperimentalPathApi
     override fun run() {
         val config = LangConfigLoader.load(configPath)
-        val astBuilder = config.grammar.getParser()
+        val astBuilder = config.parserConfig.getParser()
         inputs
             .forEach { input ->
                 val ast = astBuilder.parse(input.bufferedReader())

@@ -19,7 +19,7 @@ class ParseUtil(
 
     fun parseText(text: String, langName: String, langConfig: LangConfig): String {
         val astBuilder = synchronized(astBuilders) {
-            astBuilders.computeIfAbsent(langName) { langConfig.grammar.getParser() }
+            astBuilders.computeIfAbsent(langName) { langConfig.parserConfig.getParser() }
         }
         val ast = astBuilder.parse(text.reader())
         return encoder.encodeToString(ast)

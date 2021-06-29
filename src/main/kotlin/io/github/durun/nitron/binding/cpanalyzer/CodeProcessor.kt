@@ -16,7 +16,7 @@ class CodeProcessor(
     config: LangConfig,
     outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-    private val astBuilder: AstBuilder = config.grammar.getParser()
+    private val astBuilder: AstBuilder = config.parserConfig.getParser()
     val nodeTypePool: NodeTypePool = astBuilder.nodeTypes
     private val splitter = ThreadLocal.withInitial {
         AstSplitter(config.process.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })

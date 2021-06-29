@@ -75,7 +75,7 @@ internal class DbUtil(
 
     @kotlin.io.path.ExperimentalPathApi
     fun isLanguageConsistent(langName: String, langConfig: LangConfig): Boolean {
-        val checksum = langConfig.grammar.checksum()
+        val checksum = langConfig.parserConfig.checksum()
 
         val correctSum = transaction(db) {
             val rows = LanguageTable.select { LanguageTable.name eq langName }

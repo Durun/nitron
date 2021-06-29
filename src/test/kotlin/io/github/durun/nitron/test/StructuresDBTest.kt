@@ -40,7 +40,7 @@ class StructuresDBTest : FreeSpec() {
 		db = SQLiteDatabase.connect(path)
 		langConfig = LangConfigLoader.load(langPath)
 		processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
-		val antlrParser = ParserStore.getOrThrow(langConfig.grammar).antlrParser
+		val antlrParser = ParserStore.getOrThrow(langConfig.parserConfig).antlrParser
 		nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
 
 		"prepare" - {

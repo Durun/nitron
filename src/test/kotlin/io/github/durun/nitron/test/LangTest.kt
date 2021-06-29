@@ -23,7 +23,7 @@ import kotlin.io.path.bufferedReader
 class LangTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
     NitronConfigLoader.load(configPath).langConfig
-        .filter { (_, config) -> config.grammar is AntlrParserConfig }
+        .filter { (_, config) -> config.parserConfig is AntlrParserConfig }
         .forEach { (lang, config) -> include(langTestFactory(lang, config)) }
 })
 
@@ -31,19 +31,19 @@ class LangTest : FreeSpec({
 @ExperimentalPathApi
 fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 	"config for $lang (${config.fileName})" - {
-        val parser = ParserStore.getOrNull(config.grammar)
-        val parserConfig = config.grammar as AntlrParserConfig
-		"grammar files exist" {
+        val parser = ParserStore.getOrNull(config.parserConfig)
+        val parserConfig = config.parserConfig as AntlrParserConfig
+        "grammar files exist" {
             val files = parserConfig.grammarFilePaths + parserConfig.utilJavaFilePaths
             log { "${config.fileName}: files=$files" }
             files shouldHaveAtLeastSize 1
             files.forAll {
                 it.shouldBeReadable()
             }
-		}
-		"defines parser settings" {
-			shouldNotThrowAny {
-				ParserStore.getOrThrow(config.grammar)
+        }
+        "defines parser settings" {
+            shouldNotThrowAny {
+                ParserStore.getOrThrow(config.parserConfig)
 			}
 		}
 		"defines start rule" {

@@ -81,7 +81,7 @@ class ExtractorTest : FreeSpec({
 })
 
 private val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
-private val parser = config.langConfig["java"]!!.grammar.getParser()
+private val parser = config.langConfig["java"]!!.parserConfig.getParser()
 private val testCode = """
     class Sample {
         public static void main(String[] args){
