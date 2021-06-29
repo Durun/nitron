@@ -14,7 +14,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.net.URL
-import kotlin.io.path.readText
 
 internal class DbUtil(
     val db: Database
@@ -76,11 +75,7 @@ internal class DbUtil(
 
     @kotlin.io.path.ExperimentalPathApi
     fun isLanguageConsistent(langName: String, langConfig: LangConfig): Boolean {
-        val paths = langConfig.grammar.grammarFilePaths + langConfig.grammar.utilJavaFilePaths
-        val checksum = paths.map { MD5.digest(it.readText()).toString() }
-            .sorted()
-            .reduce { a, b -> a + b }
-            .let { MD5.digest(it) }
+        val checksum = langConfig.grammar.checksum()
 
         val correctSum = transaction(db) {
             val rows = LanguageTable.select { LanguageTable.name eq langName }
