@@ -4,8 +4,6 @@ import io.github.durun.nitron.core.AstSerializers
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.core.parser.AstBuilder
-import io.github.durun.nitron.core.parser.AstBuilders
-import io.github.durun.nitron.core.parser.antlr.antlr
 import kotlinx.serialization.encodeToString
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
@@ -21,14 +19,7 @@ class ParseUtil(
 
     fun parseText(text: String, langName: String, langConfig: LangConfig): String {
         val astBuilder = synchronized(astBuilders) {
-            astBuilders.computeIfAbsent(langName) {
-                AstBuilders.antlr(
-                    grammarName = langConfig.fileName,
-                    entryPoint = langConfig.grammar.startRule,
-                    grammarFiles = langConfig.grammar.grammarFilePaths,
-                    utilityJavaFiles = langConfig.grammar.utilJavaFilePaths
-                )
-            }
+            astBuilders.computeIfAbsent(langName) { langConfig.grammar.getParser() }
         }
         val ast = astBuilder.parse(text.reader())
         return encoder.encodeToString(ast)
