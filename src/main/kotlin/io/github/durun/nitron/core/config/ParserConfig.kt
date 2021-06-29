@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 
 @Serializable
-sealed class GrammarConfig : ConfigWithDir() {
+sealed class ParserConfig : ConfigWithDir() {
     abstract fun getParser(): AstBuilder
     abstract fun checksum(): MD5
 }
@@ -21,7 +21,7 @@ data class AntlrParserConfig(
     private val grammarFiles: List<String>,
     private val utilJavaFiles: List<String>,
     val startRule: String
-) : GrammarConfig() {
+) : ParserConfig() {
     val grammarFilePaths: List<Path> by lazy {
         grammarFiles.map { dir.resolve(it) }
     }
