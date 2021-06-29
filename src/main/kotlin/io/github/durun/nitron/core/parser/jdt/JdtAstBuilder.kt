@@ -40,15 +40,18 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
         }
 
     override fun parse(reader: Reader): AstNode {
-        parser.setSource(reader.readText().replace(Regex("\r\n|\r|\n"), "\n").toCharArray())
+        val source = reader.readText().replace(Regex("\r\n|\r|\n"), "\n")
+        parser.setSource(source.toCharArray())
         val root = parser.createAST(null)
-        val visitor = BuildVisitor()
+        val visitor = BuildVisitor(source)
         root.accept(visitor)
         return visitor.result!!
             .accept(AlignLineVisitor())
     }
 
-    private class BuildVisitor : ASTVisitor() {
+    private class BuildVisitor(
+        val source: String
+    ) : ASTVisitor() {
         var result: AstNode? = null
             private set
         private val stack: MutableList<AstNode> = mutableListOf()
@@ -75,7 +78,8 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
             if (parent is BasicAstRuleNode && parent.toString() != node.toString()) {
                 // 構文木に不足しているトークンを補う
                 val trees = parent.children         // 構文木(トークンが不足している)
-                val tokens = lex(node.toString())   // 完全なトークン列
+                val nodeString = source.slice(node.startPosition until node.startPosition + node.length)
+                val tokens = lex(nodeString)        // 完全なトークン列
                 val baseLine = detectLineNumber(trees, tokens)
                 var k = 0
                 var remainText = ""
@@ -124,7 +128,8 @@ private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder 
             val node = trees.flatMap { it.flatten() }
                 .filterIsInstance<AstTerminalNode>().firstOrNull()
                 ?: return null
-            val matched = tokens.first { (_, token) -> token == node.token }
+            val matched = tokens.firstOrNull { (_, token) -> token == node.token }
+                ?: return null
             val absLine = node.line
             val relLine = matched.first
             return absLine - relLine
