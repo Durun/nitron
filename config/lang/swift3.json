@@ -1,6 +1,6 @@
 {
     "extensions": [".swift"],
-	"parser": {
+	"parserConfig": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/swift/swift3/Swift3.g4"

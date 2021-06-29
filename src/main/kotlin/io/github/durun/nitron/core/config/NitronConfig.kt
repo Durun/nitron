@@ -1,6 +1,7 @@
 package io.github.durun.nitron.core.config
 
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
 
@@ -36,7 +37,7 @@ data class NitronConfig(
 
 @Serializable
 data class LangConfig(
-    private val parser: ParserConfig,
+    @SerialName("parserConfig") private val parser: ParserConfig,
     val processConfig: ProcessConfig,
     val extensions: List<String>
 ) : ConfigWithDir() {

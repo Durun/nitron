@@ -1,6 +1,6 @@
 {
     "extensions": [".erl"],
-	"parser": {
+	"parserConfig": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/erlang/Erlang.g4"

@@ -1,6 +1,6 @@
 {
   "extensions": [".js"],
-  "parser": {
+  "parserConfig": {
 	"type": "antlr",
 	"grammarFiles": [
 	  "../grammars/javascript/javascript/JavaScriptParser.g4",

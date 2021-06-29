@@ -2,7 +2,7 @@
   "extensions": [
 	".kt"
   ],
-  "parser": {
+  "parserConfig": {
 	"type": "antlr",
 	"grammarFiles": [
 	  "../grammars/kotlin/kotlin/KotlinLexer.g4",

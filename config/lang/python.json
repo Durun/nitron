@@ -1,6 +1,6 @@
 {
 	"extensions": [".py"],
-	"parser": {
+	"parserConfig": {
 	  "type": "antlr",
 	  "grammarFiles": [
 		"../grammars/python/python3/Python3.g4"

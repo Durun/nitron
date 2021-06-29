@@ -1,6 +1,6 @@
 {
   "extensions": [".r"],
-  "parser": {
+  "parserConfig": {
 	"type": "antlr",
 	"grammarFiles": [
 	  "../grammars/r/R.g4"
