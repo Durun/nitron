@@ -1,5 +1,6 @@
 package io.github.durun.nitron.test
 
+import io.github.durun.nitron.core.config.AntlrParserConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.core.parser.antlr.ParserStore
@@ -30,9 +31,10 @@ class LangTest : FreeSpec({
 @ExperimentalPathApi
 fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 	"config for $lang (${config.fileName})" - {
-		val parser = ParserStore.getOrNull(config.grammar)
+        val parser = ParserStore.getOrNull(config.grammar)
+        val parserConfig = config.grammar as AntlrParserConfig
 		"grammar files exist" {
-			val files = config.grammar.grammarFilePaths + config.grammar.utilJavaFilePaths
+            val files = parserConfig.grammarFilePaths + parserConfig.utilJavaFilePaths
             log { "${config.fileName}: files=$files" }
             files shouldHaveAtLeastSize 1
             files.forAll {
@@ -45,7 +47,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 			}
 		}
 		"defines start rule" {
-            val startRule = config.grammar.startRule
+            val startRule = parserConfig.startRule
             log { "${config.fileName}: startRule=$startRule" }
             startRule shouldBeIn parser!!.antlrParser.ruleNames
         }
@@ -68,7 +70,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 			runCatching {
 				allowedRules shouldContainAll usedRules
 			}.onFailure {
-				println("see: ${config.grammar.grammarFilePaths.map(Path::normalize)}")
+                println("see: ${parserConfig.grammarFilePaths.map(Path::normalize)}")
 				val errorSymbols = (usedRules - allowedRules)
 				config.filePath.bufferedReader().lineSequence().forEachIndexed { index, line ->
 					val file = config.filePath
