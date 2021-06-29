@@ -2,9 +2,7 @@
 name: Release build
 
 on:
-  push:
-    branches:
-      - '!*'
+  create:
     tags:
       - 'v*'
 
