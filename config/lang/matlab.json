@@ -1,11 +1,12 @@
 {
     "extensions": [".m"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/matlab/matlab.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "translation_unit"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/matlab/matlab.g4"
+	  ],
+	  "utilJavaFiles": [],
+	  "startRule": "translation_unit"
 	},
 	"processConfig": {
 		"splitConfig": {

@@ -1,11 +1,12 @@
 {
     "extensions": [".erl"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/erlang/Erlang.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "forms"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/erlang/Erlang.g4"
+	  ],
+	  "utilJavaFiles": [],
+	  "startRule": "forms"
 	},
 	"processConfig": {
 		"splitConfig": {

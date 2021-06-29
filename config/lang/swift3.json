@@ -1,13 +1,14 @@
 {
     "extensions": [".swift"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/swift/swift3/Swift3.g4"
-		],
-		"utilJavaFiles": [
-			"../grammars/swift/swift3/src/main/java/SwiftSupport.java"
-		],
-		"startRule": "top_level"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/swift/swift3/Swift3.g4"
+	  ],
+	  "utilJavaFiles": [
+		"../grammars/swift/swift3/src/main/java/SwiftSupport.java"
+	  ],
+	  "startRule": "top_level"
 	},
 	"processConfig": {
 		"splitConfig": {

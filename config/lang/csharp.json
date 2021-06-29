@@ -1,13 +1,14 @@
 {
     "extensions": [".cs"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/csharp/CSharpLexer.g4",
-			"../grammars/csharp/CSharpParser.g4",
-			"../grammars/csharp/CSharpPreprocessorParser.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "compilation_unit"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/csharp/CSharpLexer.g4",
+		"../grammars/csharp/CSharpParser.g4",
+		"../grammars/csharp/CSharpPreprocessorParser.g4"
+	  ],
+	  "utilJavaFiles": [],
+	  "startRule": "compilation_unit"
 	},
 	"processConfig": {
 		"splitConfig": {

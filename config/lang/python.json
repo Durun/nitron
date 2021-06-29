@@ -1,11 +1,12 @@
 {
 	"extensions": [".py"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/python/python3/Python3.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "file_input"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/python/python3/Python3.g4"
+	  ],
+	  "utilJavaFiles": [],
+	  "startRule": "file_input"
 	},
 	"processConfig": {
 		"splitConfig": {

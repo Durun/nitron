@@ -1,5 +1,6 @@
 package io.github.durun.nitron.test
 
+import io.github.durun.nitron.core.config.AntlrParserConfig
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.core.parser.antlr.ParserStore
@@ -21,31 +22,32 @@ import kotlin.io.path.bufferedReader
 @ExperimentalPathApi
 class LangTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
-	NitronConfigLoader.load(configPath).langConfig.forEach { (lang, config) ->
-		include(langTestFactory(lang, config))
-	}
+    NitronConfigLoader.load(configPath).langConfig
+        .filter { (_, config) -> config.parserConfig is AntlrParserConfig }
+        .forEach { (lang, config) -> include(langTestFactory(lang, config)) }
 })
 
 
 @ExperimentalPathApi
 fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 	"config for $lang (${config.fileName})" - {
-		val parser = ParserStore.getOrNull(config.grammar)
-		"grammar files exist" {
-			val files = config.grammar.grammarFilePaths + config.grammar.utilJavaFilePaths
+        val parser = ParserStore.getOrNull(config.parserConfig)
+        val parserConfig = config.parserConfig as AntlrParserConfig
+        "grammar files exist" {
+            val files = parserConfig.grammarFilePaths + parserConfig.utilJavaFilePaths
             log { "${config.fileName}: files=$files" }
             files shouldHaveAtLeastSize 1
             files.forAll {
                 it.shouldBeReadable()
             }
-		}
-		"defines parser settings" {
-			shouldNotThrowAny {
-				ParserStore.getOrThrow(config.grammar)
+        }
+        "defines parser settings" {
+            shouldNotThrowAny {
+                ParserStore.getOrThrow(config.parserConfig)
 			}
 		}
 		"defines start rule" {
-            val startRule = config.grammar.startRule
+            val startRule = parserConfig.startRule
             log { "${config.fileName}: startRule=$startRule" }
             startRule shouldBeIn parser!!.antlrParser.ruleNames
         }
@@ -56,10 +58,10 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
         }
 		"uses correct rule/token name" {
 			val usedRules: List<String> = (
-                    config.process.normalizeConfig.ignoreRules +
-                            config.process.normalizeConfig.mapping.keys +
-                            config.process.normalizeConfig.indexedMapping.keys +
-                            config.process.splitConfig.splitRules
+                    config.processConfig.normalizeConfig.ignoreRules +
+                            config.processConfig.normalizeConfig.mapping.keys +
+                            config.processConfig.normalizeConfig.indexedMapping.keys +
+                            config.processConfig.splitConfig.splitRules
                     )
                 .flatMap { it.split('/').filter(String::isNotEmpty) }
                 .filterNot { it.contains(Regex("[^a-zA-Z]")) }
@@ -68,7 +70,7 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 			runCatching {
 				allowedRules shouldContainAll usedRules
 			}.onFailure {
-				println("see: ${config.grammar.grammarFilePaths.map(Path::normalize)}")
+                println("see: ${parserConfig.grammarFilePaths.map(Path::normalize)}")
 				val errorSymbols = (usedRules - allowedRules)
 				config.filePath.bufferedReader().lineSequence().forEachIndexed { index, line ->
 					val file = config.filePath

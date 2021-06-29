@@ -1,12 +1,13 @@
 {
     "extensions": [".java"],
-	"grammarConfig": {
-		"grammarFiles": [
-			"../grammars/java/java8/Java8Lexer.g4",
-			"../grammars/java/java8/Java8Parser.g4"
-		],
-		"utilJavaFiles": [],
-		"startRule": "compilationUnit"
+	"parserConfig": {
+	  "type": "antlr",
+	  "grammarFiles": [
+		"../grammars/java/java8/Java8Lexer.g4",
+		"../grammars/java/java8/Java8Parser.g4"
+	  ],
+	  "utilJavaFiles": [],
+	  "startRule": "compilationUnit"
 	},
 	"processConfig": {
 		"splitConfig": {

@@ -5,7 +5,8 @@
 	".c",
 	".cpp"
   ],
-  "grammarConfig": {
+  "parserConfig": {
+	"type": "antlr",
 	"grammarFiles": [
 	  "../grammars/cpp/CPP14Lexer.g4",
 	  "../grammars/cpp/CPP14Parser.g4"

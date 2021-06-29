@@ -1,6 +1,6 @@
 package io.github.durun.nitron.core.parser.antlr
 
-import io.github.durun.nitron.core.config.GrammarConfig
+import io.github.durun.nitron.core.config.AntlrParserConfig
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FreeSpec
@@ -15,7 +15,7 @@ class GenericParserTest : FreeSpec({
     include(
         tests(
             "javascript",
-            config.langConfig["javascript"]!!.grammar,
+            config.langConfig["javascript"]!!.parserConfig as AntlrParserConfig,
             src = """console.log("Hello");"""
         )
     )
@@ -23,7 +23,7 @@ class GenericParserTest : FreeSpec({
     include(
         tests(
             "csharp",
-            config.langConfig["csharp"]!!.grammar,
+            config.langConfig["csharp"]!!.parserConfig as AntlrParserConfig,
             src = """
 				class HelloClass {
 				    void hello() { }
@@ -33,17 +33,17 @@ class GenericParserTest : FreeSpec({
     )
 })
 
-private fun tests(name: String, config: GrammarConfig, src: String) = freeSpec {
-	val parser by lazy {
-		GenericParser.fromFiles(
-				config.grammarFilePaths,
-				utilityJavaFiles = config.utilJavaFilePaths
-		)
-	}
-	name - {
-		"init" {
-			shouldNotThrowAny {
-				println(parser)
+private fun tests(name: String, config: AntlrParserConfig, src: String) = freeSpec {
+    val parser by lazy {
+        GenericParser.fromFiles(
+            config.grammarFilePaths,
+            utilityJavaFiles = config.utilJavaFilePaths
+        )
+    }
+    name - {
+        "init" {
+            shouldNotThrowAny {
+                println(parser)
 			}
 		}
 		"antlrParser" {

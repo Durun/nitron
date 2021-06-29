@@ -1,6 +1,7 @@
 package io.github.durun.nitron.core.config
 
 import io.github.durun.nitron.core.config.loader.LangConfigLoader
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
 
@@ -36,27 +37,11 @@ data class NitronConfig(
 
 @Serializable
 data class LangConfig(
-        private val grammarConfig: GrammarConfig,
-        private val processConfig: ProcessConfig,
-        val extensions: List<String>
+    @SerialName("parserConfig") private val parser: ParserConfig,
+    val processConfig: ProcessConfig,
+    val extensions: List<String>
 ) : ConfigWithDir() {
-    val grammar: GrammarConfig by lazy { grammarConfig.setPath(path) }
-    val process: ProcessConfig
-        get() = processConfig
-}
-
-@Serializable
-data class GrammarConfig(
-        private val grammarFiles: List<String>,
-        private val utilJavaFiles: List<String>,
-        val startRule: String
-) : ConfigWithDir() {
-    val grammarFilePaths: List<Path> by lazy {
-        grammarFiles.map { dir.resolve(it) }
-    }
-    val utilJavaFilePaths: List<Path> by lazy {
-        utilJavaFiles.map { dir.resolve(it) }
-    }
+    val parserConfig: ParserConfig by lazy { parser.setPath(path) }
 }
 
 @Serializable
