@@ -22,9 +22,9 @@ import kotlin.io.path.bufferedReader
 @ExperimentalPathApi
 class LangTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
-	NitronConfigLoader.load(configPath).langConfig.forEach { (lang, config) ->
-		include(langTestFactory(lang, config))
-	}
+    NitronConfigLoader.load(configPath).langConfig
+        .filter { (_, config) -> config.grammar is AntlrParserConfig }
+        .forEach { (lang, config) -> include(langTestFactory(lang, config)) }
 })
 
 
