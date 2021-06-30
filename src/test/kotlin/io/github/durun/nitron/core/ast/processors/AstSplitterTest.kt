@@ -36,8 +36,7 @@ public class HelloWorld {
 
 private const val splittedCode = """public class HelloWorld {
 public static void main ( String [ ] args ) {
-if ( false )
-{
+if ( false ) {
 x = y * x + 1 ;
 }
 }
