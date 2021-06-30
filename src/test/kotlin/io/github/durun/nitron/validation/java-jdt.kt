@@ -2,6 +2,7 @@ package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
 import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
+import io.github.durun.nitron.core.ast.visitor.AstXmlBuildVisitor
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
@@ -78,7 +79,7 @@ fun main() = testReportAsMarkDown {
         }
         "member field access" {
             code(methodBody = "f(m.name);").normalize() shouldBe normStatements(methodBody = "f ( \$V0 . name ) ;")
-            code(methodBody = "f(m.name.length);").normalize() shouldBe normStatements(methodBody = "f ( \$V0 . name . length) ;")
+            code(methodBody = "f(m.name.length);").normalize() shouldBe normStatements(methodBody = "f ( \$V0 . name . length ) ;")
         }
         "member method access" {
             code(methodBody = "m.toString();").normalize() shouldBe normStatements(methodBody = "\$V0 . toString ( ) ;")
@@ -140,7 +141,12 @@ fun main() = testReportAsMarkDown {
             )
         }
         "while statement" {
-            code(methodBody = "while(cond) invoke();").normalize() shouldBe normStatements(methodBody = "while ( \$V0 ) invoke ( ) ;")
+            code(methodBody = "while(cond) invoke();").normalize() shouldBe normStatements(
+                methodBody = listOf(
+                    "while ( \$V0 )",
+                    "invoke ( ) ;"
+                )
+            )
         }
         "while block" {
             code(
@@ -173,7 +179,10 @@ fun main() = testReportAsMarkDown {
         }
         "for statement" {
             code(methodBody = "for(int i=0; i<5; i++) invoke();").normalize() shouldBe normStatements(
-                methodBody = "for ( int \$V0 = N ; \$V0 < N ; \$V0 ++ ) invoke ( ) ;"
+                methodBody = listOf(
+                    "for ( int \$V0 = N ; \$V0 < N ; \$V0 ++ )",
+                    "invoke ( ) ;"
+                )
             )
         }
         "for block" {
@@ -193,7 +202,12 @@ fun main() = testReportAsMarkDown {
             )
         }
         "if statement" {
-            code(methodBody = "if(cond) invoke();").normalize() shouldBe normStatements(methodBody = "if ( \$V0 ) invoke ( ) ;")
+            code(methodBody = "if(cond) invoke();").normalize() shouldBe normStatements(
+                methodBody = listOf(
+                    "if ( \$V0 )",
+                    "invoke ( ) ;"
+                )
+            )
         }
         "if block" {
             code(
@@ -214,7 +228,10 @@ fun main() = testReportAsMarkDown {
         "if-else statement" {
             code(methodBody = "if (cond) f1(); else f2();").normalize() shouldBe normStatements(
                 methodBody = listOf(
-                    "if ( \$V0 ) f1 ( ) ; else f2 ( ) ;"
+                    "if ( \$V0 )",
+                    "f1 ( ) ;",
+                    "else",
+                    "f2 ( ) ;"
                 )
             )
         }
@@ -231,8 +248,11 @@ fun main() = testReportAsMarkDown {
         "else-if statement" {
             code(methodBody = "if (cond0) f1(); else if (cond1) f2();").normalize() shouldBe normStatements(
                 methodBody = listOf(
-                    "if ( \$V0 ) f1 ( ) ; else",
-                    "if ( \$V0 ) f2 ( ) ;"
+                    "if ( \$V0 )",
+                    "f1 ( ) ;",
+                    "else",
+                    "if ( \$V0 )",
+                    "f2 ( ) ;"
                 )
             )
         }
@@ -344,5 +364,6 @@ private fun String.normalize(): List<String> {
     return processor.split(this)
         .mapNotNull { processor.proceess(it) }
         .onEach { println(it.accept(AstPrintVisitor)) }
+        .onEach { println(it.accept(AstXmlBuildVisitor)) }
         .map { it.getText() }
 }
