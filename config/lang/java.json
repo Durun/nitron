@@ -12,19 +12,25 @@
 	"processConfig": {
 		"splitConfig": {
 			"splitRules": [
-			  "blockStatement",
-			  "labeledStatement",
+			  "typeDeclaration",
+			  "methodDeclaration",
+			  "classBodyDeclaration",
+			  "expressionStatement",
+			  "localVariableDeclarationStatement",
+			  "tryStatement",
+			  "catchClause",
+			  "whileStatement",
+			  "doStatement",
+			  "forStatement",
 			  "ifThenStatement",
 			  "ifThenElseStatement",
-			  "whileStatement",
-			  "forStatement",
+			  "switchStatement",
 			  "switchLabel",
-			  "labeledStatementNoShortIf",
-			  "whileStatementNoShortIf",
-			  "forStatementNoShortIf",
-			  "catchClause",
-			  "typeDeclaration",
-			  "classBodyDeclaration"
+			  "breakStatement",
+			  "synchronizedStatement",
+			  "returnStatement",
+			  "throwStatement",
+			  "assertStatement"
 			]
 		},
 		"normalizeConfig": {

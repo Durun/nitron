@@ -64,7 +64,8 @@ private const val javaParsed = """package sample ; import some . Library ; publi
 private const val javaSplitted = """package sample ; import some . Library ;
 public class HelloWorld {
 public static void main ( String [ ] args ) {
-try { URL url = null ;
+try {
+URL url = null ;
 try {
 url = new URL ( source ) ;
 url = url + "test" ;
@@ -79,8 +80,7 @@ throw e ;
 if ( true ) {
 System . out . println ( "Hello-A" ) ;
 } else
-if ( false )
-{
+if ( false ) {
 System . out . println ( "Hello-B" ) ;
 }
 }
@@ -88,7 +88,8 @@ System . out . println ( "Hello-B" ) ;
 <EOF>"""
 private const val javaNormalized = """class HelloWorld {
 void main ( String [ ] ${"$"}V0 ) {
-try { URL ${"$"}V0 = null ;
+try {
+URL ${"$"}V0 = null ;
 try {
 ${"$"}V0 = new URL ( ${"$"}V1 ) ;
 ${"$"}V0 = ${"$"}V0 + "S" ;
@@ -99,6 +100,5 @@ throw ${"$"}V0 ;
 if ( ${"$"}L ) {
 ${"$"}V0 . println ( "S" ) ;
 else
-if ( ${"$"}L )
-{
+if ( ${"$"}L ) {
 ${"$"}V0 . println ( "S" ) ;"""
