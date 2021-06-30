@@ -1,6 +1,7 @@
 package io.github.durun.nitron.validation
 
 import io.github.durun.nitron.binding.cpanalyzer.CodeProcessor
+import io.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
@@ -26,14 +27,6 @@ fun main() = testReportAsMarkDown {
         "extract class declaration" {
             """ package sample;
                 class SampleClass {
-                }
-                """.trimIndent().normalize() shouldBe listOf(
-                "class SampleClass {"
-            )
-        }
-        "ignore modifier" {
-            """ package sample;
-                public class SampleClass {
                 }
                 """.trimIndent().normalize() shouldBe listOf(
                 "class SampleClass {"
@@ -81,6 +74,7 @@ fun main() = testReportAsMarkDown {
         }
         "expression" {
             code(methodBody = "f((x+y)*z);").normalize() shouldBe normStatements(methodBody = "f ( ( \$V0 + \$V1 ) * \$V2 ) ;")
+            code(methodBody = "f(x+f());").normalize() shouldBe normStatements(methodBody = "f ( \$V0 + f ( ) ) ;")
         }
         "member field access" {
             code(methodBody = "f(m.name);").normalize() shouldBe normStatements(methodBody = "f ( \$V0 . name ) ;")
@@ -346,12 +340,9 @@ private fun normStatements(
     methodBody: String? = null
 ) = normStatements(listOfNotNull(classBody), listOfNotNull(methodBody))
 
-private fun String.toStatements(): List<String> {
-    return processor.split(this)
-        .map { it.getText() }
-}
-
 private fun String.normalize(): List<String> {
     return processor.split(this)
-        .mapNotNull { processor.proceess(it)?.getText() }
+        .mapNotNull { processor.proceess(it) }
+        .onEach { println(it.accept(AstPrintVisitor)) }
+        .map { it.getText() }
 }
