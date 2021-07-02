@@ -50,7 +50,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
     private val log by logger()
 
-    override fun toString(): String = "<preparse-fetch $dbFiles>"
+    override fun toString(): String = "<preparse-fetch>"
 
     override fun run() {
         dbFiles.forEach { dbFile ->
