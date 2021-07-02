@@ -1,6 +1,5 @@
 package io.github.durun.nitron.app.preparse
 
-import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.inout.model.preparse.*
@@ -67,7 +66,7 @@ internal class DbUtil(
                 this[FileTable.commit] = EntityID(commitId.value + i, commitId.table)
                 this[FileTable.path] = it.path
                 this[FileTable.objectId] = it.objectId.name()
-                this[FileTable.checksum] = MD5.digest(it.text).toString()
+                this[FileTable.checksum] = it.checksum.toString()
             }
         }
         log.verbose { "Insert 'files' in $commitId" }
@@ -85,7 +84,7 @@ internal class DbUtil(
             this[FileTable.commit] = commitId
             this[FileTable.path] = it.path
             this[FileTable.objectId] = it.objectId.name()
-            this[FileTable.checksum] = MD5.digest(it.text).toString()
+            this[FileTable.checksum] = it.checksum.toString()
         }
     }
 

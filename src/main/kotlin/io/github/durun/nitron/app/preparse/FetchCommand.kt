@@ -4,18 +4,15 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.defaultLazy
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
-import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.CommitTable
-import io.github.durun.nitron.util.isExclusiveIn
-import io.github.durun.nitron.util.logger
-import io.github.durun.nitron.util.parseToDateTime
+import io.github.durun.nitron.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -47,15 +44,20 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
         .convert { it.parseToDateTime() }
         .defaultLazy { DateTime(Long.MAX_VALUE) }
 
-    private val bufferSize: Int by option("-b")
-        .int()
-        .default(1000)
+    private val isVerbose: Boolean by option("--verbose").flag()
+    private val isDebug: Boolean by option("--debug").flag()
 
     private val log by logger()
 
     override fun toString(): String = "<preparse-fetch>"
 
     override fun run() {
+        LogLevel = when {
+            isVerbose -> Log.Level.VERBOSE
+            isDebug -> Log.Level.DEBUG
+            else -> Log.Level.INFO
+        }
+
         dbFiles.forEach { dbFile ->
             runCatching {
                 log.info { "Start DB=$dbFile" }
@@ -97,6 +99,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                         val commitHash = commit.id.name
                         if (existCommits.contains(commitHash)) return@async null
                         val info = git.createCommitInfo(commit, parent, filter)
+                        info.files.forEach { it.checksum } // pre-compute
                         if (i % 100 == 0) log.info { "Made commit: ${repo.url} $i / ${commitPairs.size}" }
                         info
                     }
@@ -104,7 +107,7 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
                 runBlocking(Dispatchers.IO) {
                     while (commitInfos.isNotEmpty()) {
-                        delay(5000)
+                        if (commitInfos.any { it.isActive }) delay(5000)
                         val doneIndices = commitInfos.mapIndexedNotNull { i, job ->
                             i.takeIf { job.isCompleted }
                         }
@@ -113,6 +116,12 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                             commitInfos.removeAt(i).await()?.let { doneList += it }
                         }
                         if (doneList.isNotEmpty()) dbUtil.batchInsertCommitInfos(repo, doneList)
+                        /*
+                        doneList.forEachIndexed { i, it ->
+                            dbUtil.insertCommitInfo(repo, it)
+                            log.verbose { "  Writing: $i / ${doneList.size}" }
+                        }
+                         */
                         log.info { "Wrote commit: ${repo.url} ${doneList.size}" }
                     }
                 }
