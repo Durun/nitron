@@ -16,7 +16,10 @@ import io.github.durun.nitron.inout.model.preparse.CommitTable
 import io.github.durun.nitron.util.isExclusiveIn
 import io.github.durun.nitron.util.logger
 import io.github.durun.nitron.util.parseToDateTime
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -88,24 +91,29 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
             val commitPairs = git.zipCommitWithParent()
 
             runBlocking(Dispatchers.Default) {
-                val commitInfos = commitPairs.asSequence()
-                    .filter { (commit, _) -> commit.committerIdent.`when` isExclusiveIn startDate..endDate }
-                    .filterNot { (commit, _) ->
+                val commitInfos = commitPairs.mapIndexed { i, (commit, parent) ->
+                    async {
+                        if (!(commit.committerIdent.`when` isExclusiveIn startDate..endDate)) return@async null
                         val commitHash = commit.id.name
-                        existCommits.contains(commitHash)
+                        if (existCommits.contains(commitHash)) return@async null
+                        val info = git.createCommitInfo(commit, parent, filter)
+                        if (i % 100 == 0) log.info { "Made commit: ${repo.url} $i / ${commitPairs.size}" }
+                        info
                     }
-                    .mapIndexed { i, (commit, parent) ->
-                        async {
-                            val info = git.createCommitInfo(commit, parent, filter)
-                            if (i % 100 == 0) log.info { "Made commit: $i" }
-                            info
+                }.toMutableList()
+
+                runBlocking(Dispatchers.IO) {
+                    while (commitInfos.isNotEmpty()) {
+                        delay(5000)
+                        val doneIndices = commitInfos.mapIndexedNotNull { i, job ->
+                            i.takeIf { job.isCompleted }
                         }
-                    }
-                runBlocking {
-                    val buffers: Sequence<List<Deferred<CommitInfo>>> = commitInfos.chunked(bufferSize)
-                    buffers.forEachIndexed { i, buf ->
-                        dbUtil.batchInsertCommitInfos(repo, buf.awaitAll())
-                        log.info { "Wrote commit: ${i * bufferSize}" }
+                        val doneList: MutableList<CommitInfo> = mutableListOf()
+                        doneIndices.asReversed().forEach { i ->
+                            commitInfos.removeAt(i).await()?.let { doneList += it }
+                        }
+                        if (doneList.isNotEmpty()) dbUtil.batchInsertCommitInfos(repo, doneList)
+                        log.info { "Wrote commit: ${repo.url} ${doneList.size}" }
                     }
                 }
             }
