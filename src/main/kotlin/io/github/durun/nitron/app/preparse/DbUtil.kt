@@ -67,10 +67,26 @@ internal class DbUtil(
                 this[FileTable.commit] = EntityID(commitId.value + i, commitId.table)
                 this[FileTable.path] = it.path
                 this[FileTable.objectId] = it.objectId.name()
-                this[FileTable.checksum] = MD5.digest(it.readText()).toString()
+                this[FileTable.checksum] = MD5.digest(it.text).toString()
             }
         }
         log.verbose { "Insert 'files' in $commitId" }
+    }
+
+    fun insertCommitInfo(repositoryInfo: RepositoryInfo, commitInfo: CommitInfo) = transaction(db) {
+        val commitId = CommitTable.insertAndGetId(
+            repositoryID = repositoryInfo.id,
+            hash = commitInfo.id,
+            message = commitInfo.message,
+            date = commitInfo.date,
+            author = commitInfo.author
+        )
+        FileTable.batchInsert(commitInfo.files, ignore = true) {
+            this[FileTable.commit] = commitId
+            this[FileTable.path] = it.path
+            this[FileTable.objectId] = it.objectId.name()
+            this[FileTable.checksum] = MD5.digest(it.text).toString()
+        }
     }
 
     @kotlin.io.path.ExperimentalPathApi

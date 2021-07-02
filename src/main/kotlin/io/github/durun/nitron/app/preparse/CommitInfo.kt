@@ -32,9 +32,9 @@ internal data class CommitInfo(
 internal data class FileInfo(
     val path: String,
     val objectId: ObjectId,
-    val lazytext: () -> String
+    private val lazytext: () -> String
 ) {
-    fun readText(): String = lazytext.invoke()
+    val text: String by lazy { lazytext.invoke() }
 }
 
 internal fun RevCommit.getDate(): Date {
