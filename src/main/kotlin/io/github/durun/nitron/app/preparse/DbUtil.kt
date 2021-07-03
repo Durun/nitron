@@ -111,11 +111,11 @@ internal class DbUtil(
         }
     }
 
-    fun prepareAstTable(config: NitronConfig, timeRange: ClosedRange<DateTime>) {
+    fun prepareAstTable(repo: RepositoryInfo, config: NitronConfig, timeRange: ClosedRange<DateTime>) {
 
         // Language name : id
         val langs = transaction(db) {
-            LanguageTable.selectAll()
+            LanguageTable.select { LanguageTable.name inList repo.languages }
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
@@ -123,14 +123,12 @@ internal class DbUtil(
             val extensions = config.langConfig[lang]!!.extensions
             transaction(db) {
                 FileTable.innerJoin(CommitTable).select {  // files with correct extension
-                    extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
-                        expr or (FileTable.path like "%$ext")
-                    } and notExists(
-                        AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }
-                    ) and
+                    CommitTable.repository eq repo.id and
+                            extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
+                                expr or (FileTable.path like "%$ext")
+                            } and notExists(AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }) and
                             (CommitTable.date greaterEq timeRange.start) and
                             (CommitTable.date lessEq timeRange.endInclusive)
-
                 }
                     .forEachIndexed { i, it ->
                         if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }

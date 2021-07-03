@@ -89,8 +89,17 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
         log.debug { "Language check OK" }
 
+        val repos = transaction(db) {
+            val rows =
+                if (repoUrl.isNotEmpty()) RepositoryTable.select { RepositoryTable.url inList repoUrl.map { it.toString() } }
+                else RepositoryTable.selectAll()
+            rows.map { RepositoryInfo(it[RepositoryTable.id], URL(it[RepositoryTable.url]), it[RepositoryTable.langs]) }
+        }
+
         // list asts table
-        dbUtil.prepareAstTable(config, startDate..endDate)
+        repos.forEach { repo ->
+            dbUtil.prepareAstTable(repo, config, startDate..endDate)
+        }
 
         // normalize
         log.debug { "Normalizing 'asts' table" }
@@ -99,19 +108,12 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
 
         // parse
-        val repos = repoUrl.ifEmpty {   // if empty, all repositories
-            transaction(db) {
-                RepositoryTable.selectAll()
-                    .map { URL(it[RepositoryTable.url]) }
-            }
-        }
-
-        log.info { "Repository list: $repos" }
+        log.info { "Repository list: ${repos.map { it.url }}" }
 
         repos.forEach {
-            log.info { "Start repository: $it" }
-            processRepository(dbUtil, it)
-            log.info { "Done repository: $it" }
+            log.info { "Start repository: ${it.url}" }
+            processRepository(dbUtil, it.url)
+            log.info { "Done repository: ${it.url}" }
         }
     }
 
