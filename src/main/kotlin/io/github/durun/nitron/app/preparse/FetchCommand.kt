@@ -103,18 +103,13 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
                         if (i % 100 == 0) log.info { "Made commit: ${repo.url} $i / ${commitPairs.size}" }
                         info
                     }
-                }.toMutableList()
+                }.toMutableSet()
 
                 runBlocking(Dispatchers.IO) {
                     while (commitInfos.isNotEmpty()) {
                         if (commitInfos.any { it.isActive }) delay(5000)
-                        val doneIndices = commitInfos.mapIndexedNotNull { i, job ->
-                            i.takeIf { job.isCompleted }
-                        }
-                        val doneList: MutableList<CommitInfo> = mutableListOf()
-                        doneIndices.asReversed().forEach { i ->
-                            commitInfos.removeAt(i).await()?.let { doneList += it }
-                        }
+                        val doneList = commitInfos.removeAndGetIf { it.isCompleted }
+                            .mapNotNull { it.await() }
                         if (doneList.isNotEmpty()) dbUtil.batchInsertCommitInfos(repo, doneList)
                         /*
                         doneList.forEachIndexed { i, it ->
