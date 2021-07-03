@@ -9,11 +9,11 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
-import io.github.durun.nitron.util.Log
-import io.github.durun.nitron.util.LogLevel
-import io.github.durun.nitron.util.logger
-import io.github.durun.nitron.util.parseToDateTime
-import kotlinx.coroutines.*
+import io.github.durun.nitron.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.eclipse.jgit.api.Git
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
@@ -141,26 +141,21 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.debug { "Loaded jobs: ${jobs.size}" }
 
         runBlocking(Dispatchers.Default) {
-            val parsing: MutableList<Deferred<ParseJobResult?>> = jobs
+            val parsing = jobs
                 .mapIndexed { index, it ->
                     async {
                         val result = calcJob(git, parseUtil, it) ?: return@async null
                         log.verbose { "Parsed: $repoUrl $index / $jobCount: $it" }
                         result
                     }
-                }.toMutableList()
+                }.toMutableSet()
 
             runBlocking(Dispatchers.IO) {
                 while (parsing.isNotEmpty()) {
                     log.verbose { "Wait..." }
                     delay(5000)
-                    val doneIndices = parsing.mapIndexedNotNull { i, job ->
-                        i.takeIf { job.isCompleted }
-                    }
-                    val doneList: MutableList<ParseJobResult> = mutableListOf()
-                    doneIndices.asReversed().forEach { i ->
-                        parsing.removeAt(i).await()?.let { doneList += it }
-                    }
+                    val doneList = parsing.removeAndGetIf { it.isCompleted }
+                        .mapNotNull { it.await() }
                     if (doneList.isNotEmpty()) {
                         writeJobResult(db, doneList)
                     }
