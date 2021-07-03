@@ -25,24 +25,26 @@ fun AstBuilders.jdt(version: String = JavaCore.VERSION_16): AstBuilder = JdtAstB
 private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder {
     override val nodeTypes: NodeTypePool = Companion.nodeTypes
 
-    private val parser = ASTParser.newParser(AST.JLS16)
-        .apply {
-            @Suppress("UNCHECKED_CAST")
-            val defaultOptions = DefaultCodeFormatterConstants.getEclipseDefaultSettings() as Map<String, String>
-            val options = defaultOptions + mapOf(
-                JavaCore.COMPILER_COMPLIANCE to version,
-                JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM to version,
-                JavaCore.COMPILER_SOURCE to version,
-                JavaCore.COMPILER_DOC_COMMENT_SUPPORT to JavaCore.DISABLED
-            )
-            setCompilerOptions(options)
-            setEnvironment(null, null, null, true)
-        }
+    private val parser = ThreadLocal.withInitial {
+        ASTParser.newParser(AST.JLS16)
+            .apply {
+                @Suppress("UNCHECKED_CAST")
+                val defaultOptions = DefaultCodeFormatterConstants.getEclipseDefaultSettings() as Map<String, String>
+                val options = defaultOptions + mapOf(
+                    JavaCore.COMPILER_COMPLIANCE to version,
+                    JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM to version,
+                    JavaCore.COMPILER_SOURCE to version,
+                    JavaCore.COMPILER_DOC_COMMENT_SUPPORT to JavaCore.DISABLED
+                )
+                setCompilerOptions(options)
+                setEnvironment(null, null, null, true)
+            }
+    }
 
     override fun parse(reader: Reader): AstNode {
         val source = reader.readText().replace(Regex("\r\n|\r|\n"), "\n")
-        parser.setSource(source.toCharArray())
-        val root = parser.createAST(null)
+        parser.get().setSource(source.toCharArray())
+        val root = parser.get().createAST(null)
         val visitor = BuildVisitor(source)
         root.accept(visitor)
         return visitor.result!!
