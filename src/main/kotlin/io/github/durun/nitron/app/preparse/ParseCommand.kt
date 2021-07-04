@@ -9,11 +9,11 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.github.durun.nitron.inout.database.SQLiteDatabase
 import io.github.durun.nitron.inout.model.preparse.*
-import io.github.durun.nitron.util.Log
-import io.github.durun.nitron.util.LogLevel
-import io.github.durun.nitron.util.logger
-import io.github.durun.nitron.util.parseToDateTime
-import kotlinx.coroutines.*
+import io.github.durun.nitron.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.eclipse.jgit.api.Git
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
@@ -89,8 +89,17 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
         log.debug { "Language check OK" }
 
+        val repos = transaction(db) {
+            val rows =
+                if (repoUrl.isNotEmpty()) RepositoryTable.select { RepositoryTable.url inList repoUrl.map { it.toString() } }
+                else RepositoryTable.selectAll()
+            rows.map { RepositoryInfo(it[RepositoryTable.id], URL(it[RepositoryTable.url]), it[RepositoryTable.langs]) }
+        }
+
         // list asts table
-        dbUtil.prepareAstTable(config, startDate..endDate)
+        repos.forEach { repo ->
+            dbUtil.prepareAstTable(repo, config, startDate..endDate)
+        }
 
         // normalize
         log.debug { "Normalizing 'asts' table" }
@@ -99,19 +108,12 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
 
         // parse
-        val repos = repoUrl.ifEmpty {   // if empty, all repositories
-            transaction(db) {
-                RepositoryTable.selectAll()
-                    .map { URL(it[RepositoryTable.url]) }
-            }
-        }
-
-        log.info { "Repository list: $repos" }
+        log.info { "Repository list: ${repos.map { it.url }}" }
 
         repos.forEach {
-            log.info { "Start repository: $it" }
-            processRepository(dbUtil, it)
-            log.info { "Done repository: $it" }
+            log.info { "Start repository: ${it.url}" }
+            processRepository(dbUtil, it.url)
+            log.info { "Done repository: ${it.url}" }
         }
     }
 
@@ -139,26 +141,21 @@ class ParseCommand : CliktCommand(name = "preparse") {
         log.debug { "Loaded jobs: ${jobs.size}" }
 
         runBlocking(Dispatchers.Default) {
-            val parsing: MutableList<Deferred<ParseJobResult?>> = jobs
+            val parsing = jobs
                 .mapIndexed { index, it ->
                     async {
                         val result = calcJob(git, parseUtil, it) ?: return@async null
                         log.verbose { "Parsed: $repoUrl $index / $jobCount: $it" }
                         result
                     }
-                }.toMutableList()
+                }.toMutableSet()
 
             runBlocking(Dispatchers.IO) {
                 while (parsing.isNotEmpty()) {
                     log.verbose { "Wait..." }
                     delay(5000)
-                    val doneIndices = parsing.mapIndexedNotNull { i, job ->
-                        i.takeIf { job.isCompleted }
-                    }
-                    val doneList: MutableList<ParseJobResult> = mutableListOf()
-                    doneIndices.asReversed().forEach { i ->
-                        parsing.removeAt(i).await()?.let { doneList += it }
-                    }
+                    val doneList = parsing.removeAndGetIf { it.isCompleted }
+                        .mapNotNull { it.await() }
                     if (doneList.isNotEmpty()) {
                         writeJobResult(db, doneList)
                     }

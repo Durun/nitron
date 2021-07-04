@@ -1,6 +1,5 @@
 package io.github.durun.nitron.app.preparse
 
-import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.LangConfig
 import io.github.durun.nitron.core.config.NitronConfig
 import io.github.durun.nitron.inout.model.preparse.*
@@ -67,10 +66,26 @@ internal class DbUtil(
                 this[FileTable.commit] = EntityID(commitId.value + i, commitId.table)
                 this[FileTable.path] = it.path
                 this[FileTable.objectId] = it.objectId.name()
-                this[FileTable.checksum] = MD5.digest(it.readText()).toString()
+                this[FileTable.checksum] = it.checksum.toString()
             }
         }
         log.verbose { "Insert 'files' in $commitId" }
+    }
+
+    fun insertCommitInfo(repositoryInfo: RepositoryInfo, commitInfo: CommitInfo) = transaction(db) {
+        val commitId = CommitTable.insertAndGetId(
+            repositoryID = repositoryInfo.id,
+            hash = commitInfo.id,
+            message = commitInfo.message,
+            date = commitInfo.date,
+            author = commitInfo.author
+        )
+        FileTable.batchInsert(commitInfo.files, ignore = true) {
+            this[FileTable.commit] = commitId
+            this[FileTable.path] = it.path
+            this[FileTable.objectId] = it.objectId.name()
+            this[FileTable.checksum] = it.checksum.toString()
+        }
     }
 
     @kotlin.io.path.ExperimentalPathApi
@@ -96,11 +111,11 @@ internal class DbUtil(
         }
     }
 
-    fun prepareAstTable(config: NitronConfig, timeRange: ClosedRange<DateTime>) {
+    fun prepareAstTable(repo: RepositoryInfo, config: NitronConfig, timeRange: ClosedRange<DateTime>) {
 
         // Language name : id
         val langs = transaction(db) {
-            LanguageTable.selectAll()
+            LanguageTable.select { LanguageTable.name inList repo.languages }
                 .associate { it[LanguageTable.name] to it[LanguageTable.id] }
         }
 
@@ -108,14 +123,12 @@ internal class DbUtil(
             val extensions = config.langConfig[lang]!!.extensions
             transaction(db) {
                 FileTable.innerJoin(CommitTable).select {  // files with correct extension
-                    extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
-                        expr or (FileTable.path like "%$ext")
-                    } and notExists(
-                        AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }
-                    ) and
+                    CommitTable.repository eq repo.id and
+                            extensions.fold<String, Op<Boolean>>(Op.FALSE) { expr, ext ->
+                                expr or (FileTable.path like "%$ext")
+                            } and notExists(AstTable.selectAll().adjustWhere { FileTable.id eq AstTable.file }) and
                             (CommitTable.date greaterEq timeRange.start) and
                             (CommitTable.date lessEq timeRange.endInclusive)
-
                 }
                     .forEachIndexed { i, it ->
                         if (i % 10000 == 0) log.info { "Preparing 'asts' rows ($lang): $i" }

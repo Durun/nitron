@@ -1,5 +1,6 @@
 package io.github.durun.nitron.app.preparse
 
+import io.github.durun.nitron.core.MD5
 import io.github.durun.nitron.core.config.NitronConfig
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.revwalk.RevCommit
@@ -32,9 +33,11 @@ internal data class CommitInfo(
 internal data class FileInfo(
     val path: String,
     val objectId: ObjectId,
-    val lazytext: () -> String
+    private val lazytext: () -> String
 ) {
+    val text: String by lazy { lazytext.invoke() }
     fun readText(): String = lazytext.invoke()
+    val checksum: MD5 by lazy { MD5.digest(readText()) }
 }
 
 internal fun RevCommit.getDate(): Date {
