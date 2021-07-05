@@ -105,6 +105,11 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         bugfixKeywords.any { change.revision.message.contains(it, ignoreCase = true) }
                     }
 
+                    // count test file
+                    val testFiles = supportingChanges.count { change ->
+                        isTestPath(change.filePath)
+                    }
+
                     val beforeText = pattern.text.first
                     val afterText = pattern.text.second
                     val beforeTokens = beforeText.split(' ')
@@ -132,6 +137,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         dTokens = afterTokens.size - beforeTokens.size,
                         authors = supportingChanges.distinctBy { it.revision.author }.count(),
                         bugfixWords = bugfixWords.toDouble() / sup,
+                        testFiles = testFiles.toDouble() / sup,
                         changeToLessThan = if (dLessThan == -dGreaterThan) dLessThan else 0
                     )
                 }
@@ -157,6 +163,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[dTokens] = metrics.dTokens
                     it[authors] = metrics.authors
                     it[bugfixWords] = metrics.bugfixWords
+                    it[testFiles] = metrics.testFiles
                     it[changeToLessThan] = metrics.changeToLessThan
                 }
             }
@@ -175,6 +182,18 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             "defect",
             "flaw"
         )
+
+        private fun isTestPath(path: String): Boolean {
+            if (path.contains("Test")) return true
+
+            val names = path.split('/')
+            val fileName = names.lastOrNull()?.split('.')?.firstOrNull() ?: ""
+            val dirNames = names.dropLast(1)
+
+            if (fileName.startsWith("test")) return true
+            if (dirNames.any { it.startsWith("test") }) return true
+            return false
+        }
     }
 }
 
@@ -224,5 +243,6 @@ private data class Metrics(
     val dTokens: Int,   // Pattern前後のトークン数の増減
     val authors: Int,
     val bugfixWords: Double,// コミットメッセージに bugfix keyword が含まれているchangesの数
+    val testFiles: Double,  // テストコードであるchangesの数
     val changeToLessThan: Int,  // >, >= から <, <= への変更がされた数
 )
