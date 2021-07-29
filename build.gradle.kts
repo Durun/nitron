@@ -30,10 +30,6 @@ plugins {
 
 repositories {
     mavenCentral()
-
-    // for JitPack build
-    jcenter()
-    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -73,9 +69,6 @@ dependencies {
     // Use the Kotlin test library.
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
-
-    // for JitPack build
-    implementation("com.github.jitpack:gradle-simple:1.0")
 }
 
 application {
