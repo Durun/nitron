@@ -16,11 +16,12 @@ abstract class AstPath {
 			return AstXPath(expression)
 		}
 
-		fun of(type: NodeType): AstPath {
+		private fun of(type: NodeType): AstPath {
             return SimpleAstPath(type)
         }
 
-		fun of(expression: String, types: NodeTypePool): AstPath {
+        @JvmStatic
+        fun of(expression: String, types: NodeTypePool): AstPath {
             val typeName = if (expression.startsWith('/')) expression.drop(1) else expression
             return types.getType(typeName)?.let { of(it) }
                 ?: fromXPath(expression)
