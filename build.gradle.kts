@@ -1,11 +1,24 @@
 group = "com.github.durun.nitron"
 version = "0.2-SNAPSHOT"
 
+buildscript {
+    val kotlinVersion = "1.5.21"
+    dependencies {
+        classpath(kotlin("gradle-plugin", kotlinVersion))
+    }
+    configurations.classpath.get().resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion(kotlinVersion)
+        }
+    }
+}
+
 plugins {
+    val kotlinVersion = "1.5.21"
     `maven-publish`
 
-    kotlin("jvm") version "1.5.20"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
 
     application
 
