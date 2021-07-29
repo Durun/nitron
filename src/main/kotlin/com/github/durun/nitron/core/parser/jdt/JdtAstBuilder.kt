@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.*
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import java.io.Reader
 
+fun jdt(version: String = JavaCore.VERSION_16) = AstBuilders.jdt(version)
 
 @Suppress("UNUSED")
 fun AstBuilders.jdt(version: String = JavaCore.VERSION_16): AstBuilder = JdtAstBuilder(version)

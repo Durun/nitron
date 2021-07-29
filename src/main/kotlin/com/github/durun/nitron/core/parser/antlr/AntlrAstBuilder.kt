@@ -36,6 +36,13 @@ private constructor(
     }
 }
 
+fun antlr(
+    grammarName: String,
+    entryPoint: String,
+    grammarFiles: Collection<Path>,
+    utilityJavaFiles: Collection<Path> = emptySet()
+): AstBuilder = AstBuilders.antlr(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
+
 fun AstBuilders.antlr(
     grammarName: String,
     entryPoint: String,
