@@ -1,4 +1,4 @@
-group = "io.github.durun.nitron"
+group = "com.github.durun.nitron"
 version = "0.2-SNAPSHOT"
 
 plugins {
@@ -60,7 +60,7 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = "io.github.durun.nitron.app.AppKt"
+    mainClassName = "com.github.durun.nitron.app.AppKt"
     mainClass.set(mainClassName)
 }
 
@@ -96,7 +96,7 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 from(components["kotlin"])
                 artifact(tasks["sourcesJar"])
-                groupId = "io.github.durun"
+                groupId = "com.github.durun"
                 artifactId = "nitron"
                 version = project.version.toString()
             }
