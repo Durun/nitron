@@ -1,8 +1,18 @@
 # nitron
 
+[![](https://jitpack.io/v/Durun/nitron.svg)](https://jitpack.io/#Durun/nitron)
+
 A multilingual code normalizer application/library.
 
-## How to run
+## To use as a Library
+
+nitron is distributed through [JitPack](https://jitpack.io)
+
+```groovy
+implementation 'com.github.Durun:nitron:0.2'
+```
+
+## To use as an Application
 
 1. Clone this repository
 
