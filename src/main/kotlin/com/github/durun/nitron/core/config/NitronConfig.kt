@@ -1,5 +1,9 @@
 package com.github.durun.nitron.core.config
 
+import com.github.durun.nitron.core.ast.path.AstPath
+import com.github.durun.nitron.core.ast.processors.AstNormalizer
+import com.github.durun.nitron.core.ast.processors.AstSplitter
+import com.github.durun.nitron.core.ast.type.NodeTypePool
 import com.github.durun.nitron.core.config.loader.LangConfigLoader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -52,12 +56,33 @@ data class ProcessConfig(
 
 @Serializable
 data class SplitConfig(
-        val splitRules: List<String>
-)
+    val splitRules: List<String>
+) {
+    fun initSplitter(types: NodeTypePool): AstSplitter {
+        return AstSplitter(splitRules.map {
+            types.getType(it)
+                ?: throw NoSuchElementException("Not found $it in $types")
+        })
+    }
+}
 
 @Serializable
 data class NormalizeConfig(
     val mapping: Map<String, String>,
     val indexedMapping: Map<String, String>,
     val ignoreRules: List<String>
-)
+) {
+    fun initNormalizer(types: NodeTypePool): AstNormalizer {
+        return AstNormalizer(
+            mapping = mapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, types) to symbol
+            },
+            numberedMapping = indexedMapping.entries.associate { (path, symbol) ->
+                AstPath.of(path, types) to symbol
+            },
+            ignoreRules = ignoreRules.map {
+                AstPath.of(it, types)
+            }
+        )
+    }
+}
