@@ -31,7 +31,7 @@ public class NitronSample {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
 
     // 言語毎の設定 LangConfig を取り出します
-    // 言語一覧は config.nitron.json に定義されています
+    // 言語一覧は config/nitron.json に定義されています
     // "java" は config/lang/java.json にあります
     LangConfig javaConfig = config.getLangConfig().get("java");
 

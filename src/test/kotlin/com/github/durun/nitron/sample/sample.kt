@@ -19,7 +19,7 @@ fun sample_ParserFromConfig(src: String) {
     val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
 
     // 言語毎の設定 LangConfig を取り出します
-    // 言語一覧は config.nitron.json に定義されています
+    // 言語一覧は config/nitron.json に定義されています
     // "java" は config/lang/java.json にあります
     val javaConfig = config.langConfig["java"]!!
 
