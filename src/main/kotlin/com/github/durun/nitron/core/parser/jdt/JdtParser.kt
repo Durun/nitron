@@ -9,8 +9,8 @@ import com.github.durun.nitron.core.ast.type.RuleType
 import com.github.durun.nitron.core.ast.type.TokenType
 import com.github.durun.nitron.core.ast.visitor.AstVisitor
 import com.github.durun.nitron.core.ast.visitor.flatten
-import com.github.durun.nitron.core.parser.AstBuilder
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParser
+import com.github.durun.nitron.core.parser.NitronParsers
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.ToolFactory
 import org.eclipse.jdt.core.compiler.ITerminalSymbols
@@ -18,11 +18,12 @@ import org.eclipse.jdt.core.dom.*
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import java.io.Reader
 
+fun init(version: String = JavaCore.VERSION_16) = NitronParsers.jdt(version)
 
 @Suppress("UNUSED")
-fun AstBuilders.jdt(version: String = JavaCore.VERSION_16): AstBuilder = JdtAstBuilder(version)
+fun NitronParsers.jdt(version: String = JavaCore.VERSION_16): NitronParser = JdtParser(version)
 
-private class JdtAstBuilder(version: String = JavaCore.VERSION_16) : AstBuilder {
+private class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
     override val nodeTypes: NodeTypePool = Companion.nodeTypes
 
     private val parser = ThreadLocal.withInitial {

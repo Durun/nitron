@@ -1,8 +1,8 @@
 package com.github.durun.nitron.core.config
 
 import com.github.durun.nitron.core.MD5
-import com.github.durun.nitron.core.parser.AstBuilder
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParser
+import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.antlr.antlr
 import com.github.durun.nitron.core.parser.jdt.jdt
 import kotlinx.serialization.SerialName
@@ -12,7 +12,7 @@ import java.nio.file.Path
 
 @Serializable
 sealed class ParserConfig : ConfigWithDir() {
-    abstract fun getParser(): AstBuilder
+    abstract fun getParser(): NitronParser
     abstract fun checksum(): MD5
 }
 
@@ -30,7 +30,7 @@ data class AntlrParserConfig(
         utilJavaFiles.map { dir.resolve(it) }
     }
 
-    override fun getParser(): AstBuilder = AstBuilders.antlr(
+    override fun getParser(): NitronParser = NitronParsers.antlr(
         grammarName = fileName,
         entryPoint = startRule,
         grammarFiles = grammarFilePaths,
@@ -51,6 +51,6 @@ data class AntlrParserConfig(
 data class JdtParserConfig(
     val version: String
 ) : ParserConfig() {
-    override fun getParser(): AstBuilder = AstBuilders.jdt(version)
+    override fun getParser(): NitronParser = NitronParsers.jdt(version)
     override fun checksum(): MD5 = MD5.digest("JDT Parser $version")
 }
