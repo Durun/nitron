@@ -155,6 +155,26 @@ fun sample_SplitAst(src: String) {
     println(statements)
 }
 
+fun sample_SplitAndNormalize(src: String) {
+    val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
+    val javaConfig = config.langConfig["java"]!!
+    val parser = javaConfig.parserConfig.getParser()
+    val ast = parser.parse(src.reader())
+
+    val types = parser.nodeTypes
+    // AstNormalizer を初期化します
+    val normConfig = javaConfig.processConfig.normalizeConfig
+    val normalizer = normConfig.initNormalizer(types)
+    // AstSplitter を初期化します
+    val splitConfig = javaConfig.processConfig.splitConfig
+    val splitter = splitConfig.initSplitter(types)
+
+    // 分割・正規化を組み合わせる場合、通常は分割を先に行います。
+    val statements = splitter.process(ast)
+    val normalizedStatements = statements.mapNotNull { normalizer.process(it) }
+    println(normalizedStatements)
+}
+
 fun main() {
     val src = """
         public class NitronSample {
@@ -171,4 +191,5 @@ fun main() {
     sample_ANTLRParser(src)
     sample_NormalizeAst(src)
     sample_SplitAst(src)
+    sample_SplitAndNormalize(src)
 }
