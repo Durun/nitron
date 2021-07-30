@@ -12,6 +12,8 @@ nitron is distributed through [JitPack](https://jitpack.io)
 implementation 'com.github.Durun:nitron:0.2'
 ```
 
+[nitron as a library Guide (Japanese)](README_Lib_jp.md)
+
 ## To use as an Application
 
 1. Clone this repository
