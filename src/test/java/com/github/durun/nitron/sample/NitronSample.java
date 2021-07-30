@@ -19,8 +19,9 @@ import org.eclipse.jdt.core.JavaCore;
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.List;
-
-import static java.util.Map.of;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class NitronSample {
   /**
@@ -54,7 +55,7 @@ public class NitronSample {
     // AstNormalizer を初期化します
     // NormalizeConfig に正規化用の設定が格納されています
     NormalizeConfig normConfig = javaConfig.getProcessConfig().getNormalizeConfig();
-    var normalizer = normConfig.initNormalizer(types);
+    AstProcessor<AstNode> normalizer = normConfig.initNormalizer(types);
 
     // 正規化を実行します
     AstNode normalizedAst = normalizer.process(ast);
@@ -92,7 +93,7 @@ public class NitronSample {
    * 直接 JDT Parser を設定してパースする
    */
   static void JDTParser(String src) {
-    NitronParser parser = JdtParserKt.jdt(JavaCore.VERSION_16);
+    NitronParser parser = JdtParserKt.init(JavaCore.VERSION_16);
     AstNode ast = parser.parse(new StringReader(src));
     System.out.println(ast);
   }
@@ -102,7 +103,7 @@ public class NitronSample {
    */
   static void ANTLRParser(String src) {
     // 各種設定を入れてANTLRパーサを生成します
-    NitronParser parser = AntlrParserKt.antlr(
+    NitronParser parser = AntlrParserKt.init(
             "java",
             "compilationUnit",  // 翻訳単位の非終端記号名
             List.of(  // 文法ファイル
@@ -129,10 +130,10 @@ public class NitronSample {
 
     // AstNormalizer を設定します
     AstProcessor<AstNode> normalizer = new AstNormalizer(
-            of( // 置換規則
+            Map.of( // 置換規則
                     AstPath.of("IntegerLiteral", types), "N"
             ),
-            of( // 添字付き置換規則
+            Map.of( // 添字付き置換規則
                     AstPath.of("variableDeclaratorId", types), "V",
                     AstPath.of("//expressionName/Identifier", types), "V" // XPathで指定する場合、//は省略できません
             ),
@@ -176,6 +177,30 @@ public class NitronSample {
     System.out.println(statements);
   }
 
+  static void SplitAndNormalize(String src) {
+    NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
+    LangConfig javaConfig = config.getLangConfig().get("java");
+    NitronParser parser = javaConfig.getParserConfig().getParser();
+    AstNode ast = parser.parse(new StringReader(src));
+
+    // 設定には、非終端記号・終端記号の一覧 NodeTypePool が必要になります
+    NodeTypePool types = parser.getNodeTypes();
+    // AstNormalizer を初期化します
+    NormalizeConfig normConfig = javaConfig.getProcessConfig().getNormalizeConfig();
+    AstProcessor<AstNode> normalizer = normConfig.initNormalizer(types);
+    // AstSplitter を初期化します
+    SplitConfig splitConfig = javaConfig.getProcessConfig().getSplitConfig();
+    AstProcessor<List<? extends AstNode>> splitter = splitConfig.initSplitter(types);
+
+    // 分割・正規化を組み合わせる場合、通常は分割を先に行います。
+    var statements = splitter.process(ast);
+    var normalizedStatements = statements.stream()
+            .map(s -> normalizer.process(s))
+            .filter(s -> Objects.nonNull(s))
+            .collect(Collectors.toList());
+    System.out.println(normalizedStatements);
+  }
+
   public static void main(String[] args) {
     String src =
             "public class NitronSample {\n" +
@@ -191,5 +216,6 @@ public class NitronSample {
     ANTLRParser(src);
     NormalizeAst(src);
     SplitAst(src);
+    SplitAndNormalize(src);
   }
 }

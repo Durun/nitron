@@ -36,7 +36,7 @@ private constructor(
     }
 }
 
-fun antlr(
+fun init(
     grammarName: String,
     entryPoint: String,
     grammarFiles: Collection<Path>,

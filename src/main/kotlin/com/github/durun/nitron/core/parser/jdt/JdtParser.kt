@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.dom.*
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import java.io.Reader
 
-fun jdt(version: String = JavaCore.VERSION_16) = NitronParsers.jdt(version)
+fun init(version: String = JavaCore.VERSION_16) = NitronParsers.jdt(version)
 
 @Suppress("UNUSED")
 fun NitronParsers.jdt(version: String = JavaCore.VERSION_16): NitronParser = JdtParser(version)
