@@ -3,7 +3,7 @@ package com.github.durun.nitron.core.parser.jdt
 import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import com.github.durun.nitron.core.ast.visitor.flatten
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParsers
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.should
@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.ToolFactory
 import org.eclipse.jdt.core.compiler.ITerminalSymbols
 
-class JdtAstBuilderTest : FreeSpec({
+class JdtParserTest : FreeSpec({
 
     val src = """
         package example;
@@ -41,7 +41,7 @@ class JdtAstBuilderTest : FreeSpec({
     """.trimIndent()
 
     "parse" {
-        val parser = AstBuilders.jdt()
+        val parser = NitronParsers.jdt()
         val ast = parser.parse(src.reader())
         println(ast)
         println(ast.accept(AstPrintVisitor))

@@ -4,7 +4,7 @@ import com.github.durun.nitron.core.ast.path.AstPath
 import com.github.durun.nitron.core.ast.processors.AstNormalizer
 import com.github.durun.nitron.core.ast.processors.AstSplitter
 import com.github.durun.nitron.core.config.loader.NitronConfigLoader
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.antlr.antlr
 import com.github.durun.nitron.core.parser.jdt.jdt
 import java.io.StringReader
@@ -76,7 +76,7 @@ fun sample_SplitFromConfig(src: String) {
  */
 fun sample_JDTParser(src: String) {
     // パーサはAstBuilderインターフェースを持ちます
-    val parser = AstBuilders.jdt()
+    val parser = NitronParsers.jdt()
     val ast = parser.parse(src.reader())
     println(ast)
 }
@@ -86,7 +86,7 @@ fun sample_JDTParser(src: String) {
  */
 fun sample_ANTLRParser(src: String) {
     // 各種設定を入れてANTLRパーサを生成します
-    val parser = AstBuilders.antlr(
+    val parser = NitronParsers.antlr(
         grammarName = "java",           // 名前
         entryPoint = "compilationUnit", // 翻訳単位の非終端記号名
         grammarFiles = listOf(          // 文法ファイル

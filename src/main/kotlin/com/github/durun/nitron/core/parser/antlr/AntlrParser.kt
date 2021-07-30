@@ -4,29 +4,29 @@ package com.github.durun.nitron.core.parser.antlr
 
 import com.github.durun.nitron.core.ast.node.AstNode
 import com.github.durun.nitron.core.ast.type.NodeTypePool
-import com.github.durun.nitron.core.parser.AstBuilder
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParser
+import com.github.durun.nitron.core.parser.NitronParsers
 import org.antlr.v4.runtime.tree.ParseTreeVisitor
 import java.io.Reader
 import java.nio.file.Path
 
-private class AntlrAstBuilder
+private class AntlrParser
 private constructor(
     override val nodeTypes: NodeTypePool,
     private val genericParser: GenericParser,
     private val buildVisitor: ParseTreeVisitor<AstNode>,
     private val defaultEntryPoint: String
-) : AstBuilder {
+) : NitronParser {
     companion object {
         fun init(
             grammarName: String,
             entryPoint: String,
             grammarFiles: Collection<Path>,
             utilityJavaFiles: Collection<Path> = emptySet(),
-        ): AstBuilder {
+        ): NitronParser {
             val genericParser = GenericParser.fromFiles(grammarFiles, utilityJavaFiles)
             val buildVisitor = AstBuildVisitor(grammarName, genericParser.antlrParser)
-            return AntlrAstBuilder(buildVisitor.nodeTypes, genericParser, buildVisitor, entryPoint)
+            return AntlrParser(buildVisitor.nodeTypes, genericParser, buildVisitor, entryPoint)
         }
     }
 
@@ -41,11 +41,11 @@ fun antlr(
     entryPoint: String,
     grammarFiles: Collection<Path>,
     utilityJavaFiles: Collection<Path> = emptySet()
-): AstBuilder = AstBuilders.antlr(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
+): NitronParser = NitronParsers.antlr(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
 
-fun AstBuilders.antlr(
+fun NitronParsers.antlr(
     grammarName: String,
     entryPoint: String,
     grammarFiles: Collection<Path>,
     utilityJavaFiles: Collection<Path> = emptySet()
-): AstBuilder = AntlrAstBuilder.init(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
+): NitronParser = AntlrParser.init(grammarName, entryPoint, grammarFiles, utilityJavaFiles)

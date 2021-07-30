@@ -11,9 +11,9 @@ import com.github.durun.nitron.core.config.NitronConfig;
 import com.github.durun.nitron.core.config.NormalizeConfig;
 import com.github.durun.nitron.core.config.SplitConfig;
 import com.github.durun.nitron.core.config.loader.NitronConfigLoader;
-import com.github.durun.nitron.core.parser.AstBuilder;
-import com.github.durun.nitron.core.parser.antlr.AntlrAstBuilderKt;
-import com.github.durun.nitron.core.parser.jdt.JdtAstBuilderKt;
+import com.github.durun.nitron.core.parser.NitronParser;
+import com.github.durun.nitron.core.parser.antlr.AntlrParserKt;
+import com.github.durun.nitron.core.parser.jdt.JdtParserKt;
 import org.eclipse.jdt.core.JavaCore;
 
 import java.io.StringReader;
@@ -35,7 +35,7 @@ public class NitronSample {
     // "java" は config/lang/java.json にあります
     LangConfig javaConfig = config.getLangConfig().get("java");
 
-    AstBuilder parser = javaConfig.getParserConfig().getParser();
+    NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
     System.out.println(ast);
   }
@@ -46,7 +46,7 @@ public class NitronSample {
   static void NormalizeFromConfig(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
     LangConfig javaConfig = config.getLangConfig().get("java");
-    AstBuilder parser = javaConfig.getParserConfig().getParser();
+    NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
     // 設定には、非終端記号・終端記号の一覧 NodeTypePool が必要になります
@@ -72,7 +72,7 @@ public class NitronSample {
   static void SplitFromConfig(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
     LangConfig javaConfig = config.getLangConfig().get("java");
-    AstBuilder parser = javaConfig.getParserConfig().getParser();
+    NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
     // 設定には、非終端記号・終端記号の一覧 NodeTypePool が必要になります
@@ -92,7 +92,7 @@ public class NitronSample {
    * 直接 JDT Parser を設定してパースする
    */
   static void JDTParser(String src) {
-    AstBuilder parser = JdtAstBuilderKt.jdt(JavaCore.VERSION_16);
+    NitronParser parser = JdtParserKt.jdt(JavaCore.VERSION_16);
     AstNode ast = parser.parse(new StringReader(src));
     System.out.println(ast);
   }
@@ -102,7 +102,7 @@ public class NitronSample {
    */
   static void ANTLRParser(String src) {
     // 各種設定を入れてANTLRパーサを生成します
-    AstBuilder parser = AntlrAstBuilderKt.antlr(
+    NitronParser parser = AntlrParserKt.antlr(
             "java",
             "compilationUnit",  // 翻訳単位の非終端記号名
             List.of(  // 文法ファイル
@@ -121,7 +121,7 @@ public class NitronSample {
   static void NormalizeAst(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
     LangConfig javaConfig = config.getLangConfig().get("java");
-    AstBuilder parser = javaConfig.getParserConfig().getParser();
+    NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
     // 設定には、非終端記号・終端記号の一覧 NodeTypePool が必要になります
@@ -157,7 +157,7 @@ public class NitronSample {
   static void SplitAst(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
     LangConfig javaConfig = config.getLangConfig().get("java");
-    AstBuilder parser = javaConfig.getParserConfig().getParser();
+    NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
     // 設定には、非終端記号・終端記号の一覧 NodeTypePool が必要になります

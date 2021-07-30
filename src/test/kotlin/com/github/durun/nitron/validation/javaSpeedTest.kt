@@ -2,7 +2,7 @@ package com.github.durun.nitron.validation
 
 import com.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import com.github.durun.nitron.core.config.loader.NitronConfigLoader
-import com.github.durun.nitron.core.parser.AstBuilders
+import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.jdt.jdt
 import java.nio.file.Paths
 import kotlin.time.ExperimentalTime
@@ -17,7 +17,7 @@ private val configPath = Paths.get("config/nitron.json")
 fun main(args: Array<String>) = TemporaryTest {
     val sources = args.map { Paths.get(it).toFile() }
     "JDT Parser" {
-        val parser = AstBuilders.jdt()
+        val parser = NitronParsers.jdt()
         sources.forEach { src ->
             val time = measureTime {
                 parser.parse(src.reader())

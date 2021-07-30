@@ -6,7 +6,7 @@ import com.github.durun.nitron.core.ast.processors.AstNormalizer
 import com.github.durun.nitron.core.ast.processors.AstSplitter
 import com.github.durun.nitron.core.ast.type.NodeTypePool
 import com.github.durun.nitron.core.config.LangConfig
-import com.github.durun.nitron.core.parser.AstBuilder
+import com.github.durun.nitron.core.parser.NitronParser
 import com.github.durun.nitron.inout.model.ast.Structure
 import com.github.durun.nitron.inout.model.ast.merge
 import com.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
@@ -16,8 +16,8 @@ class CodeProcessor(
     config: LangConfig,
     outputPath: Path? = null    // TODO recording feature should be separated
 ) {
-    private val astBuilder: AstBuilder = config.parserConfig.getParser()
-    val nodeTypePool: NodeTypePool = astBuilder.nodeTypes
+    private val nitronParser: NitronParser = config.parserConfig.getParser()
+    val nodeTypePool: NodeTypePool = nitronParser.nodeTypes
     private val splitter = ThreadLocal.withInitial {
         AstSplitter(config.processConfig.splitConfig.splitRules.mapNotNull { nodeTypePool.getType(it) })
     }
@@ -44,7 +44,7 @@ class CodeProcessor(
     }
 
     fun parse(input: String): AstNode {
-        return astBuilder.parse(input.reader().buffered())
+        return nitronParser.parse(input.reader().buffered())
     }
 
     fun split(input: AstNode): List<AstNode> {

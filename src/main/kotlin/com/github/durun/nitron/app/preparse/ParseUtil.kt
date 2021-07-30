@@ -3,7 +3,7 @@ package com.github.durun.nitron.app.preparse
 import com.github.durun.nitron.core.AstSerializers
 import com.github.durun.nitron.core.config.LangConfig
 import com.github.durun.nitron.core.config.NitronConfig
-import com.github.durun.nitron.core.parser.AstBuilder
+import com.github.durun.nitron.core.parser.NitronParser
 import kotlinx.serialization.encodeToString
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
@@ -14,7 +14,7 @@ import java.util.zip.Inflater
 class ParseUtil(
     val config: NitronConfig
 ) {
-    private val astBuilders: MutableMap<String, AstBuilder> = mutableMapOf()
+    private val astBuilders: MutableMap<String, NitronParser> = mutableMapOf()
     private val encoder = AstSerializers.encodeOnlyJson
 
     fun parseText(text: String, langName: String, langConfig: LangConfig): String {
