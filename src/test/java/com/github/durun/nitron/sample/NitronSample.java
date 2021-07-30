@@ -33,8 +33,8 @@ public class NitronSample {
 
     // 言語毎の設定 LangConfig を取り出します
     // 言語一覧は config/nitron.json に定義されています
-    // "java" は config/lang/java.json にあります
-    LangConfig javaConfig = config.getLangConfig().get("java");
+    // "java-jdt" は config/lang/java-jdt.json にあります
+    LangConfig javaConfig = config.getLangConfig().get("java-jdt");
 
     NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
@@ -46,7 +46,7 @@ public class NitronSample {
    */
   static void NormalizeFromConfig(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
-    LangConfig javaConfig = config.getLangConfig().get("java");
+    LangConfig javaConfig = config.getLangConfig().get("java-jdt");
     NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
@@ -72,7 +72,7 @@ public class NitronSample {
    */
   static void SplitFromConfig(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
-    LangConfig javaConfig = config.getLangConfig().get("java");
+    LangConfig javaConfig = config.getLangConfig().get("java-jdt");
     NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 
@@ -179,7 +179,7 @@ public class NitronSample {
 
   static void SplitAndNormalize(String src) {
     NitronConfig config = NitronConfigLoader.INSTANCE.load(Path.of("config/nitron.json"));
-    LangConfig javaConfig = config.getLangConfig().get("java");
+    LangConfig javaConfig = config.getLangConfig().get("java-jdt");
     NitronParser parser = javaConfig.getParserConfig().getParser();
     AstNode ast = parser.parse(new StringReader(src));
 

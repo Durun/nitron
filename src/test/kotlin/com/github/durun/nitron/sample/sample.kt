@@ -20,8 +20,8 @@ fun sample_ParserFromConfig(src: String) {
 
     // 言語毎の設定 LangConfig を取り出します
     // 言語一覧は config/nitron.json に定義されています
-    // "java" は config/lang/java.json にあります
-    val javaConfig = config.langConfig["java"]!!
+    // "java-jdt" は config/lang/java-jdt.json にあります
+    val javaConfig = config.langConfig["java-jdt"]!!
 
     val parser = javaConfig.parserConfig.getParser()
     val ast = parser.parse(StringReader(src))
@@ -33,7 +33,7 @@ fun sample_ParserFromConfig(src: String) {
  */
 fun sample_NormalizeFromConfig(src: String) {
     val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
-    val javaConfig = config.langConfig["java"]!!
+    val javaConfig = config.langConfig["java-jdt"]!!
     val parser = javaConfig.parserConfig.getParser()
     val ast = parser.parse(src.reader())
 
@@ -55,7 +55,7 @@ fun sample_NormalizeFromConfig(src: String) {
  */
 fun sample_SplitFromConfig(src: String) {
     val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
-    val javaConfig = config.langConfig["java"]!!
+    val javaConfig = config.langConfig["java-jdt"]!!
     val parser = javaConfig.parserConfig.getParser()
     val ast = parser.parse(src.reader())
 
@@ -157,7 +157,7 @@ fun sample_SplitAst(src: String) {
 
 fun sample_SplitAndNormalize(src: String) {
     val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
-    val javaConfig = config.langConfig["java"]!!
+    val javaConfig = config.langConfig["java-jdt"]!!
     val parser = javaConfig.parserConfig.getParser()
     val ast = parser.parse(src.reader())
 
