@@ -51,7 +51,7 @@ class AdditionalMetricsCommand : CliktCommand(name = "additionalMetrics") {
                     val blob = it[GlobalPatternsTable.beforeHash] to it[GlobalPatternsTable.afterHash]
                     val hash = blob.first?.toMD5() to blob.second?.toMD5()
 
-                    if (i % 1000 == 0) log.info { "Read: $i" }
+                    if (i % 100000 == 0) log.info { "Read: $i" }
 
                     Metrics(
                         pattern = Pattern(
@@ -73,14 +73,19 @@ class AdditionalMetricsCommand : CliktCommand(name = "additionalMetrics") {
         val softwares = transaction(db) {
             ChangesTable.slice(ChangesTable.software)
                 .selectAll()
-                .distinct()
+                .withDistinct(true)
+                .asSequence()
                 .map { it[ChangesTable.software] }
+                .distinct()
+                .toList()
         }
         log.debug { "Softwares: $softwares" }
 
         val nFiles = transaction(db) {
             ChangesTable.slice(ChangesTable.filepath)
                 .selectAll()
+                .withDistinct(true)
+                .asSequence()
                 .distinct()
                 .count()
         }
@@ -94,7 +99,7 @@ class AdditionalMetricsCommand : CliktCommand(name = "additionalMetrics") {
                     val afterTokens = afterText.split(' ')
 
 
-                    if (i % 1000 == 0) log.info { "Calc done: $i / ${metrices.size}" }
+                    if (i % 100000 == 0) log.info { "Calc done: $i / ${metrices.size}" }
 
                     AdditionalMetrics(
                         pattern = metrics.pattern,
