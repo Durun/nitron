@@ -20,8 +20,6 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Path
-import java.sql.Blob
-import kotlin.math.ln
 
 class MetricsCommand : CliktCommand(name = "metrics") {
     private val dbFiles: List<Path> by argument(name = "DATABASE", help = "Database file")
@@ -80,8 +78,6 @@ class MetricsCommand : CliktCommand(name = "metrics") {
         log.debug { "nPatterns: ${patterns.size}" }
 
         val softwares = changes.groupBy { it.software }
-        val nDocuments = softwares.size
-        val nFiles = changes.distinctBy { it.filePath }.count()
         log.debug { "Softwares: ${softwares.keys}" }
 
 
@@ -110,20 +106,6 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         isTestPath(change.filePath)
                     }
 
-                    val beforeText = pattern.text.first
-                    val afterText = pattern.text.second
-                    val beforeTokens = beforeText.split(' ')
-                    val afterTokens = afterText.split(' ')
-
-                    // count operators
-                    val beforeLt = beforeTokens.count { it == "<" || it == "<=" }
-                    val afterLt = afterTokens.count { it == "<" || it == "<=" }
-                    val beforeGt = beforeTokens.count { it == ">" || it == ">=" }
-                    val afterGt = afterTokens.count { it == ">" || it == ">=" }
-                    val dLessThan = afterLt - beforeLt
-                    val dGreaterThan = afterGt - beforeGt
-
-
                     if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
 
                     Metrics(
@@ -131,20 +113,17 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         support = sup,
                         confidence = sup.toDouble() / left,
                         projects = projects,
-                        projectIdf = ln(nDocuments.toDouble() / projects),
                         files = files,
-                        fileIdf = ln(nFiles.toDouble() / files),
-                        dChars = afterText.length - beforeText.length,
-                        dTokens = afterTokens.size - beforeTokens.size,
                         authors = supportingChanges.distinctBy { it.revision.author }.count(),
                         bugfixWords = bugfixWords.toDouble() / sup,
                         testFiles = testFiles.toDouble() / sup,
-                        changeToLessThan = if (dLessThan == -dGreaterThan) dLessThan else 0,
-                        styleOnly = isStyleOnlyChange(beforeText, afterText),
                     )
                 }
             }.map { it.await() }
         }
+
+        log.info { "Calc done." }
+        log.info { "Writing to DB." }
 
         transaction(db) {
             SchemaUtils.drop(GlobalPatternsTable)
@@ -158,16 +137,10 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[support] = metrics.support
                     it[confidence] = metrics.confidence
                     it[projects] = metrics.projects
-                    it[projectIdf] = metrics.projectIdf
                     it[files] = metrics.files
-                    it[fileIdf] = metrics.fileIdf
-                    it[dChars] = metrics.dChars
-                    it[dTokens] = metrics.dTokens
                     it[authors] = metrics.authors
                     it[bugfixWords] = metrics.bugfixWords
                     it[testFiles] = metrics.testFiles
-                    it[changeToLessThan] = metrics.changeToLessThan
-                    it[styleOnly] = if (metrics.styleOnly) 1 else 0
                 }
             }
         }
@@ -197,17 +170,6 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             if (dirNames.any { it.startsWith("test") }) return true
             return false
         }
-
-        fun isStyleOnlyChange(beforeText: String, afterText: String): Boolean {
-            val (inner, outer) = when {
-                beforeText.startsWith(afterText) -> afterText to beforeText
-                afterText.startsWith(beforeText) -> beforeText to afterText
-                else -> return false
-            }
-            val suffix = outer.drop(inner.length)
-                .trim()
-            return suffix == "{"
-        }
     }
 }
 
@@ -222,42 +184,4 @@ private data class Change(
     val filePath: String,
     val pattern: Pattern,
     val revision: Revision
-)
-
-private data class Pattern(
-    val hash: Pair<MD5?, MD5?>,
-    val blob: Pair<Blob?, Blob?>,
-    val text: Pair<String, String>
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Pattern
-
-        if (hash != other.hash) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return hash.hashCode()
-    }
-}
-
-private data class Metrics(
-    val pattern: Pattern,
-    val support: Int,
-    val confidence: Double,
-    val projects: Int,
-    val projectIdf: Double,
-    val files: Int,
-    val fileIdf: Double,
-    val dChars: Int,    // Pattern前後の文字数の増減
-    val dTokens: Int,   // Pattern前後のトークン数の増減
-    val authors: Int,
-    val bugfixWords: Double,// コミットメッセージに bugfix keyword が含まれているchangesの数
-    val testFiles: Double,  // テストコードであるchangesの数
-    val changeToLessThan: Int,  // >, >= から <, <= への変更がされた数
-    val styleOnly: Boolean, // 違いは { を挿入するかだけか?
 )
