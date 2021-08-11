@@ -123,6 +123,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     val dLessThan = afterLt - beforeLt
                     val dGreaterThan = afterGt - beforeGt
 
+
                     if (i % 1000 == 0) log.info { "Calc done: $i / ${patterns.size}" }
 
                     Metrics(
@@ -138,7 +139,8 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                         authors = supportingChanges.distinctBy { it.revision.author }.count(),
                         bugfixWords = bugfixWords.toDouble() / sup,
                         testFiles = testFiles.toDouble() / sup,
-                        changeToLessThan = if (dLessThan == -dGreaterThan) dLessThan else 0
+                        changeToLessThan = if (dLessThan == -dGreaterThan) dLessThan else 0,
+                        styleOnly = isStyleOnlyChange(beforeText, afterText),
                     )
                 }
             }.map { it.await() }
@@ -165,6 +167,7 @@ class MetricsCommand : CliktCommand(name = "metrics") {
                     it[bugfixWords] = metrics.bugfixWords
                     it[testFiles] = metrics.testFiles
                     it[changeToLessThan] = metrics.changeToLessThan
+                    it[styleOnly] = if (metrics.styleOnly) 1 else 0
                 }
             }
         }
@@ -193,6 +196,17 @@ class MetricsCommand : CliktCommand(name = "metrics") {
             if (fileName.startsWith("test")) return true
             if (dirNames.any { it.startsWith("test") }) return true
             return false
+        }
+
+        fun isStyleOnlyChange(beforeText: String, afterText: String): Boolean {
+            val (inner, outer) = when {
+                beforeText.startsWith(afterText) -> afterText to beforeText
+                afterText.startsWith(beforeText) -> beforeText to afterText
+                else -> return false
+            }
+            val suffix = outer.drop(inner.length)
+                .trim()
+            return suffix == "{"
         }
     }
 }
@@ -245,4 +259,5 @@ private data class Metrics(
     val bugfixWords: Double,// コミットメッセージに bugfix keyword が含まれているchangesの数
     val testFiles: Double,  // テストコードであるchangesの数
     val changeToLessThan: Int,  // >, >= から <, <= への変更がされた数
+    val styleOnly: Boolean, // 違いは { を挿入するかだけか?
 )

@@ -43,5 +43,6 @@ object GlobalPatternsTable : Table("globalPatterns") {
     val bugfixWords: Column<Double> = double("bugfixWords")
     val testFiles: Column<Double> = double("testFiles")
     val changeToLessThan: Column<Int> = integer("changeToLessThan")
+    val styleOnly: Column<Int> = integer("styleOnly")
     // TODO: more metrics
 }
