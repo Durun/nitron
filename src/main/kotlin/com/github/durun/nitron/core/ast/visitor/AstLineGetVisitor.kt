@@ -8,12 +8,12 @@ import com.github.durun.nitron.core.ast.node.AstTerminalNode
  * Line numberの範囲を求めるビジター。
  * ただし、正規化する前のAstNodeにacceptさせなければならない。
  */
-object AstLineGetVisitor : AstVisitor<IntRange> {
-    override fun visit(node: AstNode): IntRange {
+object AstLineGetVisitor : AstVisitor<LineRange> {
+    override fun visit(node: AstNode): LineRange {
         TODO("Not yet implemented")
     }
 
-    override fun visitRule(node: AstRuleNode): IntRange {
+    override fun visitRule(node: AstRuleNode): LineRange {
         val first = node.children?.first()
             ?: throw Exception("Can't get line number from normalized AstNode")
         val last = node.children?.last()
@@ -23,11 +23,13 @@ object AstLineGetVisitor : AstVisitor<IntRange> {
             firstRange
         } else {
             val lastRange = last.accept(this)
-            firstRange.first..lastRange.last
+            LineRange(firstRange.first, lastRange.last)
         }
     }
 
-    override fun visitTerminal(node: AstTerminalNode): IntRange {
-        return node.line..node.line
+    override fun visitTerminal(node: AstTerminalNode): LineRange {
+        return LineRange(node.line, node.line)
     }
 }
+
+data class LineRange(val first: Int, val last: Int)
