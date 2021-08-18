@@ -2,6 +2,7 @@ package com.github.durun.nitron.app
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
+import com.github.durun.nitron.app.metrics.AdditionalMetricsCommand
 import com.github.durun.nitron.app.metrics.MetricsCommand
 import com.github.durun.nitron.app.preparse.FetchCommand
 import com.github.durun.nitron.app.preparse.ParseCommand
@@ -24,6 +25,7 @@ fun main(args: Array<String>) {
         RegisterCommand(),
         FetchCommand(),
         ParseCommand(),
-        MetricsCommand()
+        MetricsCommand(),
+        AdditionalMetricsCommand(),
     ).main(args)
 }

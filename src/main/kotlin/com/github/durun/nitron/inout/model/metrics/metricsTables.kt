@@ -34,14 +34,28 @@ object GlobalPatternsTable : Table("globalPatterns") {
     val support: Column<Int> = integer("support")
     val confidence: Column<Double> = double("confidence")
     val projects: Column<Int> = integer("projects")
-    val projectIdf: Column<Double> = double("projectIdf")
     val files: Column<Int> = integer("files")
-    val fileIdf: Column<Double> = double("fileIdf")
-    val dChars: Column<Int> = integer("dChars")
-    val dTokens: Column<Int> = integer("dTokens")
     val authors: Column<Int> = integer("authors")
     val bugfixWords: Column<Double> = double("bugfixWords")
     val testFiles: Column<Double> = double("testFiles")
+    // TODO: more metrics
+}
+
+
+/**
+ * GlobalPatternsTableが計算済みなら高速に計算可能なメトリクス
+ */
+object MetricsTable : Table("metrics") {
+    // id
+    val beforeHash: Column<Blob?> = blob("beforeHash").nullable()
+    val afterHash: Column<Blob?> = blob("afterHash").nullable()
+
+    // metrics
+    val projectIdf: Column<Double> = double("projectIdf")
+    val fileIdf: Column<Double> = double("fileIdf")
+    val dChars: Column<Int> = integer("dChars")
+    val dTokens: Column<Int> = integer("dTokens")
     val changeToLessThan: Column<Int> = integer("changeToLessThan")
+    val styleOnly: Column<Int> = integer("styleOnly")
     // TODO: more metrics
 }
