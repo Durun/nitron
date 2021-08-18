@@ -31,8 +31,8 @@ class AstLineGetVisitorTest : FreeSpec({
         )
         val tree = nodeOf(rule, *children)
 
-        tree.accept(AstLineGetVisitor) shouldBe 0..5
-        tree.children[0].accept(AstLineGetVisitor) shouldBe 0..0
-        tree.children[1].accept(AstLineGetVisitor) shouldBe 1..4
+        tree.accept(AstLineGetVisitor) shouldBe LineRange(0, 5)
+        tree.children[0].accept(AstLineGetVisitor) shouldBe LineRange(0, 0)
+        tree.children[1].accept(AstLineGetVisitor) shouldBe LineRange(1, 4)
     }
 })
