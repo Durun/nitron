@@ -10,25 +10,39 @@ import com.github.durun.nitron.core.ast.node.AstTerminalNode
  */
 object AstLineGetVisitor : AstVisitor<LineRange> {
     override fun visit(node: AstNode): LineRange {
-        TODO("Not yet implemented")
+        return LineRange(
+            getFirstLine(node),
+            getLastLine(node)
+        )
     }
 
     override fun visitRule(node: AstRuleNode): LineRange {
-        val first = node.children?.first()
-            ?: throw Exception("Can't get line number from normalized AstNode")
-        val last = node.children?.last()
-            ?: throw Exception("Can't get line number from normalized AstNode")
-        val firstRange = first.accept(this)
-        return if (first === last) {
-            firstRange
-        } else {
-            val lastRange = last.accept(this)
-            LineRange(firstRange.first, lastRange.last)
-        }
+        return LineRange(
+            getFirstLine(node),
+            getLastLine(node)
+        )
     }
 
     override fun visitTerminal(node: AstTerminalNode): LineRange {
         return LineRange(node.line, node.line)
+    }
+
+    private fun getFirstLine(node: AstNode): Int {
+        var current = node
+        while (current !is AstTerminalNode) {
+            current = current.children?.first()
+                ?: throw Exception("Can't get line number from normalized AstNode")
+        }
+        return current.line
+    }
+
+    private fun getLastLine(node: AstNode): Int {
+        var current = node
+        while (current !is AstTerminalNode) {
+            current = current.children?.last()
+                ?: throw Exception("Can't get line number from normalized AstNode")
+        }
+        return current.line
     }
 }
 
