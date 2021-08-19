@@ -61,7 +61,7 @@ private class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         private lateinit var getLineNumber: (Int) -> Int
 
         override fun preVisit(node: ASTNode) {
-            if (node is CompilationUnit) getLineNumber = { node.getLineNumber(it) - 1 } // Line number is 0-origin
+            if (node is CompilationUnit) getLineNumber = { node.getLineNumber(it) } // Line number is 1-origin
             val newNode =
                 when (val type = nodeTypes.getRuleType(node.nodeType) ?: nodeTypes.getTokenType(node.nodeType)) {
                     is RuleType -> BasicAstRuleNode(type, mutableListOf())
@@ -114,7 +114,7 @@ private class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
             while (tokenType != ITerminalSymbols.TokenNameEOF) {
                 val start = scanner.currentTokenStartPosition
                 val end = scanner.currentTokenEndPosition
-                val line = scanner.getLineNumber(start) - 1 // Line number is 0-origin
+                val line = scanner.getLineNumber(start) // Line number is 1-origin
                 val token = scanner.source.sliceArray(start..end).joinToString("")
                 list.add(line to token)
                 tokenType = scanner.nextToken
@@ -140,7 +140,7 @@ private class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
     }
 
     companion object {
-        private val DEFAULT_LINE_NO = 0
+        private const val DEFAULT_LINE_NO = 0
         val nodeTypes: NodeTypePool = NodeTypePool.of(
             "java",
             tokenTypes = mapOf(

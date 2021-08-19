@@ -1,6 +1,7 @@
 package com.github.durun.nitron.core.parser.jdt
 
 import com.github.durun.nitron.core.ast.node.AstTerminalNode
+import com.github.durun.nitron.core.ast.visitor.AstLineGetVisitor
 import com.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 import com.github.durun.nitron.core.ast.visitor.flatten
 import com.github.durun.nitron.core.parser.NitronParsers
@@ -58,6 +59,11 @@ class JdtParserTest : FreeSpec({
         println(src)
         println(src2)
         src2.removeSpace() shouldBe src.removeComments().removeSpace()
+
+        // line number
+        val (beginLine, endLine) = ast.accept(AstLineGetVisitor)
+        beginLine shouldBe 1
+        endLine shouldBe 23
     }
 })
 
