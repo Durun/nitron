@@ -22,7 +22,7 @@ plugins {
 
     application
 
-    id("org.jetbrains.dokka") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.5.0"
 
     // for making fatJar
     id("com.github.johnrengelman.shadow") version "7.0.0"
@@ -36,7 +36,7 @@ dependencies {
     // Versions
     val antlrVersion = "4.9.2"
     val inmemantlrVersion = "1.7.0"
-    val kotestVersion = "4.6.0"
+    val kotestVersion = "4.6.1"
     val cliktVersion = "2.8.0"
     val sqliteJdbcVersion = "3.36.0"
     val exposedVersion = "0.17.13"
