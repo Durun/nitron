@@ -7,7 +7,7 @@ import com.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import com.github.durun.nitron.core.ast.visitor.AstVisitor
 
 class AlignLineVisitor : AstVisitor<AstNode> {
-    private var currentLine = 0
+    private var currentLine = 1
     override fun visitRule(node: AstRuleNode): AstNode = visit(node)
     override fun visit(node: AstNode): AstNode {
         return if (node is BasicAstRuleNode) {
