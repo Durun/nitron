@@ -1,5 +1,5 @@
 group = "com.github.durun.nitron"
-version = "v0.4"
+version = "v0.6"
 
 buildscript {
     val kotlinVersion = "1.5.21"
@@ -60,7 +60,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     // Use the Kotlin JDK 8 standard library.
-    implementation(kotlin("stdlib-jdk8"))
+    api(kotlin("stdlib-jdk8"))
 
     //// Dependency for parsing
     // Java
