@@ -10,13 +10,10 @@ import com.github.durun.nitron.core.ast.type.TokenType
 import com.github.durun.nitron.core.parser.NitronParser
 import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.jdt.AlignLineVisitor
-import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.Reader
 import javax.xml.parsers.DocumentBuilderFactory
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 
 fun init(
     command: String,
@@ -46,34 +43,18 @@ private class SrcmlParser(
         nodeTypes.ruleTypes
     )
 
-    @ExperimentalTime
     override fun parse(reader: Reader): AstNode {
-        val rawXml: String
-        measureTime {
-            val process = ProcessBuilder(srcmlCommand, "--language", language, "--position")
-                .start()
-            process.outputStream.bufferedWriter().use { writer ->
-                writer.write(reader.readText())
-            }
-            rawXml = process.inputStream.bufferedReader().readText()
-        }.let { println("srcML process: $it") }
-        println(rawXml)
+        val process = ProcessBuilder(srcmlCommand, "--language", language, "--position")
+            .start()
+        process.outputStream.bufferedWriter().use { writer ->
+            writer.write(reader.readText())
+        }
 
         val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        val document: Document
-        measureTime {
-            document = builder.parse(rawXml.byteInputStream())
-        }.let { println("parse XML: $it") }
+        val document = builder.parse(process.inputStream.buffered())
 
-        val ast: AstNode
-        measureTime {
-            ast = toAstNode(document.documentElement)!!
-        }.let { println("convert AST: $it") }
-        val aligned: AstNode
-        measureTime {
-            aligned = ast.accept(AlignLineVisitor())
-        }.let { println("align AST: $it") }
-        return aligned
+        return toAstNode(document.documentElement)!!
+            .accept(AlignLineVisitor())
     }
 
 
