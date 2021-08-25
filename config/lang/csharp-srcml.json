@@ -1,0 +1,164 @@
+{
+  "extensions": [
+	".cs"
+  ],
+  "parserConfig": {
+	"type": "srcml",
+	"command": "srcml",
+	"language": "C#",
+	"tokenTypesWithAttr": {
+	  "number_literal": {
+		"literal": {
+		  "type": "number"
+		}
+	  },
+	  "char_literal": {
+		"literal": {
+		  "type": "char"
+		}
+	  },
+	  "string_literal": {
+		"literal": {
+		  "type": "string"
+		}
+	  },
+	  "boolean_literal": {
+		"literal": {
+		  "type": "boolean"
+		}
+	  },
+	  "null_literal": {
+		"literal": {
+		  "type": "null"
+		}
+	  }
+	},
+	"tokenTypes": [
+	  "comment",
+	  "escape",
+	  "operator",
+	  "literal"
+	],
+	"ruleTypesWithAttr": {
+	  "elseif": {
+		"if": {
+		  "type": "elseif"
+		}
+	  }
+	},
+	"ruleTypes": [
+	  "name",
+	  "unit",
+	  "argument",
+	  "argument_list",
+	  "attribute",
+	  "block",
+	  "block_content",
+	  "break",
+	  "by",
+	  "call",
+	  "case",
+	  "catch",
+	  "checked",
+	  "class",
+	  "condition",
+	  "constraint",
+	  "constructor",
+	  "continue",
+	  "control",
+	  "cpp:define",
+	  "cpp:directive",
+	  "cpp:elif",
+	  "cpp:else",
+	  "cpp:endif",
+	  "cpp:endregion",
+	  "cpp:error",
+	  "cpp:file",
+	  "cpp:if",
+	  "cpp:line",
+	  "cpp:macro",
+	  "cpp:number",
+	  "cpp:pragma",
+	  "cpp:region",
+	  "cpp:undef",
+	  "cpp:warning",
+	  "decl",
+	  "decl_stmt",
+	  "default",
+	  "delegate",
+	  "destructor",
+	  "do",
+	  "else",
+	  "elseif",
+	  "empty_stmt",
+	  "enum",
+	  "equals",
+	  "event",
+	  "expr",
+	  "expr_stmt",
+	  "extern",
+	  "finally",
+	  "fixed",
+	  "for",
+	  "foreach",
+	  "from",
+	  "function",
+	  "function_decl",
+	  "goto",
+	  "group",
+	  "if",
+	  "if_stmt",
+	  "in",
+	  "incr",
+	  "index",
+	  "init",
+	  "interface",
+	  "into",
+	  "join",
+	  "label",
+	  "lambda",
+	  "let",
+	  "linq",
+	  "lock",
+	  "modifier",
+	  "namespace",
+	  "on",
+	  "orderby",
+	  "parameter_list",
+	  "return",
+	  "select",
+	  "sizeof",
+	  "specifier",
+	  "struct",
+	  "super",
+	  "super_list",
+	  "switch",
+	  "ternary",
+	  "then",
+	  "throw",
+	  "true",
+	  "try",
+	  "type",
+	  "typeof",
+	  "unchecked",
+	  "unsafe",
+	  "using",
+	  "where",
+	  "while"
+	]
+  },
+  "processConfig": {
+	"splitConfig": {
+	  "splitRules": [
+	  ]
+	},
+	"normalizeConfig": {
+	  "mapping": {
+	  },
+	  "indexedMapping": {
+	  },
+	  "ignoreRules": [
+	  ]
+	}
+  }
+}

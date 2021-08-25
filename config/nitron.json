@@ -10,6 +10,7 @@
 	  "javascript": "lang/javascript.json",
 	  "swift": "lang/swift3.json",
 	  "matlab": "lang/matlab.json",
-	  "erlang": "lang/erlang.json"
+	  "erlang": "lang/erlang.json",
+	  "csharp-srcml": "lang/csharp-srcml.json"
 	}
 }
