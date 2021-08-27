@@ -57,11 +57,17 @@ private class SrcmlParser(
             .accept(AlignLineVisitor())
     }
 
+    private data class Position(val start: Int, val end: Int)
 
-    private data class Context(val line: Int)
-
-    private fun Node.getPosLine(): Int? {
-        return this.attributes?.getNamedItem("pos:line")?.nodeValue?.toInt()
+    private fun Node.getPosition(): Position? {
+        // ex.) <tag pos:start="1:1" pos:end="1:13"></tag>
+        val attr = this.attributes ?: return null
+        val startItem = attr.getNamedItem("pos:start") ?: return null
+        val endItem = attr.getNamedItem("pos:end") ?: return null
+        return Position(
+            start = startItem.nodeValue.split(':').first().toInt(),
+            end = endItem.nodeValue.split(':').first().toInt()
+        )
     }
 
     private fun Node.getAstNodeType(): NodeType? {
@@ -71,16 +77,17 @@ private class SrcmlParser(
             ?: nodeTypes.getType(this.nodeName)
     }
 
-    private fun toAstNode(node: Node, ctx: Context? = null): AstNode? {
-
+    private fun toAstNode(node: Node, parentPos: Position? = null): AstNode? {
         return when (node.nodeType) {
             Node.TEXT_NODE -> {
                 val text = node.nodeValue.trim()
                     .takeIf { it.isNotBlank() } ?: return null  // ignore blank text element
-                // get line from tags like <pos:position pos:line="2" pos:column="7"/>
-                val line = node.nextSibling?.takeIf { it.nodeName == "pos:position" }?.getPosLine()
-                    ?: ctx?.line
-                    ?: 0
+                val line = run {
+                    val next = node.nextSibling ?: return@run parentPos?.end
+                    val prev = node.previousSibling ?: return@run parentPos?.start
+                    prev.getPosition()?.end
+                        ?: next.getPosition()?.start
+                } ?: 0
                 AstTerminalNode(text, TOKEN, line)
             }
             Node.ELEMENT_NODE -> {
@@ -88,15 +95,13 @@ private class SrcmlParser(
                     is TokenType -> {
                         val text = node.firstChild?.nodeValue?.trim()
                             ?: throw Exception("type $type may not be terminal node")
-                        val line = node.getPosLine()
-                            ?: ctx?.line
+                        val line = node.getPosition()?.start
                             ?: 0
                         AstTerminalNode(text, type, line)
                     }
                     is RuleType -> {
-                        val line = node.getPosLine()
-                        val ctx = if (line != null) Context(line) else ctx
-                        val children = node.childNodes.asSequence().mapNotNull { toAstNode(it, ctx) }.toMutableList()
+                        val pos = node.getPosition()
+                        val children = node.childNodes.asSequence().mapNotNull { toAstNode(it, pos) }.toMutableList()
                         if (children.isNotEmpty()) BasicAstRuleNode(type, children)
                         else null
                     }

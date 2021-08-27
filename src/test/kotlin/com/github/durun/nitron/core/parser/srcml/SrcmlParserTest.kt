@@ -5,7 +5,9 @@ import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.visitor.flatten
 import com.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import java.nio.file.Path
 import kotlin.time.ExperimentalTime
@@ -36,8 +38,10 @@ class SrcmlParserTest : FreeSpec({
         ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
         val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
-        tokens.forEach {
+        val lines = source.split('\n')
+        tokens.forAll {
             println("${it.line}: ${it.token}")
+            lines[it.line - 1] shouldContain it.token
         }
     }
 
@@ -63,8 +67,10 @@ class SrcmlParserTest : FreeSpec({
         ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
         val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
-        tokens.forEach {
+        val lines = source.split('\n')
+        tokens.forAll {
             println("${it.line}: ${it.token}")
+            lines[it.line - 1] shouldContain it.token
         }
     }
 
@@ -89,8 +95,10 @@ class SrcmlParserTest : FreeSpec({
         ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
         val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
-        tokens.forEach {
+        val lines = source.split('\n')
+        tokens.forAll {
             println("${it.line}: ${it.token}")
+            lines[it.line - 1] shouldContain it.token
         }
     }
 })
