@@ -5,6 +5,8 @@ import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.visitor.flatten
 import com.github.durun.nitron.core.config.loader.NitronConfigLoader
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import java.nio.file.Path
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -30,9 +32,10 @@ class SrcmlParserTest : FreeSpec({
         measureTime {
             ast = parser.parse(source.reader())
         }.let { println("parse source to AST: $it") }
-        //println(ast.accept(AstPrintVisitor))
+        println(ast)
+        ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
-        val tokens = ast.flatten() as List<AstTerminalNode>
+        val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
         tokens.forEach {
             println("${it.line}: ${it.token}")
         }
@@ -56,9 +59,10 @@ class SrcmlParserTest : FreeSpec({
         measureTime {
             ast = parser.parse(source.reader())
         }.let { println("parse source to AST: $it") }
-        //println(ast.accept(AstPrintVisitor))
+        println(ast)
+        ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
-        val tokens = ast.flatten() as List<AstTerminalNode>
+        val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
         tokens.forEach {
             println("${it.line}: ${it.token}")
         }
@@ -81,11 +85,14 @@ class SrcmlParserTest : FreeSpec({
         measureTime {
             ast = parser.parse(source.reader())
         }.let { println("parse source to AST: $it") }
-        //println(ast.accept(AstPrintVisitor))
+        println(ast)
+        ast.getText().removeSpaceAndNL() shouldBe source.removeSpaceAndNL()
 
-        val tokens = ast.flatten() as List<AstTerminalNode>
+        val tokens = ast.flatten().shouldBeInstanceOf<List<AstTerminalNode>>()
         tokens.forEach {
             println("${it.line}: ${it.token}")
         }
     }
 })
+
+private fun String.removeSpaceAndNL() = this.filterNot { it in " \n" }
