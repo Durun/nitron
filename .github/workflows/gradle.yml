@@ -20,14 +20,20 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Install srcML
+      run: |
+        wget http://131.123.42.38/lmcrs/v1.0.0/srcml_1.0.0-1_ubuntu20.04.deb
+        sudo dpkg -i srcml_1.0.0-1_ubuntu20.04.deb
+        srcml -h
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build Jar
       run: ./gradlew shadowJar
-    - name: Upload a Build Artifact
+    - name: Test
+      run: ./gradlew test
+    - name: Upload Test report and Build Artifacts
       uses: actions/upload-artifact@v2.2.1
+      if: always()
       with:
         name: build
         path: build
-    - name: Test
-      run: ./gradlew test

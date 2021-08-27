@@ -1,0 +1,125 @@
+{
+  "extensions": [
+	".h",
+	".c"
+  ],
+  "parserConfig": {
+	"type": "srcml",
+	"command": "srcml",
+	"language": "C",
+	"tokenTypesWithAttr": {
+	  "number_literal": {"literal": {"type": "number"}},
+	  "char_literal": {"literal": {"type": "char"}},
+	  "string_literal": {"literal": {"type": "string"}}
+	},
+	"tokenTypes": [
+	  "comment",
+	  "escape",
+	  "operator",
+	  "literal"
+	],
+	"ruleTypesWithAttr": {
+	  "elseif": {"if": {"type": "elseif"}}
+	},
+	"ruleTypes": [
+	  "unit",
+	  "cpp:define",
+	  "cpp:directive",
+	  "cpp:elif",
+	  "cpp:else",
+	  "cpp:empty",
+	  "cpp:endif",
+	  "cpp:error",
+	  "cpp:file",
+	  "cpp:if",
+	  "cpp:ifdef",
+	  "cpp:ifndef",
+	  "cpp:include",
+	  "cpp:line",
+	  "cpp:literal",
+	  "cpp:macro",
+	  "cpp:number",
+	  "cpp:pragma",
+	  "cpp:undef",
+	  "cpp:value",
+	  "cpp:warning",
+	  "alignas",
+	  "alignof",
+	  "argument",
+	  "argument_list",
+	  "asm",
+	  "assert",
+	  "association",
+	  "association_list",
+	  "atomic",
+	  "block",
+	  "block_content",
+	  "break",
+	  "call",
+	  "case",
+	  "condition",
+	  "continue",
+	  "control",
+	  "decl",
+	  "decl_stmt",
+	  "default",
+	  "do",
+	  "else",
+	  "empty_stmt",
+	  "enum",
+	  "enum_decl",
+	  "expr",
+	  "expr_stmt",
+	  "extern",
+	  "for",
+	  "function",
+	  "function_decl",
+	  "generic_selection",
+	  "goto",
+	  "if",
+	  "if_stmt",
+	  "incr",
+	  "index",
+	  "init",
+	  "label",
+	  "modifier",
+	  "name",
+	  "omp:argument",
+	  "omp:argument_list",
+	  "omp:clause",
+	  "omp:directive",
+	  "omp:expr",
+	  "omp:name",
+	  "parameter_list",
+	  "range",
+	  "return",
+	  "selector",
+	  "sizeof",
+	  "specifier",
+	  "struct",
+	  "struct_decl",
+	  "switch",
+	  "ternary",
+	  "then",
+	  "type",
+	  "typedef",
+	  "union",
+	  "union_decl",
+	  "while"
+	]
+  },
+  "processConfig": {
+	"splitConfig": {
+	  "splitRules": [
+	  ]
+	},
+	"normalizeConfig": {
+	  "mapping": {
+	  },
+	  "indexedMapping": {
+	  },
+	  "ignoreRules": [
+	  ]
+	}
+  }
+}

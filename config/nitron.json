@@ -4,12 +4,15 @@
 	  "java": "lang/java.json",
 	  "kotlin": "lang/kotlin.json",
 	  "python": "lang/python.json",
+	  "c-srcml": "lang/c-srcml.json",
 	  "cpp": "lang/cpp.json",
+	  "cpp-srcml": "lang/cpp-srcml.json",
 	  "csharp": "lang/csharp.json",
 	  "r": "lang/r.json",
 	  "javascript": "lang/javascript.json",
 	  "swift": "lang/swift3.json",
 	  "matlab": "lang/matlab.json",
-	  "erlang": "lang/erlang.json"
+	  "erlang": "lang/erlang.json",
+	  "csharp-srcml": "lang/csharp-srcml.json"
 	}
 }
