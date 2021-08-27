@@ -90,7 +90,7 @@ private class SrcmlParser(
                             ?: throw Exception("type $type may not be terminal node")
                         val line = node.getPosLine()
                             ?: ctx?.line
-                            ?: throw Exception("Can't get line number")
+                            ?: 0
                         AstTerminalNode(text, type, line)
                     }
                     is RuleType -> {
