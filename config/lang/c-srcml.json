@@ -8,21 +8,9 @@
 	"command": "srcml",
 	"language": "C",
 	"tokenTypesWithAttr": {
-	  "number_literal": {
-		"literal": {
-		  "type": "number"
-		}
-	  },
-	  "char_literal": {
-		"literal": {
-		  "type": "char"
-		}
-	  },
-	  "string_literal": {
-		"literal": {
-		  "type": "string"
-		}
-	  }
+	  "number_literal": {"literal": {"type": "number"}},
+	  "char_literal": {"literal": {"type": "char"}},
+	  "string_literal": {"literal": {"type": "string"}}
 	},
 	"tokenTypes": [
 	  "comment",
@@ -31,11 +19,7 @@
 	  "literal"
 	],
 	"ruleTypesWithAttr": {
-	  "elseif": {
-		"if": {
-		  "type": "elseif"
-		}
-	  }
+	  "elseif": {"if": {"type": "elseif"}}
 	},
 	"ruleTypes": [
 	  "unit",

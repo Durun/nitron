@@ -10,36 +10,12 @@
 	"command": "srcml",
 	"language": "C++",
 	"tokenTypesWithAttr": {
-	  "number_literal": {
-		"literal": {
-		  "type": "number"
-		}
-	  },
-	  "char_literal": {
-		"literal": {
-		  "type": "char"
-		}
-	  },
-	  "string_literal": {
-		"literal": {
-		  "type": "string"
-		}
-	  },
-	  "boolean_literal": {
-		"literal": {
-		  "type": "boolean"
-		}
-	  },
-	  "complex_literal": {
-		"literal": {
-		  "type": "complex"
-		}
-	  },
-	  "null_literal": {
-		"literal": {
-		  "type": "null"
-		}
-	  }
+	  "number_literal": {"literal": {"type": "number"}},
+	  "char_literal": {"literal": {"type": "char"}},
+	  "string_literal": {"literal": {"type": "string"}},
+	  "boolean_literal": {"literal": {"type": "boolean"}},
+	  "complex_literal": {"literal": {"type": "complex"}},
+	  "null_literal": {"literal": {"type": "null"}}
 	},
 	"tokenTypes": [
 	  "comment",
@@ -48,41 +24,13 @@
 	  "literal"
 	],
 	"ruleTypesWithAttr": {
-	  "elseif": {
-		"if": {
-		  "type": "elseif"
-		}
-	  },
-	  "const_cast": {
-		"cast": {
-		  "type": "const"
-		}
-	  },
-	  "dynamic_cast": {
-		"cast": {
-		  "type": "dynamic"
-		}
-	  },
-	  "reinterpret_cast": {
-		"cast": {
-		  "type": "reinterpret"
-		}
-	  },
-	  "static_cast": {
-		"cast": {
-		  "type": "static"
-		}
-	  },
-	  "class_enum_decl": {
-		"enum_decl": {
-		  "type": "class"
-		}
-	  },
-	  "class_enum": {
-		"enum": {
-		  "type": "class"
-		}
-	  }
+	  "elseif": {"if": {"type": "elseif"}},
+	  "const_cast": {"cast": {"type": "const"}},
+	  "dynamic_cast": {"cast": {"type": "dynamic"}},
+	  "reinterpret_cast": {"cast": {"type": "reinterpret"}},
+	  "static_cast": {"cast": {"type": "static"}},
+	  "class_enum_decl": {"enum_decl": {"type": "class"}},
+	  "class_enum": {"enum": {"type": "class"}}
 	},
 	"ruleTypes": [
 	  "unit",
