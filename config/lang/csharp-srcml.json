@@ -101,6 +101,8 @@
 	  "on",
 	  "orderby",
 	  "parameter_list",
+	  "parameter",
+	  "range",
 	  "return",
 	  "select",
 	  "sizeof",
@@ -119,6 +121,7 @@
 	  "unchecked",
 	  "unsafe",
 	  "using",
+	  "using_stmt",
 	  "where",
 	  "while"
 	]
@@ -126,14 +129,44 @@
   "processConfig": {
 	"splitConfig": {
 	  "splitRules": [
+		"function",
+		"expr_stmt",
+		"decl_stmt",
+		"while",
+		"do",
+		"for",
+		"foreach",
+		"if",
+		"else",
+		"elseif",
+		"switch",
+		"case",
+		"default",
+		"break",
+		"checked",
+		"unchecked",
+		"unsafe",
+		"fixed",
+		"return",
+		"lock",
+		"using_stmt",
+		"throw"
 	  ]
 	},
 	"normalizeConfig": {
 	  "mapping": {
+		"string_literal": "\"S\"",
+		"char_literal": "'C'",
+		"number_literal": "N"
 	  },
 	  "indexedMapping": {
+		"//name[..[@tag!='name' and @tag!='call' and @tag!='type' and @tag!='class' and @tag!='function']]/TOKEN": "$V",
+		"//name[./operator='.']/name[position()=1]/TOKEN": "$V"
 	  },
 	  "ignoreRules": [
+		"using",
+		"specifier",
+		"//TOKEN[.='}']"
 	  ]
 	}
   }
