@@ -9,7 +9,7 @@ A multilingual code normalizer application/library.
 nitron is distributed through [JitPack](https://jitpack.io)
 
 ```groovy
-implementation 'com.github.Durun:nitron:v0.4'
+implementation 'com.github.Durun:nitron:version'
 ```
 
 [nitron as a library Guide (Japanese)](README_Lib_jp.md)
