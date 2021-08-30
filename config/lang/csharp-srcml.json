@@ -148,6 +148,7 @@
 		"unsafe",
 		"fixed",
 		"return",
+		"goto",
 		"lock",
 		"using_stmt",
 		"throw"
@@ -160,7 +161,7 @@
 		"number_literal": "N"
 	  },
 	  "indexedMapping": {
-		"//name[..[@tag!='name' and @tag!='call' and @tag!='type' and @tag!='class' and @tag!='function']]/TOKEN": "$V",
+		"//name[..[@tag!='name' and @tag!='call' and @tag!='type' and @tag!='class' and @tag!='function' and @tag!='namespace']]/TOKEN": "$V",
 		"//name[./operator='.']/name[position()=1]/TOKEN": "$V"
 	  },
 	  "ignoreRules": [
