@@ -148,14 +148,48 @@
   "processConfig": {
 	"splitConfig": {
 	  "splitRules": [
+		"function",
+		"function_decl",
+		"expr_stmt",
+		"decl_stmt",
+		"while",
+		"do",
+		"for",
+		"if",
+		"else",
+		"elseif",
+		"switch",
+		"case",
+		"default",
+		"break",
+		"return",
+		"goto",
+		"throw"
 	  ]
 	},
 	"normalizeConfig": {
 	  "mapping": {
+		"string_literal": "\"S\"",
+		"char_literal": "'C'",
+		"number_literal": "N",
+		"complex_literal": "C"
 	  },
 	  "indexedMapping": {
+		"//name[..[@tag!='name' and @tag!='call' and @tag!='type' and @tag!='class' and @tag!='function' and @tag!='function_decl' and @tag!='namespace']]/TOKEN": "$V",
+		"//name[./operator='.']/name[position()=1]/TOKEN": "$V",
+		"//name[./operator='->']/name[position()=1]/TOKEN": "$V"
 	  },
 	  "ignoreRules": [
+		"cpp:include",
+		"using",
+		"specifier",
+		"public",
+		"private",
+		"protected",
+		"//TOKEN[.='}']",
+		"//class/TOKEN[.=';']",
+		"//struct/TOKEN[.=';']",
+		"//union/TOKEN[.=';']"
 	  ]
 	}
   }
