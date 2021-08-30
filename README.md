@@ -4,6 +4,11 @@
 
 A multilingual code normalizer application/library.
 
+## Requirement
+
+- Java 11 or later
+- [srcML](https://www.srcml.org/) (optional)
+
 ## To use as a Library
 
 nitron is distributed through [JitPack](https://jitpack.io)
