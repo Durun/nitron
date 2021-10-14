@@ -20,6 +20,8 @@ import org.snt.inmemantlr.tool.InmemantlrTool
 import java.io.Reader
 import java.lang.reflect.Method
 import java.nio.file.Path
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.readText
 
 /**
  * [GenericParser] parses sourcecode using given ANTLR grammar files.
@@ -66,7 +68,7 @@ private constructor(
             grammarFiles: Collection<Path>,
             utilityJavaFiles: Collection<Path> = emptySet(),
             toolCustomizer: Tool.() -> Unit = {}
-        ): GenericParser = init(grammarFiles.map { it.toFile().readText() }, utilityJavaFiles, toolCustomizer)
+        ): GenericParser = init(grammarFiles.map { it.readText() }, utilityJavaFiles, toolCustomizer)
     }
 
     private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
@@ -96,8 +98,8 @@ private constructor(
     private val streamProvider: StreamProvider = DefaultStreamProvider()
     private val fileProvider: FileProvider = FileProvider().apply {
         utilityJavaFiles.forEach {
-            val name = it.toFile().nameWithoutExtension
-            val content = it.toFile().readText()
+            val name = it.nameWithoutExtension
+            val content = it.readText()
             LOGGER.debug { "add utility" }
             addFiles(MemorySource(name, content))
         }

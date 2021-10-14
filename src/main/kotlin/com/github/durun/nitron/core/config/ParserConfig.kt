@@ -11,6 +11,7 @@ import com.github.durun.nitron.core.parser.srcml.srcml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
+import kotlin.io.path.readText
 
 
 @Serializable
@@ -42,7 +43,7 @@ data class AntlrParserConfig(
 
     override fun checksum(): MD5 {
         val paths = grammarFilePaths + utilJavaFilePaths
-        return paths.map { MD5.digest(it.toFile().readText()).toString() }
+        return paths.map { MD5.digest(it.readText()).toString() }
             .sorted()
             .reduce { a, b -> a + b }
             .let { MD5.digest(it) }

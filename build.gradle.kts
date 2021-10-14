@@ -2,7 +2,7 @@ group = "com.github.durun.nitron"
 version = "v0.7"
 
 buildscript {
-    val kotlinVersion = "1.5.21"
+    val kotlinVersion = "1.5.31"
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
     }
@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    val kotlinVersion = "1.5.21"
+    val kotlinVersion = "1.5.31"
     `maven-publish`
 
     kotlin("jvm") version kotlinVersion
