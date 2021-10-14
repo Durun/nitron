@@ -64,7 +64,7 @@ dependencies {
 
     //// Dependency for parsing
     // Java
-    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.26.0")
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.27.0")
 
     // Use the Kotlin test library.
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
