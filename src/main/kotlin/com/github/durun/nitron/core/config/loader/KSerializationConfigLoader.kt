@@ -1,11 +1,10 @@
 package com.github.durun.nitron.core.config.loader
 
 import com.github.durun.nitron.core.config.ConfigWithDir
-import com.github.durun.nitron.core.config.setPath
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import java.nio.file.Path
-import kotlin.io.path.readText
+import java.io.Reader
+import java.net.URI
 
 class KSerializationConfigLoader<C : ConfigWithDir>(
         private val serializer: KSerializer<C>
@@ -15,9 +14,10 @@ class KSerializationConfigLoader<C : ConfigWithDir>(
         classDiscriminator = "type"
     }
 
-    override fun load(jsonPath: Path): C {
-        val jsonString = jsonPath.readText()
+    override fun load(uri: URI, reader: Reader): C {
+        val jsonString = reader.readText()
         val config = json.decodeFromString(serializer, jsonString)
-        return config.setPath(jsonPath)
+        config.uri = uri
+        return config
     }
 }

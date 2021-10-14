@@ -16,7 +16,7 @@ import io.kotest.mpp.log
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.bufferedReader
+import kotlin.io.path.toPath
 
 
 @ExperimentalPathApi
@@ -71,14 +71,14 @@ fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 				allowedRules shouldContainAll usedRules
 			}.onFailure {
                 println("see: ${parserConfig.grammarFilePaths.map(Path::normalize)}")
-				val errorSymbols = (usedRules - allowedRules)
-				config.filePath.bufferedReader().lineSequence().forEachIndexed { index, line ->
-					val file = config.filePath
-					val lineNo = index + 1
-					errorSymbols.filter { line.contains(it) }.forEach {
-						println("""$file:$lineNo: "$it" is not defined""")
-					}
-				}
+                val errorSymbols = (usedRules - allowedRules)
+                config.fileUri.toURL().readText().lineSequence().forEachIndexed { index, line ->
+                    val file = config.fileUri.toPath()
+                    val lineNo = index + 1
+                    errorSymbols.filter { line.contains(it) }.forEach {
+                        println("""$file:$lineNo: "$it" is not defined""")
+                    }
+                }
 			}.getOrThrow()
 		}
 	}

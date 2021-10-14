@@ -12,6 +12,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.nio.file.Path
 import kotlin.io.path.readText
+import kotlin.io.path.toPath
 
 
 @Serializable
@@ -28,10 +29,10 @@ data class AntlrParserConfig(
     val startRule: String
 ) : ParserConfig() {
     val grammarFilePaths: List<Path> by lazy {
-        grammarFiles.map { dir.resolve(it) }
+        grammarFiles.map { dir.toPath().resolve(it) }   // TODO: Zip内のファイルに対応
     }
     val utilJavaFilePaths: List<Path> by lazy {
-        utilJavaFiles.map { dir.resolve(it) }
+        utilJavaFiles.map { dir.toPath().resolve(it) }
     }
 
     override fun getParser(): NitronParser = NitronParsers.antlr(

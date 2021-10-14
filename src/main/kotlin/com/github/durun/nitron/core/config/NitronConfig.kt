@@ -5,26 +5,22 @@ import com.github.durun.nitron.core.ast.processors.AstNormalizer
 import com.github.durun.nitron.core.ast.processors.AstSplitter
 import com.github.durun.nitron.core.ast.type.NodeTypePool
 import com.github.durun.nitron.core.config.loader.LangConfigLoader
+import com.github.durun.nitron.util.resolveInJar
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.nio.file.Path
+import java.net.URI
 
 abstract class ConfigWithDir {
-    internal lateinit var path: Path
+    internal lateinit var uri: URI
 
-    val dir: Path
-        get() = path.toAbsolutePath().parent
+    val dir: URI
+        get() = uri.resolveInJar(".").normalize()
 
     val fileName: String
-        get() = path.fileName.toString()
+        get() = uri.toURL().file
 
-    val filePath: Path
-        get() = path
-}
-
-internal fun <C : ConfigWithDir> C.setPath(filePath: Path): C {
-    this.path = filePath
-    return this
+    val fileUri: URI
+        get() = uri
 }
 
 @Serializable
@@ -33,8 +29,8 @@ data class NitronConfig(
 ) : ConfigWithDir() {
     val langConfig: Map<String, LangConfig> by lazy {
         langConfigFiles.mapValues {
-            val file = dir.resolve(it.value)
-            LangConfigLoader.load(file)
+            val filePath = dir.resolveInJar(it.value)
+            LangConfigLoader.load(filePath)
         }
     }
 }
@@ -45,7 +41,10 @@ data class LangConfig(
     val processConfig: ProcessConfig,
     val extensions: List<String>
 ) : ConfigWithDir() {
-    val parserConfig: ParserConfig by lazy { parser.setPath(path) }
+    val parserConfig: ParserConfig by lazy {
+        parser.uri = uri
+        parser
+    }
 }
 
 @Serializable
