@@ -9,8 +9,6 @@ import com.github.durun.nitron.util.resolveInJar
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.net.URI
-import java.nio.file.Path
-import kotlin.io.path.toPath
 
 abstract class ConfigWithDir {
     internal lateinit var uri: URI
@@ -23,10 +21,6 @@ abstract class ConfigWithDir {
 
     val fileUri: URI
         get() = uri
-
-    val filePath: Path
-        get() = uri.toPath()
-
 }
 
 @Serializable
