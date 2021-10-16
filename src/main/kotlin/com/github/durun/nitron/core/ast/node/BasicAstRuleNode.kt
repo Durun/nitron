@@ -15,11 +15,15 @@ class BasicAstRuleNode(
     @SerialName("c")
     override val children: MutableList<AstNode>
 ) : AstRuleNode {
+    override var originalNode: BasicAstRuleNode = this
+        private set
+
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
     }
 
     override fun copy() = BasicAstRuleNode(type, children.map { it.copy() }.toMutableList())
+        .also { it.originalNode = this.originalNode }
 
     override fun toString(): String = getText()
 

@@ -31,6 +31,9 @@ class AstTerminalNode(
         @SerialName("l")
         val line: Int
 ) : AstNode {
+    override var originalNode: AstTerminalNode = this
+        private set
+
     @Deprecated("use type", ReplaceWith("type.name"))
     val tokenType: String
         get() = type.name
@@ -47,7 +50,9 @@ class AstTerminalNode(
     override fun getText(): String = token
 
     override fun copy(): AstNode = AstTerminalNode(token, type, line)
+        .also { it.originalNode = this.originalNode }
     fun copy(line: Int): AstNode = AstTerminalNode(token, type, line)
+        .also { it.originalNode = this.originalNode }
 
     override fun toString(): String = getText()
 

@@ -22,9 +22,13 @@ class NormalAstRuleNode(
     override val children: List<AstNode>?
         get() = null
 
+    override var originalNode: NormalAstRuleNode = this
+        private set
+
     override fun getText(): String = text ?: type.name.uppercase(Locale.getDefault())
 
     override fun copy() = NormalAstRuleNode(type, text)
+        .also { it.originalNode = this.originalNode }
 
     override fun toString(): String = getText()
 

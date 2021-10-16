@@ -15,6 +15,13 @@ interface AstNode {
      */
     val children: List<AstNode>?
 
+    /**
+     * このノードがコピーである場合, コピー元のノード.
+     * このノードがオリジナルである場合, このノード自身.
+     * このノードがコピーのコピーである場合, おおもとのコピー元のノード.
+     */
+    val originalNode: AstNode
+
     fun <R> accept(visitor: AstVisitor<R>): R = visitor.visit(this)
 
     /**
