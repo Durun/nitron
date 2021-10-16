@@ -34,10 +34,6 @@ class AstTerminalNode(
     override var originalNode: AstTerminalNode = this
         private set
 
-    @Deprecated("use type", ReplaceWith("type.name"))
-    val tokenType: String
-        get() = type.name
-
     fun replaceToken(newToken: String): AstTerminalNode {
         this.token = newToken
         return this
