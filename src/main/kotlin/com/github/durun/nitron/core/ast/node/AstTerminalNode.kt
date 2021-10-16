@@ -31,6 +31,13 @@ class AstTerminalNode(
         @SerialName("l")
         val line: Int
 ) : AstNode {
+    companion object {
+        fun of(token: String, type: TokenType, line: Int, originalNode: AstTerminalNode): AstTerminalNode {
+            return AstTerminalNode(token, type, line)
+                .also { it.originalNode = originalNode }
+        }
+    }
+
     override var originalNode: AstTerminalNode = this
         private set
 
@@ -45,10 +52,9 @@ class AstTerminalNode(
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
 
-    override fun copy(): AstNode = AstTerminalNode(token, type, line)
-        .also { it.originalNode = this.originalNode }
-    fun copy(line: Int): AstNode = AstTerminalNode(token, type, line)
-        .also { it.originalNode = this.originalNode }
+    override fun copy(): AstNode = of(token, type, line, originalNode = this.originalNode)
+
+    fun copy(line: Int): AstNode = of(token, type, line, originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 

@@ -19,6 +19,13 @@ class NormalAstRuleNode(
         @SerialName("s")
         private val text: String? = null
 ) : AstRuleNode {
+    companion object {
+        fun of(type: RuleType, text: String?, originalNode: NormalAstRuleNode): NormalAstRuleNode {
+            return NormalAstRuleNode(type, text)
+                .also { it.originalNode = originalNode }
+        }
+    }
+
     override val children: List<AstNode>?
         get() = null
 
@@ -27,8 +34,7 @@ class NormalAstRuleNode(
 
     override fun getText(): String = text ?: type.name.uppercase(Locale.getDefault())
 
-    override fun copy() = NormalAstRuleNode(type, text)
-        .also { it.originalNode = this.originalNode }
+    override fun copy() = of(type, text, originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 

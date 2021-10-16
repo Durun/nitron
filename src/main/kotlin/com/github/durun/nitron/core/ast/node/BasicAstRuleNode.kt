@@ -15,6 +15,13 @@ class BasicAstRuleNode(
     @SerialName("c")
     override val children: MutableList<AstNode>
 ) : AstRuleNode {
+    companion object {
+        fun of(type: RuleType, children: MutableList<AstNode>, originalNode: BasicAstRuleNode): BasicAstRuleNode {
+            return BasicAstRuleNode(type, children)
+                .also { it.originalNode = originalNode }
+        }
+    }
+
     override var originalNode: BasicAstRuleNode = this
         private set
 
@@ -22,8 +29,7 @@ class BasicAstRuleNode(
         return children.joinToString(" ") { it.getText() }
     }
 
-    override fun copy() = BasicAstRuleNode(type, children.map { it.copy() }.toMutableList())
-        .also { it.originalNode = this.originalNode }
+    override fun copy() = of(type, children.map { it.copy() }.toMutableList(), originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 
