@@ -23,6 +23,20 @@ class AstNodeTest : FreeSpec({
             doubleCopied shouldNotBeSameInstanceAs copied
             doubleCopied.originalNode shouldBeSameInstanceAs node
         }
+
+        "copy of rule node" {
+            val node = astNode(rule) {
+                token("token1", token)
+            }
+            val copied = node.copy()
+            copied shouldBe node
+            copied shouldNotBeSameInstanceAs node
+            copied.originalNode shouldBeSameInstanceAs node
+
+            val doubleCopied = copied.copy()
+            doubleCopied shouldNotBeSameInstanceAs copied
+            doubleCopied.originalNode shouldBeSameInstanceAs node
+        }
     }
 })
 
