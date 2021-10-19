@@ -3,18 +3,14 @@ package com.github.durun.nitron.core.parser.jdt
 import com.github.durun.nitron.core.ast.node.AstNode
 import com.github.durun.nitron.core.ast.node.AstRuleNode
 import com.github.durun.nitron.core.ast.node.AstTerminalNode
-import com.github.durun.nitron.core.ast.node.BasicAstRuleNode
 import com.github.durun.nitron.core.ast.type.NodeTypePool
-import com.github.durun.nitron.core.ast.type.RuleType
-import com.github.durun.nitron.core.ast.type.TokenType
 import com.github.durun.nitron.core.ast.visitor.AstVisitor
-import com.github.durun.nitron.core.ast.visitor.flatten
 import com.github.durun.nitron.core.parser.NitronParser
 import com.github.durun.nitron.core.parser.NitronParsers
 import org.eclipse.jdt.core.JavaCore
-import org.eclipse.jdt.core.ToolFactory
-import org.eclipse.jdt.core.compiler.ITerminalSymbols
-import org.eclipse.jdt.core.dom.*
+import org.eclipse.jdt.core.dom.AST
+import org.eclipse.jdt.core.dom.ASTNode
+import org.eclipse.jdt.core.dom.ASTParser
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import java.io.Reader
 
@@ -46,100 +42,12 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         val source = reader.readText().replace(Regex("\r\n|\r|\n"), "\n")
         parser.get().setSource(source.toCharArray())
         val root = parser.get().createAST(null)
-        val visitor = BuildVisitor(source)
-        root.accept(visitor)
-        return visitor.result!!
-        //.accept(AlignLineVisitor())
-    }
-
-    private class BuildVisitor(
-        val source: String
-    ) : ASTVisitor() {
-        var result: AstNode? = null
-            private set
-        private val stack: MutableList<AstNode> = mutableListOf()
-        private lateinit var getLineNumber: (Int) -> Int
-        override fun preVisit(node: ASTNode) {
-            if (node is CompilationUnit) getLineNumber = { node.getLineNumber(it) } // Line number is 1-origin
-            val newNode =
-                when (val type = nodeTypes.getRuleType(node.nodeType) ?: nodeTypes.getTokenType(node.nodeType)) {
-                    is RuleType -> BasicAstRuleNode(type, mutableListOf())
-                    is TokenType -> AstTerminalNode(node.toString(), type, getLineNumber(node.startPosition))
-                    else -> throw Exception()
-                }
-            val parent = stack.lastOrNull()
-            if (parent is BasicAstRuleNode) {
-                parent.children += newNode
-            }
-            stack += newNode
-        }
-
-        private fun token(text: String, line: Int) = AstTerminalNode(text, TOKEN, line)
-        override fun postVisit(node: ASTNode) {
-            val parent = stack.lastOrNull()
-            if (parent is BasicAstRuleNode && parent.toString() != node.toString()) {
-                // 構文木に不足しているトークンを補う
-                val trees = parent.children         // 構文木(トークンが不足している)
-                val nodeString = source.slice(node.startPosition until node.startPosition + node.length)
-                val tokens = lex(nodeString)        // 完全なトークン列
-                val baseLine = detectLineNumber(trees, tokens)
-                var k = 0
-                var remainText = ""
-                tokens.forEach { (relLine, token) ->
-                    if (trees.lastIndex < k) {
-                        trees.add(token(token, baseLine?.plus(relLine) ?: DEFAULT_LINE_NO))
-                        k++
-                        return@forEach
-                    }
-                    if (remainText.isEmpty()) remainText = trees[k].accept(CatVisitor)
-                    if (remainText.startsWith(token)) {
-                        remainText = remainText.drop(token.length)
-                        if (remainText.isEmpty()) k++
-                    } else {
-                        trees.add(k, token(token, baseLine?.plus(relLine) ?: DEFAULT_LINE_NO))
-                        k++
-                    }
-                }
-            }
-
-            result = stack.removeLast()
-        }
-
-        private fun lex(text: String): List<Pair<Int, String>> {
-            val scanner = ToolFactory.createScanner(false, false, true, JavaCore.VERSION_1_8)
-            scanner.source = text.replace(Regex("\r\n|\r|\n"), "\n").toCharArray()
-            val list: MutableList<Pair<Int, String>> = mutableListOf()
-            var tokenType = scanner.nextToken
-            while (tokenType != ITerminalSymbols.TokenNameEOF) {
-                val start = scanner.currentTokenStartPosition
-                val end = scanner.currentTokenEndPosition
-                val line = scanner.getLineNumber(start) // Line number is 1-origin
-                val token = scanner.source.sliceArray(start..end).joinToString("")
-                list.add(line to token)
-                tokenType = scanner.nextToken
-            }
-            return list
-        }
-
-        /**
-         * @param trees 絶対行数の情報を持つ構文木
-         * @param tokens (相対行数, トークン) のリスト
-         * @return [tokens] の相対行数=0にあたる絶対行数を返す。(0-origin)
-         */
-        private fun detectLineNumber(trees: List<AstNode>, tokens: List<Pair<Int, String>>): Int? {
-            val node = trees.flatMap { it.flatten() }
-                .filterIsInstance<AstTerminalNode>().firstOrNull()
-                ?: return null
-            val matched = tokens.firstOrNull { (_, token) -> token == node.token }
-                ?: return null
-            val absLine = node.line
-            val relLine = matched.first
-            return absLine - relLine
-        }
+        val converter = AstConvertVisitor()
+        root.accept(converter)
+        return converter.result
     }
 
     companion object {
-        private const val DEFAULT_LINE_NO = 0
         val nodeTypes: NodeTypePool = NodeTypePool.of(
             "java",
             tokenTypes = mapOf(
