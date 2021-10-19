@@ -153,6 +153,7 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
                 ASTNode.LINE_COMMENT to "LINE_COMMENT",
                 ASTNode.BLOCK_COMMENT to "BLOCK_COMMENT",
                 ASTNode.MODIFIER to "MODIFIER",
+                ASTNode.MODULE_MODIFIER to "MODULE_MODIFIER",
                 ASTNode.TEXT_BLOCK to "TEXT_BLOCK",
                 ASTNode.TEXT_ELEMENT to "TEXT_ELEMENT",
             ),
@@ -240,7 +241,6 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
                 ASTNode.SUPER_METHOD_REFERENCE to "SUPER_METHOD_REFERENCE",
                 ASTNode.TYPE_METHOD_REFERENCE to "TYPE_METHOD_REFERENCE",
                 ASTNode.MODULE_DECLARATION to "MODULE_DECLARATION",
-                ASTNode.MODULE_MODIFIER to "MODULE_MODIFIER",
                 ASTNode.MODULE_QUALIFIED_NAME to "MODULE_QUALIFIED_NAME",
                 ASTNode.RECORD_DECLARATION to "RECORD_DECLARATION",
                 ASTNode.EXPORTS_DIRECTIVE to "EXPORTS_DIRECTIVE",
@@ -268,6 +268,7 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         val LINE_COMMENT = nodeTypes.getTokenType(ASTNode.LINE_COMMENT)!!
         val BLOCK_COMMENT = nodeTypes.getTokenType(ASTNode.BLOCK_COMMENT)!!
         val MODIFIER = nodeTypes.getTokenType(ASTNode.MODIFIER)!!
+        val MODULE_MODIFIER = nodeTypes.getTokenType(ASTNode.MODULE_MODIFIER)!!
         val TEXT_BLOCK = nodeTypes.getTokenType(ASTNode.TEXT_BLOCK)!!
         val TEXT_ELEMENT = nodeTypes.getTokenType(ASTNode.TEXT_ELEMENT)!!
     }
@@ -356,7 +357,6 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         val SUPER_METHOD_REFERENCE = nodeTypes.getRuleType(ASTNode.SUPER_METHOD_REFERENCE)!!
         val TYPE_METHOD_REFERENCE = nodeTypes.getRuleType(ASTNode.TYPE_METHOD_REFERENCE)!!
         val MODULE_DECLARATION = nodeTypes.getRuleType(ASTNode.MODULE_DECLARATION)!!
-        val MODULE_MODIFIER = nodeTypes.getRuleType(ASTNode.MODULE_MODIFIER)!!
         val MODULE_QUALIFIED_NAME = nodeTypes.getRuleType(ASTNode.MODULE_QUALIFIED_NAME)!!
         val RECORD_DECLARATION = nodeTypes.getRuleType(ASTNode.RECORD_DECLARATION)!!
         val EXPORTS_DIRECTIVE = nodeTypes.getRuleType(ASTNode.EXPORTS_DIRECTIVE)!!

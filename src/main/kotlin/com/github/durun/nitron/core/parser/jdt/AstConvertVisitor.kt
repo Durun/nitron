@@ -927,7 +927,7 @@ class AstConvertVisitor : ASTVisitor() {
     }
 
     override fun visit(node: ModuleModifier): Boolean {
-        append(node.keyword.toString(), TokenTypes.MODIFIER, getLineStart(node))
+        append(node.keyword.toString(), TokenTypes.MODULE_MODIFIER, getLineStart(node))
         return false
     }
 
