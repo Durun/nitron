@@ -8,16 +8,12 @@ import java.nio.file.Paths
 class AstSplitterTest : FreeSpec({
     val config = LangConfigLoader.load(Paths.get("config/lang/java-jdt.json"))
     val parser = config.parserConfig.getParser()
-    val javaAst = parser.parse(javaCode.reader())
     val types = parser.nodeTypes
+    val splitter = config.processConfig.splitConfig.initSplitter(types)
 
     "split statement" {
-        val ast = javaAst.copy()
+        val ast = parser.parse(javaCode.reader())
         println(ast)
-        config.processConfig.splitConfig.splitRules
-        val splitter = AstSplitter(
-            config.processConfig.splitConfig.splitRules.mapNotNull { types.getType(it) }
-        )
         val splitted = splitter.process(ast)
         println(splitted)
         splitted.joinToString("\n") shouldBe splittedCode
