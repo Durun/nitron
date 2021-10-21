@@ -2,6 +2,7 @@
 
 package com.github.durun.nitron.core.parser.antlr
 
+import com.github.durun.nitron.core.ParsingException
 import com.github.durun.nitron.core.ast.node.AstNode
 import com.github.durun.nitron.core.ast.type.NodeTypePool
 import com.github.durun.nitron.core.parser.NitronParser
@@ -31,8 +32,19 @@ private constructor(
     }
 
     override fun parse(reader: Reader): AstNode {
-        val tree = genericParser.parse(reader, defaultEntryPoint)
-        return tree.accept(buildVisitor)
+        val tree = try {
+            genericParser.parse(reader, defaultEntryPoint)
+        } catch (e: org.snt.inmemantlr.exceptions.ParsingException) {
+            throw ParsingException("Failed to parse with ANTLR: ${e.message}", e)
+        } catch (e: Exception) {
+            throw ParsingException("Internal error: ${e.message}", e)
+        }
+        val ast = try {
+            tree.accept(buildVisitor)
+        } catch (e: Exception) {
+            throw ParsingException("Failed to convert ANTLR tree into nitron tree")
+        }
+        return ast
     }
 }
 

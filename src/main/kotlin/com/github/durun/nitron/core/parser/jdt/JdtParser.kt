@@ -1,10 +1,8 @@
 package com.github.durun.nitron.core.parser.jdt
 
+import com.github.durun.nitron.core.ParsingException
 import com.github.durun.nitron.core.ast.node.AstNode
-import com.github.durun.nitron.core.ast.node.AstRuleNode
-import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.type.NodeTypePool
-import com.github.durun.nitron.core.ast.visitor.AstVisitor
 import com.github.durun.nitron.core.parser.NitronParser
 import com.github.durun.nitron.core.parser.NitronParsers
 import org.eclipse.jdt.core.JavaCore
@@ -40,11 +38,24 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
 
     override fun parse(reader: Reader): AstNode {
         val source = reader.readText().replace(Regex("\r\n|\r|\n"), "\n")
-        parser.get().setSource(source.toCharArray())
-        val root = parser.get().createAST(null)
-        val converter = AstConvertVisitor()
-        root.accept(converter)
-        return converter.result
+        val root = try {
+            val localParser = parser.get()
+            localParser.setSource(source.toCharArray())
+            val result: ASTNode = localParser.createAST(null)   // can be null
+            result
+        } catch (e: NullPointerException) {
+            throw ParsingException("Failed to parse with JDT Parser", e)
+        } catch (e: Exception) {
+            throw ParsingException("Internal error: ${e.message}", e)
+        }
+        val ast = try {
+            val converter = AstConvertVisitor()
+            root.accept(converter)
+            converter.result
+        } catch (e: Exception) {
+            throw ParsingException("Failed to convert JDT tree into nitron tree")
+        }
+        return ast
     }
 
     companion object {
@@ -277,10 +288,4 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         val TYPE_LITERAL = nodeTypes.getRuleType(ASTNode.TYPE_LITERAL)!!
         val YIELD_STATEMENT = nodeTypes.getRuleType(ASTNode.YIELD_STATEMENT)!!
     }
-}
-
-private object CatVisitor : AstVisitor<String> {
-    override fun visitRule(node: AstRuleNode): String = visit(node)
-    override fun visitTerminal(node: AstTerminalNode): String = node.token
-    override fun visit(node: AstNode): String = node.children?.joinToString("") { it.accept(this) } ?: ""
 }
