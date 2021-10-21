@@ -29,7 +29,7 @@ class AstSplitter(
             buf.filter { it.isNotEmpty() }
                 .map { newChildren ->
                     if (newChildren.first().isSelectedBy()) newChildren.first()
-                    else BasicAstRuleNode(ast.type, newChildren.toMutableList())
+                    else BasicAstRuleNode.of(ast.type, newChildren.toMutableList(), originalNode = ast)
                 }
         }
         else -> listOf(ast)

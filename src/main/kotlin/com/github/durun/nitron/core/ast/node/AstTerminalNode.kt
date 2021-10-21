@@ -5,6 +5,7 @@ import com.github.durun.nitron.core.ast.visitor.AstVisitor
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * 構文木の終端ノード
@@ -31,9 +32,16 @@ class AstTerminalNode(
         @SerialName("l")
         val line: Int
 ) : AstNode {
-    @Deprecated("use type", ReplaceWith("type.name"))
-    val tokenType: String
-        get() = type.name
+    companion object {
+        fun of(token: String, type: TokenType, line: Int, originalNode: AstTerminalNode): AstTerminalNode {
+            return AstTerminalNode(token, type, line)
+                .also { it.originalNode = originalNode.originalNode }
+        }
+    }
+
+    @Transient
+    override var originalNode: AstTerminalNode = this
+        private set
 
     fun replaceToken(newToken: String): AstTerminalNode {
         this.token = newToken
@@ -46,8 +54,9 @@ class AstTerminalNode(
     override fun <R> accept(visitor: AstVisitor<R>): R = visitor.visitTerminal(this)
     override fun getText(): String = token
 
-    override fun copy(): AstNode = AstTerminalNode(token, type, line)
-    fun copy(line: Int): AstNode = AstTerminalNode(token, type, line)
+    override fun copy(): AstNode = of(token, type, line, originalNode = this.originalNode)
+
+    fun copy(line: Int): AstNode = of(token, type, line, originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 

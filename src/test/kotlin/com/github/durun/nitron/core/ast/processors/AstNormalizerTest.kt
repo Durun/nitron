@@ -1,9 +1,16 @@
 package com.github.durun.nitron.core.ast.processors
 
+import com.github.durun.nitron.core.ast.node.AstRuleNode
 import com.github.durun.nitron.core.ast.path.AstPath
+import com.github.durun.nitron.core.ast.type.NodeTypePool
+import com.github.durun.nitron.core.ast.type.RuleType
+import com.github.durun.nitron.core.ast.type.TokenType
 import com.github.durun.nitron.core.config.loader.LangConfigLoader
+import com.github.durun.nitron.testutil.astNode
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import java.nio.file.Paths
 
 class AstNormalizerTest : FreeSpec({
@@ -35,6 +42,33 @@ class AstNormalizerTest : FreeSpec({
         val normalized = normalizer.process(ast)
         println(normalized)
         normalized.toString() shouldBe normalizedCode2
+    }
+
+    "traceable check (small tree)" {
+        val token = TokenType(0, "TOKEN")
+        val semicolon = TokenType(1, "SEMICOLON")
+        val rule = RuleType(2, "rule")
+        val types = NodeTypePool.of("grammar", tokenTypes = listOf(token, semicolon), ruleTypes = listOf(rule))
+        val node = astNode(rule) {
+            token("token1", token)
+            node(rule) {
+                token("token2", token)
+                token(";", semicolon)
+            }
+        }
+
+        val normalizer = AstNormalizer(emptyMap(), emptyMap(), listOf(AstPath.of("SEMICOLON", types)))
+        val copied = normalizer.process(node) as AstRuleNode
+
+        listOf(
+            copied.originalNode to node,
+            copied.children!!.first().originalNode to node.children!!.first(),
+            copied.children!!.last().originalNode to node.children!!.last(),
+            copied.children!!.last().children!!.first().originalNode to node.children!!.last().children!!.first()
+        ).forAll { (ref, original) ->
+            ref shouldBe original
+            ref shouldBeSameInstanceAs original
+        }
     }
 })
 

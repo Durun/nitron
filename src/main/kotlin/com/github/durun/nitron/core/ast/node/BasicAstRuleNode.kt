@@ -4,6 +4,7 @@ import com.github.durun.nitron.core.ast.type.RuleType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @SerialName("r")
@@ -15,11 +16,22 @@ class BasicAstRuleNode(
     @SerialName("c")
     override val children: MutableList<AstNode>
 ) : AstRuleNode {
+    companion object {
+        fun of(type: RuleType, children: MutableList<AstNode>, originalNode: BasicAstRuleNode): BasicAstRuleNode {
+            return BasicAstRuleNode(type, children)
+                .also { it.originalNode = originalNode.originalNode }
+        }
+    }
+
+    @Transient  // exclude from serialization
+    override var originalNode: BasicAstRuleNode = this
+        private set
+
     override fun getText(): String {
         return children.joinToString(" ") { it.getText() }
     }
 
-    override fun copy() = BasicAstRuleNode(type, children.map { it.copy() }.toMutableList())
+    override fun copy() = of(type, children.map { it.copy() }.toMutableList(), originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 

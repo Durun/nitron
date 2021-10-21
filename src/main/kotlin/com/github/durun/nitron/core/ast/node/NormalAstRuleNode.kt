@@ -4,6 +4,7 @@ import com.github.durun.nitron.core.ast.type.RuleType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.util.*
 
 /**
@@ -19,12 +20,23 @@ class NormalAstRuleNode(
         @SerialName("s")
         private val text: String? = null
 ) : AstRuleNode {
+    companion object {
+        fun of(type: RuleType, text: String?, originalNode: NormalAstRuleNode): NormalAstRuleNode {
+            return NormalAstRuleNode(type, text)
+                .also { it.originalNode = originalNode.originalNode }
+        }
+    }
+
     override val children: List<AstNode>?
         get() = null
 
+    @Transient
+    override var originalNode: NormalAstRuleNode = this
+        private set
+
     override fun getText(): String = text ?: type.name.uppercase(Locale.getDefault())
 
-    override fun copy() = NormalAstRuleNode(type, text)
+    override fun copy() = of(type, text, originalNode = this.originalNode)
 
     override fun toString(): String = getText()
 
