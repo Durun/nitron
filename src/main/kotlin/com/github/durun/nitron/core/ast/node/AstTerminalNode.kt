@@ -34,7 +34,7 @@ class AstTerminalNode(
     companion object {
         fun of(token: String, type: TokenType, line: Int, originalNode: AstTerminalNode): AstTerminalNode {
             return AstTerminalNode(token, type, line)
-                .also { it.originalNode = originalNode }
+                .also { it.originalNode = originalNode.originalNode }
         }
     }
 

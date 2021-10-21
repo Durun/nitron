@@ -18,7 +18,7 @@ class BasicAstRuleNode(
     companion object {
         fun of(type: RuleType, children: MutableList<AstNode>, originalNode: BasicAstRuleNode): BasicAstRuleNode {
             return BasicAstRuleNode(type, children)
-                .also { it.originalNode = originalNode }
+                .also { it.originalNode = originalNode.originalNode }
         }
     }
 

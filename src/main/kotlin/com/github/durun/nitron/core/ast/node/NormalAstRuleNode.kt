@@ -22,7 +22,7 @@ class NormalAstRuleNode(
     companion object {
         fun of(type: RuleType, text: String?, originalNode: NormalAstRuleNode): NormalAstRuleNode {
             return NormalAstRuleNode(type, text)
-                .also { it.originalNode = originalNode }
+                .also { it.originalNode = originalNode.originalNode }
         }
     }
 
