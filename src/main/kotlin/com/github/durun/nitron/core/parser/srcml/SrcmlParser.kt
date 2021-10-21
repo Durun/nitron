@@ -1,5 +1,6 @@
 package com.github.durun.nitron.core.parser.srcml
 
+import com.github.durun.nitron.core.ParsingException
 import com.github.durun.nitron.core.ast.node.AstNode
 import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.node.BasicAstRuleNode
@@ -12,6 +13,7 @@ import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.jdt.AlignLineVisitor
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
+import org.xml.sax.SAXException
 import java.io.Reader
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -44,17 +46,30 @@ private class SrcmlParser(
     )
 
     override fun parse(reader: Reader): AstNode {
-        val process = ProcessBuilder(srcmlCommand, "--language", language, "--position")
-            .start()
-        process.outputStream.bufferedWriter().use { writer ->
-            writer.write(reader.readText())
+        val document = try {
+            val process = ProcessBuilder(srcmlCommand, "--language", language, "--position")
+                .start()
+            process.outputStream.bufferedWriter().use { writer ->
+                writer.write(reader.readText())
+            }
+            process.onExit().thenAccept {
+                val exitValue = it.exitValue()
+                if (exitValue != 0) throw ParsingException("srcML terminated with exitValue=$exitValue")
+            }
+            val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+            builder.parse(process.inputStream.buffered())
+        } catch (e: SAXException) {
+            throw ParsingException("Failed to parse XML from srcML: ${e.message}", e)
+        } catch (e: Exception) {
+            throw ParsingException("Internal error: ${e.message}", e)
         }
 
-        val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        val document = builder.parse(process.inputStream.buffered())
-
-        return toAstNode(document.documentElement)!!
-            .accept(AlignLineVisitor())
+        val ast: AstNode = try {
+            toAstNode(document.documentElement)!!
+        } catch (e: Exception) {
+            throw ParsingException("Failed to convert XML into nitron tree: ${e.message}", e)
+        }
+        return ast.accept(AlignLineVisitor())
     }
 
     private data class Position(val start: Int, val end: Int)
@@ -94,7 +109,7 @@ private class SrcmlParser(
                 when (val type = node.getAstNodeType()) {
                     is TokenType -> {
                         val text = node.firstChild?.nodeValue?.trim()
-                            ?: throw Exception("type $type may not be terminal node")
+                            ?: throw ParsingException("type $type may not be terminal node")
                         val line = node.getPosition()?.start
                             ?: 0
                         AstTerminalNode(text, type, line)
@@ -106,10 +121,10 @@ private class SrcmlParser(
                         else null
                     }
                     null -> null
-                    else -> throw Exception("AST NodeType is unknown: $type")
+                    else -> throw ParsingException("AST NodeType is unknown: $type")
                 }
             }
-            else -> throw Exception("XML node type is unknown: type=${node.nodeType}")
+            else -> throw ParsingException("XML node type is unknown: type=${node.nodeType}")
         }
     }
 

@@ -1,5 +1,6 @@
 package com.github.durun.nitron.core.parser.jdt
 
+import com.github.durun.nitron.core.ParsingException
 import com.github.durun.nitron.core.ast.node.AstNode
 import com.github.durun.nitron.core.ast.node.AstRuleNode
 import com.github.durun.nitron.core.ast.node.AstTerminalNode
@@ -40,11 +41,24 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
 
     override fun parse(reader: Reader): AstNode {
         val source = reader.readText().replace(Regex("\r\n|\r|\n"), "\n")
-        parser.get().setSource(source.toCharArray())
-        val root = parser.get().createAST(null)
-        val converter = AstConvertVisitor()
-        root.accept(converter)
-        return converter.result
+        val root = try {
+            val localParser = parser.get()
+            localParser.setSource(source.toCharArray())
+            val result: ASTNode = localParser.createAST(null)   // can be null
+            result
+        } catch (e: NullPointerException) {
+            throw ParsingException("Failed to parse with JDT Parser", e)
+        } catch (e: Exception) {
+            throw ParsingException("Internal error: ${e.message}", e)
+        }
+        val ast = try {
+            val converter = AstConvertVisitor()
+            root.accept(converter)
+            converter.result
+        } catch (e: Exception) {
+            throw ParsingException("Failed to convert JDT tree into nitron tree")
+        }
+        return ast
     }
 
     companion object {
