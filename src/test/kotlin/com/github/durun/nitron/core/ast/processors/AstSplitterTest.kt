@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 
 class AstSplitterTest : FreeSpec({
-    val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
+    val config = LangConfigLoader.load(Paths.get("config/lang/java-jdt.json"))
     val parser = config.parserConfig.getParser()
     val javaAst = parser.parse(javaCode.reader())
     val types = parser.nodeTypes
@@ -40,5 +40,4 @@ if ( false ) {
 x = y * x + 1 ;
 }
 }
-}
-<EOF>"""
+}"""
