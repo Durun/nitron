@@ -4,6 +4,7 @@ import com.github.durun.nitron.core.ast.type.RuleType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @SerialName("r")
@@ -22,6 +23,7 @@ class BasicAstRuleNode(
         }
     }
 
+    @Transient  // exclude from serialization
     override var originalNode: BasicAstRuleNode = this
         private set
 

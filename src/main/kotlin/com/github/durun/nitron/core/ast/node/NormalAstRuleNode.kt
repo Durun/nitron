@@ -4,6 +4,7 @@ import com.github.durun.nitron.core.ast.type.RuleType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.util.*
 
 /**
@@ -29,6 +30,7 @@ class NormalAstRuleNode(
     override val children: List<AstNode>?
         get() = null
 
+    @Transient
     override var originalNode: NormalAstRuleNode = this
         private set
 

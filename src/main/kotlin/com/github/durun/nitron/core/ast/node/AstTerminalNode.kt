@@ -5,6 +5,7 @@ import com.github.durun.nitron.core.ast.visitor.AstVisitor
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * 構文木の終端ノード
@@ -38,6 +39,7 @@ class AstTerminalNode(
         }
     }
 
+    @Transient
     override var originalNode: AstTerminalNode = this
         private set
 
