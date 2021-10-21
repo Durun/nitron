@@ -2,10 +2,7 @@ package com.github.durun.nitron.core.parser.jdt
 
 import com.github.durun.nitron.core.ParsingException
 import com.github.durun.nitron.core.ast.node.AstNode
-import com.github.durun.nitron.core.ast.node.AstRuleNode
-import com.github.durun.nitron.core.ast.node.AstTerminalNode
 import com.github.durun.nitron.core.ast.type.NodeTypePool
-import com.github.durun.nitron.core.ast.visitor.AstVisitor
 import com.github.durun.nitron.core.parser.NitronParser
 import com.github.durun.nitron.core.parser.NitronParsers
 import org.eclipse.jdt.core.JavaCore
@@ -291,10 +288,4 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
         val TYPE_LITERAL = nodeTypes.getRuleType(ASTNode.TYPE_LITERAL)!!
         val YIELD_STATEMENT = nodeTypes.getRuleType(ASTNode.YIELD_STATEMENT)!!
     }
-}
-
-private object CatVisitor : AstVisitor<String> {
-    override fun visitRule(node: AstRuleNode): String = visit(node)
-    override fun visitTerminal(node: AstTerminalNode): String = node.token
-    override fun visit(node: AstNode): String = node.children?.joinToString("") { it.accept(this) } ?: ""
 }
