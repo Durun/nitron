@@ -7,11 +7,11 @@ import io.kotest.property.arbitrary.*
 
 fun Arb.Companion.terminalNode(typeSet: NodeTypePool, lineRange: IntRange? = null): Arb<AstTerminalNode> {
 	return arbitrary { rs ->
-		AstTerminalNode(
-				token = string(minSize = 1, maxSize = 20).sample(rs).value,
-				type = typeSet.tokenTypes.random(rs.random),
-				line = lineRange?.random(rs.random) ?: int().sample(rs).value
-		)
+		AstTerminalNode.of(
+            token = string(minSize = 1, maxSize = 20).sample(rs).value,
+            type = typeSet.tokenTypes.random(rs.random),
+            line = lineRange?.random(rs.random) ?: int().sample(rs).value
+        )
 	}
 }
 
@@ -26,9 +26,9 @@ fun Arb.Companion.ruleNode(typeSet: NodeTypePool, maxDepth: Int = 5, maxWidth: I
 				ruleNode(typeSet, maxDepth - 1, maxWidth)
 		)
 	return arbitrary { rs ->
-		BasicAstRuleNode(
-			type = typeSet.ruleTypes.random(rs.random),
-			children = list(gen = child, range = 1..maxWidth).sample(rs).value.toMutableList()
-		)
-	}
+        BasicAstRuleNode.of(
+            type = typeSet.ruleTypes.random(rs.random),
+            children = list(gen = child, range = 1..maxWidth).sample(rs).value
+        )
+    }
 }

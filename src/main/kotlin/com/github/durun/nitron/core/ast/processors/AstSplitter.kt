@@ -20,6 +20,7 @@ class AstSplitter(
     private fun split(ast: AstNode): List<AstNode> = when (ast) {
         is BasicAstRuleNode -> {
             val children = ast.children.flatMap { split(it) }
+            ast.clearChildren()
             val buf: MutableList<MutableList<AstNode>> = mutableListOf(mutableListOf())
             children.forEach {
                 if (it.isSelectedBy()) buf.add(mutableListOf())
@@ -29,7 +30,7 @@ class AstSplitter(
             buf.filter { it.isNotEmpty() }
                 .map { newChildren ->
                     if (newChildren.first().isSelectedBy()) newChildren.first()
-                    else BasicAstRuleNode.of(ast.type, newChildren.toMutableList(), originalNode = ast)
+                    else BasicAstRuleNode.of(ast.type, newChildren, originalNode = ast)
                 }
         }
         else -> listOf(ast)

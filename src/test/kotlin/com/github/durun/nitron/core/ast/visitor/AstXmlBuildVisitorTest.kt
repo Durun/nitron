@@ -9,9 +9,9 @@ import com.github.durun.nitron.core.ast.type.TokenType
 import io.kotest.core.spec.style.FreeSpec
 
 class AstXmlBuildVisitorTest : FreeSpec({
-    fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode(type, children.toMutableList())
-    fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode(text, type, line)
-    fun nodeOf(type: RuleType, text: String) = NormalAstRuleNode(type, text)
+    fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode.of(type, children.toList())
+    fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode.of(text, type, line)
+    fun nodeOf(type: RuleType, text: String) = NormalAstRuleNode.of(type, text)
 
     "visit" {
         val rule = RuleType(1, "Rule")

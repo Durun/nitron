@@ -12,32 +12,39 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 @SerialName("t")
-class AstTerminalNode(
-        /**
-         * トークン
-         */
-        @SerialName("s")
-        var token: String,
+class AstTerminalNode
+private constructor(
+    /**
+     * トークン
+     */
+    @SerialName("s")
+    var token: String,
 
-        /**
-         * 終端規則
-         */
-        @Contextual
-        @SerialName("t")
-        override val type: TokenType,
+    /**
+     * 終端規則
+     */
+    @Contextual
+    @SerialName("t")
+    override val type: TokenType,
 
-        /**
-         * 元のソースコードとの対応位置
-         */
-        @SerialName("l")
-        val line: Int
+    /**
+     * 元のソースコードとの対応位置
+     */
+    @SerialName("l")
+    val line: Int
 ) : AstNode {
     companion object {
-        fun of(token: String, type: TokenType, line: Int, originalNode: AstTerminalNode): AstTerminalNode {
-            return AstTerminalNode(token, type, line)
-                .also { it.originalNode = originalNode.originalNode }
+        @JvmStatic
+        fun of(token: String, type: TokenType, line: Int, originalNode: AstTerminalNode? = null): AstTerminalNode {
+            val node = AstTerminalNode(token, type, line)
+            originalNode?.let { node.originalNode = it.originalNode }
+            return node
         }
     }
+
+    @Transient
+    override var parent: AstNode? = null
+        internal set
 
     @Transient
     override var originalNode: AstTerminalNode = this

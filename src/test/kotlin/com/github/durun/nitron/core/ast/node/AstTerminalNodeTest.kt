@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
 class AstTerminalNodeTest : FreeSpec({
 	"property" - {
 		val type = TokenType(1, "Type")
-		val node = AstTerminalNode("text", type, 2)
+        val node = AstTerminalNode.of("text", type, 2)
 		"children" {
 			node.children shouldBe null
 		}
@@ -36,7 +36,7 @@ class AstTerminalNodeTest : FreeSpec({
 		val format = AstSerializers.json(types)
 
 		"serialize" {
-			val node = AstTerminalNode("text", types.getTokenType(1)!!, 3)
+            val node = AstTerminalNode.of("text", types.getTokenType(1)!!, 3)
 
 			val json = format.encodeToString(node)
 			println(json)

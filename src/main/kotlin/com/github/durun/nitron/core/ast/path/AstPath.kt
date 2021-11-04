@@ -81,7 +81,7 @@ private class AstXPath(expression: String) : AstPath() {
             if (path.isEmpty()) return replacement(root)
             val childIndex = path.last()
             when (val parent = root.resolve(path.dropLast(1))) {
-                is BasicAstRuleNode -> parent.children[childIndex] = replacement(parent.children[childIndex])
+                is BasicAstRuleNode -> parent.setChild(childIndex, replacement(parent.children[childIndex]))
             }
 		}
 		return root
@@ -89,9 +89,9 @@ private class AstXPath(expression: String) : AstPath() {
 
 	override fun removeNode(root: AstNode): AstNode? {
 		selectWithParent(root).sortedByDescending { (_, n) -> n }.forEach { (parent, childIndex) ->
-			if (parent == null) return null
-			else parent.children.removeAt(childIndex)
-		}
+            if (parent == null) return null
+            else parent.removeChildAt(childIndex)
+        }
 		return root
 	}
 
@@ -143,7 +143,8 @@ private class SimpleAstPath(
 		if (root.type == type) return replacement(root)
 		selectWithParent(root).forEach { (parent, childIndex) ->
 			check(parent is BasicAstRuleNode)
-			parent.children[childIndex] = replacement(parent.children[childIndex])
+            val newChild = replacement(parent.children[childIndex])
+            if (parent.children[childIndex] !== newChild) parent.setChild(childIndex, newChild)
 		}
 		return root
 	}
@@ -152,7 +153,7 @@ private class SimpleAstPath(
 		if (root.type == type) return null
 		selectWithParent(root).sortedByDescending { (_, n) -> n }.forEach { (parent, childIndex) ->
 			check(parent is BasicAstRuleNode)
-			parent.children.removeAt(childIndex)
+            parent.removeChildAt(childIndex)
 		}
 		return root
 	}

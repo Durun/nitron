@@ -20,14 +20,14 @@ class AstBuildVisitor(
 
     override fun visitChildren(node: RuleNode?): AstNode {
         val children = node?.children?.map { it.accept(this) }
-                ?: throw Exception("RuleNode has no children.")
+            ?: throw Exception("RuleNode has no children.")
 
         val ruleIndex = node.ruleContext?.ruleIndex
-                ?: throw Exception("Rulenode has no ruleIndex")
+            ?: throw Exception("Rulenode has no ruleIndex")
         val rule = nodeTypes.getRuleType(ruleIndex) ?: throw NoSuchElementException("No such rule: index=$ruleIndex")
-        return BasicAstRuleNode(
-                type = rule,
-                children = children.toMutableList()
+        return BasicAstRuleNode.of(
+            type = rule,
+            children = children
         )
     }
 
@@ -37,10 +37,10 @@ class AstBuildVisitor(
         val symbol = node.symbol
         val tokenType = nodeTypes.getTokenType(symbol.type)
                 ?: throw NoSuchElementException("No such tokenType: index=${symbol.type}")
-        return AstTerminalNode(
-                type = tokenType,
-                token = token,
-                line = symbol.line
+        return AstTerminalNode.of(
+            type = tokenType,
+            token = token,
+            line = symbol.line
         )
     }
 

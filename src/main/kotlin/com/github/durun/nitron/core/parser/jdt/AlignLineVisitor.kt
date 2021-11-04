@@ -12,8 +12,8 @@ class AlignLineVisitor : AstVisitor<AstNode> {
     override fun visit(node: AstNode): AstNode {
         return if (node is BasicAstRuleNode) {
             val newChildren = node.children.map { it.accept(this) }
-            node.children.clear()
-            node.children.addAll(newChildren)
+            node.clearChildren()
+            node.addChildren(newChildren)
             node
         } else node
     }
