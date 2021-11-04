@@ -117,7 +117,7 @@ private class SrcmlParser(
                     is RuleType -> {
                         val pos = node.getPosition()
                         val children = node.childNodes.asSequence().mapNotNull { toAstNode(it, pos) }.toMutableList()
-                        if (children.isNotEmpty()) BasicAstRuleNode(type, children)
+                        if (children.isNotEmpty()) BasicAstRuleNode.of(type, children)
                         else null
                     }
                     null -> null

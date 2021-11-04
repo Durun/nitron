@@ -13,7 +13,7 @@ fun astNode(text: String, type: TokenType, line: Int): AstTerminalNode = AstTerm
 fun astNode(type: RuleType, body: NodeBuilderScope.() -> Unit): AstRuleNode {
     val builder = NodeBuilderScope()
     builder.body()
-    return BasicAstRuleNode(type, builder.build().toMutableList())
+    return BasicAstRuleNode.of(type, builder.build().toMutableList())
 }
 
 class NodeBuilderScope(startLine: Int = 1) {
@@ -29,7 +29,7 @@ class NodeBuilderScope(startLine: Int = 1) {
     fun node(type: RuleType, body: NodeBuilderScope.() -> Unit) {
         val builder = NodeBuilderScope(lineCache)
         builder.body()
-        children += BasicAstRuleNode(type, builder.build().toMutableList())
+        children += BasicAstRuleNode.of(type, builder.build().toMutableList())
     }
 }
 

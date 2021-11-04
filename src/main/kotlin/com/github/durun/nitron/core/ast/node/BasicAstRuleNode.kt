@@ -8,18 +8,25 @@ import kotlinx.serialization.Transient
 
 @Serializable
 @SerialName("r")
-class BasicAstRuleNode(
+class BasicAstRuleNode
+private constructor(
     @Contextual
-        @SerialName("t")
-        override val type: RuleType,
+    @SerialName("t")
+    override val type: RuleType,
 
     @SerialName("c")
     override val children: MutableList<AstNode>
 ) : AstRuleNode {
     companion object {
-        fun of(type: RuleType, children: MutableList<AstNode>, originalNode: BasicAstRuleNode): BasicAstRuleNode {
-            return BasicAstRuleNode(type, children)
-                .also { it.originalNode = originalNode.originalNode }
+        @JvmStatic
+        fun of(
+            type: RuleType,
+            children: MutableList<AstNode>,
+            originalNode: BasicAstRuleNode? = null
+        ): BasicAstRuleNode {
+            val node = BasicAstRuleNode(type, children)
+            originalNode?.let { node.originalNode = it.originalNode }
+            return node
         }
     }
 
