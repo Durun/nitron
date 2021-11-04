@@ -14,7 +14,7 @@ import kotlinx.serialization.encodeToString
 class NormalAstRuleNodeTest : FreeSpec({
 	"prooperty" - {
 		val type = RuleType(1, "Rule")
-		val node = NormalAstRuleNode(type, "Text")
+        val node = NormalAstRuleNode.of(type, "Text")
 		"children" {
 			node.children shouldBe null
 		}
@@ -34,7 +34,7 @@ class NormalAstRuleNodeTest : FreeSpec({
 		val format = AstSerializers.json(types)
 
 		"serialize" {
-			val node = NormalAstRuleNode(types.getRuleType(2)!!, "text")
+            val node = NormalAstRuleNode.of(types.getRuleType(2)!!, "text")
 
 			val json = format.encodeToString(node)
 			println(json)

@@ -32,8 +32,8 @@ class AstNormalizer(
 	}
 
 	private fun AstNode.normalizeTo(text: String): AstNode = when (this) {
-		is AstRuleNode -> NormalAstRuleNode(type, text)
-		is AstTerminalNode -> replaceToken(text)
+		is AstRuleNode -> NormalAstRuleNode.of(type, text)
+        is AstTerminalNode -> replaceToken(text)
 		else -> throw IllegalStateException()
 	}
 

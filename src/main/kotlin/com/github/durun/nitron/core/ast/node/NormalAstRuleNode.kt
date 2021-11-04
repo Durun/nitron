@@ -12,18 +12,21 @@ import java.util.*
  */
 @Serializable
 @SerialName("n")
-class NormalAstRuleNode(
-        @Contextual
-        @SerialName("t")
-        override val type: RuleType,
+class NormalAstRuleNode
+private constructor(
+    @Contextual
+    @SerialName("t")
+    override val type: RuleType,
 
-        @SerialName("s")
-        private val text: String? = null
+    @SerialName("s")
+    private val text: String? = null
 ) : AstRuleNode {
     companion object {
-        fun of(type: RuleType, text: String?, originalNode: NormalAstRuleNode): NormalAstRuleNode {
-            return NormalAstRuleNode(type, text)
-                .also { it.originalNode = originalNode.originalNode }
+        @JvmStatic
+        fun of(type: RuleType, text: String?, originalNode: NormalAstRuleNode? = null): NormalAstRuleNode {
+            val node = NormalAstRuleNode(type, text)
+            originalNode?.let { node.originalNode = it.originalNode }
+            return node
         }
     }
 
