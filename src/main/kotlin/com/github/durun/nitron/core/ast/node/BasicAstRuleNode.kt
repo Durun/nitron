@@ -23,6 +23,10 @@ class BasicAstRuleNode(
         }
     }
 
+    @Transient
+    override var parent: AstNode? = null
+        private set
+
     @Transient  // exclude from serialization
     override var originalNode: BasicAstRuleNode = this
         private set

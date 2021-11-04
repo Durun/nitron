@@ -31,6 +31,10 @@ class NormalAstRuleNode(
         get() = null
 
     @Transient
+    override var parent: AstNode? = null
+        private set
+
+    @Transient
     override var originalNode: NormalAstRuleNode = this
         private set
 

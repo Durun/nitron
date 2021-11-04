@@ -40,6 +40,10 @@ class AstTerminalNode(
     }
 
     @Transient
+    override var parent: AstNode? = null
+        private set
+
+    @Transient
     override var originalNode: AstTerminalNode = this
         private set
 
