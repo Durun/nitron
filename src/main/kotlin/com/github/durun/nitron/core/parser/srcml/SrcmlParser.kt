@@ -103,7 +103,7 @@ private class SrcmlParser(
                     prev.getPosition()?.end
                         ?: next.getPosition()?.start
                 } ?: 0
-                AstTerminalNode(text, TOKEN, line)
+                AstTerminalNode.of(text, TOKEN, line)
             }
             Node.ELEMENT_NODE -> {
                 when (val type = node.getAstNodeType()) {
@@ -112,7 +112,7 @@ private class SrcmlParser(
                             ?: throw ParsingException("type $type may not be terminal node")
                         val line = node.getPosition()?.start
                             ?: 0
-                        AstTerminalNode(text, type, line)
+                        AstTerminalNode.of(text, type, line)
                     }
                     is RuleType -> {
                         val pos = node.getPosition()

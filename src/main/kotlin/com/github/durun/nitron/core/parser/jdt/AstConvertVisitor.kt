@@ -47,7 +47,7 @@ class AstConvertVisitor : ASTVisitor() {
 
     private fun append(text: String, lineNo: Int = 1) {
         val trimmed = text.replace("\n", "").trim()
-        if (trimmed.isNotEmpty()) append(AstTerminalNode(text, TOKEN, lineNo))
+        if (trimmed.isNotEmpty()) append(AstTerminalNode.of(text, TOKEN, lineNo))
     }
 
     private fun append(ast: AstNode) {
@@ -55,7 +55,7 @@ class AstConvertVisitor : ASTVisitor() {
     }
 
     private fun append(text: String, type: TokenType, lineNo: Int) {
-        val ast = AstTerminalNode(text, type, lineNo)
+        val ast = AstTerminalNode.of(text, type, lineNo)
         append(ast)
     }
 

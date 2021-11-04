@@ -9,7 +9,7 @@ import com.github.durun.nitron.core.ast.type.TokenType
 import com.github.durun.nitron.core.ast.visitor.AstPrintVisitor
 
 
-fun astNode(text: String, type: TokenType, line: Int): AstTerminalNode = AstTerminalNode(text, type, line)
+fun astNode(text: String, type: TokenType, line: Int): AstTerminalNode = AstTerminalNode.of(text, type, line)
 fun astNode(type: RuleType, body: NodeBuilderScope.() -> Unit): AstRuleNode {
     val builder = NodeBuilderScope()
     builder.body()
@@ -22,7 +22,7 @@ class NodeBuilderScope(startLine: Int = 1) {
     fun build(): List<AstNode> = children
 
     fun token(text: String, type: TokenType, line: Int = lineCache) {
-        children += AstTerminalNode(text, type, line)
+        children += AstTerminalNode.of(text, type, line)
         lineCache = line
     }
 

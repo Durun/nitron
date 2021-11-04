@@ -10,7 +10,7 @@ import io.kotest.matchers.shouldBe
 
 class AstLineGetVisitorTest : FreeSpec({
     fun nodeOf(type: RuleType, vararg children: AstNode) = BasicAstRuleNode.of(type, children.toMutableList())
-    fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode(text, type, line)
+    fun nodeOf(type: TokenType, text: String, line: Int) = AstTerminalNode.of(text, type, line)
 
     "visit" {
         val rule = RuleType(1, "Rule")

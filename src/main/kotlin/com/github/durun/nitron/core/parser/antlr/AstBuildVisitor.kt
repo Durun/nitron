@@ -37,10 +37,10 @@ class AstBuildVisitor(
         val symbol = node.symbol
         val tokenType = nodeTypes.getTokenType(symbol.type)
                 ?: throw NoSuchElementException("No such tokenType: index=${symbol.type}")
-        return AstTerminalNode(
-                type = tokenType,
-                token = token,
-                line = symbol.line
+        return AstTerminalNode.of(
+            type = tokenType,
+            token = token,
+            line = symbol.line
         )
     }
 
