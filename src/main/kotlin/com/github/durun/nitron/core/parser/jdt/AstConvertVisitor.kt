@@ -20,16 +20,16 @@ class AstConvertVisitor : ASTVisitor() {
 
     lateinit var result: BasicAstRuleNode
     private lateinit var unit: CompilationUnit
-    private lateinit var cursor: MutableList<AstNode>
+    private lateinit var cursor: BasicAstRuleNode
 
     private fun getLineStart(node: ASTNode): Int = unit.getLineNumber(node.startPosition)
     private fun getLineEnd(node: ASTNode): Int = unit.getLineNumber(node.startPosition + node.length - 1)
     private fun setCursor(node: BasicAstRuleNode) {
-        cursor = node.children
+        cursor = node
     }
 
     private fun <R> startRule(type: RuleType, body: () -> R): R {
-        val ast = BasicAstRuleNode.of(type, mutableListOf())
+        val ast = BasicAstRuleNode.of(type, emptyList())
         append(ast)
         val prevCursor = cursor
         setCursor(ast)
@@ -40,7 +40,7 @@ class AstConvertVisitor : ASTVisitor() {
 
     private fun startParse(node: CompilationUnit) {
         unit = node
-        val ast = BasicAstRuleNode.of(RuleTypes.COMPILATION_UNIT, mutableListOf())
+        val ast = BasicAstRuleNode.of(RuleTypes.COMPILATION_UNIT, emptyList())
         setCursor(ast)
         result = ast
     }
@@ -51,7 +51,7 @@ class AstConvertVisitor : ASTVisitor() {
     }
 
     private fun append(ast: AstNode) {
-        cursor.add(ast)
+        cursor.addChild(ast)
     }
 
     private fun append(text: String, type: TokenType, lineNo: Int) {

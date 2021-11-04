@@ -41,7 +41,7 @@ class AstNormalizer(
 		is BasicAstRuleNode -> {
 			if (children.isEmpty()) null
 			else {
-				children.removeIf { it.removeEmptyNode() == null }
+				removeChildIf { it.removeEmptyNode() == null }
 				if (children.isEmpty()) null
 				else this
 			}
