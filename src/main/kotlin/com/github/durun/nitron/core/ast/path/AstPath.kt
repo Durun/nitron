@@ -143,7 +143,8 @@ private class SimpleAstPath(
 		if (root.type == type) return replacement(root)
 		selectWithParent(root).forEach { (parent, childIndex) ->
 			check(parent is BasicAstRuleNode)
-            parent.setChild(childIndex, replacement(parent.children[childIndex]))
+            val newChild = replacement(parent.children[childIndex])
+            if (parent.children[childIndex] !== newChild) parent.setChild(childIndex, newChild)
 		}
 		return root
 	}

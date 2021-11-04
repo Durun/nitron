@@ -79,8 +79,17 @@ private constructor(
     }
 
     fun removeChildIf(filter: Predicate<in AstNode>): Boolean {
-        childrenList.filter { filter.test(it) }.forEach { it.setParent(null) }
-        return childrenList.removeIf(filter)
+        val iter = childrenList.iterator()
+        var removed = false
+        while (iter.hasNext()) {
+            val e = iter.next()
+            if (filter.test(e)) {
+                iter.remove()
+                e.setParent(null)
+                removed = true
+            }
+        }
+        return removed
     }
 
     override fun getText(): String {
