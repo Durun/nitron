@@ -46,26 +46,40 @@ private constructor(
 
 
     fun addChildren(children: Collection<AstNode>): Boolean {
+        children.forEach {
+            it.checkParentIs(null)
+            it.setParent(this)
+        }
         return childrenList.addAll(children)
     }
 
     fun addChild(child: AstNode): Boolean {
+        child.checkParentIs(null)
+        child.setParent(this)
         return childrenList.add(child)
     }
 
     fun setChild(index: Int, child: AstNode): AstNode {
-        return childrenList.set(index, child)
+        child.checkParentIs(null)
+        child.setParent(this)
+        val oldChild = childrenList.set(index, child)
+        oldChild.setParent(null)
+        return oldChild
     }
 
     fun clearChildren() {
+        childrenList.forEach { it.setParent(null) }
         childrenList.clear()
     }
 
     fun removeChildAt(index: Int): AstNode {
-        return childrenList.removeAt(index)
+        val oldChild = childrenList.removeAt(index)
+        oldChild.setParent(null)
+        return oldChild
     }
 
     fun removeChildIf(filter: Predicate<in AstNode>): Boolean {
+        childrenList.filter { filter.test(it) }.forEach { it.setParent(null) }
         return childrenList.removeIf(filter)
     }
 
@@ -93,5 +107,23 @@ private constructor(
         var result = type.hashCode()
         result = 31 * result + children.hashCode()
         return result
+    }
+
+    private fun AstNode.setParent(newParent: AstNode?) {
+        when (this) {
+            is AstTerminalNode -> {
+                parent = newParent
+            }
+            is BasicAstRuleNode -> {
+                parent = newParent
+            }
+            is NormalAstRuleNode -> {
+                parent = newParent
+            }
+        }
+    }
+
+    private fun AstNode.checkParentIs(parent: AstNode?) {
+        if (this.parent != parent) throw IllegalStateException("Parent of $this must be $parent but ${this.parent}")
     }
 }

@@ -35,7 +35,7 @@ private constructor(
 
     @Transient
     override var parent: AstNode? = null
-        private set
+        internal set
 
     @Transient
     override var originalNode: NormalAstRuleNode = this
