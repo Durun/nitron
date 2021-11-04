@@ -36,13 +36,28 @@ class AstNodeTest : FreeSpec({
             copied shouldNotBeSameInstanceAs node
             copied.originalNode shouldBeSameInstanceAs node
 
-            copied.children!!.first().originalNode shouldBeSameInstanceAs node.children!!.first()
-            copied.children!!.last().originalNode shouldBeSameInstanceAs node.children!!.last()
-            copied.children!!.last().children!!.first().originalNode shouldBeSameInstanceAs node.children!!.last().children!!.first()
+            copied.children.first().originalNode shouldBeSameInstanceAs node.children.first()
+            copied.children.last().originalNode shouldBeSameInstanceAs node.children.last()
+            copied.children.last().children!!.first().originalNode shouldBeSameInstanceAs node.children.last().children!!.first()
 
             val doubleCopied = copied.copy()
             doubleCopied shouldNotBeSameInstanceAs copied
             doubleCopied.originalNode shouldBeSameInstanceAs node
+        }
+    }
+
+    "traceable parent node" - {
+        "simple case" {
+            var node1: AstNode? = null
+            var node2: AstNode? = null
+            val tree = astNode(rule) {
+                token("token1", token)
+                node2 = node(rule) {
+                    node1 = token("token2", token)
+                }
+            }
+            node1?.parent shouldBeSameInstanceAs node2
+            node2?.parent shouldBeSameInstanceAs tree
         }
     }
 })
