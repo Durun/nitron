@@ -81,7 +81,10 @@ private class AstXPath(expression: String) : AstPath() {
             if (path.isEmpty()) return replacement(root)
             val childIndex = path.last()
             when (val parent = root.resolve(path.dropLast(1))) {
-                is BasicAstRuleNode -> parent.setChild(childIndex, replacement(parent.children[childIndex]))
+                is BasicAstRuleNode -> {
+                    val newChild = replacement(parent.children[childIndex])
+                    if (parent.children[childIndex] !== newChild) parent.setChild(childIndex, newChild)
+                }
             }
 		}
 		return root
