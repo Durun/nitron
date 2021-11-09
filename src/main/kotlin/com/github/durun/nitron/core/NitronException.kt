@@ -1,6 +1,6 @@
 package com.github.durun.nitron.core
 
-abstract class NitronException(
+open class NitronException(
     override val message: String,
     override val cause: Throwable? = null,
 ) : RuntimeException(message, cause)

@@ -1,5 +1,6 @@
 package com.github.durun.nitron.core.ast.node
 
+import com.github.durun.nitron.core.NitronException
 import com.github.durun.nitron.core.ast.type.RuleType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
@@ -133,6 +134,6 @@ private constructor(
     }
 
     private fun AstNode.checkParentIs(parent: AstNode?) {
-        if (this.parent != parent) throw IllegalStateException("Parent of $this must be $parent but ${this.parent}")
+        if (this.parent != parent) throw NitronException("Illegal state: Parent of $this must be $parent but ${this.parent}")
     }
 }
