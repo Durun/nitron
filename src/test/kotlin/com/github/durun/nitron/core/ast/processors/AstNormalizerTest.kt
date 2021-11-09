@@ -62,12 +62,26 @@ class AstNormalizerTest : FreeSpec({
 
         listOf(
             copied.originalNode to node,
-            copied.children!!.first().originalNode to node.children!!.first(),
-            copied.children!!.last().originalNode to node.children!!.last(),
-            copied.children!!.last().children!!.first().originalNode to node.children!!.last().children!!.first()
+            copied.children!!.first().originalNode to node.children.first(),
+            copied.children!!.last().originalNode to node.children.last(),
+            copied.children!!.last().children!!.first().originalNode to node.children.last().children!!.first()
         ).forAll { (ref, original) ->
             ref shouldBe original
             ref shouldBeSameInstanceAs original
+        }
+    }
+
+    "test" {
+        val jdtConfig = LangConfigLoader.load(Paths.get("config/lang/java-jdt.json"))
+        val jdtParser = jdtConfig.parserConfig.getParser()
+        val splitter = jdtConfig.processConfig.splitConfig.initSplitter(jdtParser.nodeTypes)
+        val normalizer = jdtConfig.processConfig.normalizeConfig.initNormalizer(jdtParser.nodeTypes)
+
+        val ast = jdtParser.parse(javaCode2.reader())
+        val statements = splitter.process(ast)
+        val normalized = statements.map {
+            println(it)
+            normalizer.process(it)
         }
     }
 })
@@ -83,3 +97,9 @@ private const val normalizedCode1 =
 	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( false ) V0 = V1 * V0 + N ; } }"""
 private const val normalizedCode2 =
 	"""public class HelloWorld { public static void main ( String [ ] args ) { if ( COND ) x = y * x + 1 ; } } <EOF>"""
+
+private const val javaCode2 = """
+@RunWith(SampleRunner.class)
+public class Sample {
+}
+"""
