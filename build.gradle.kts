@@ -41,7 +41,7 @@ dependencies {
     implementation("com.github.ajalt:clikt:2.8.0")
     implementation("org.xerial:sqlite-jdbc:3.36.0.2")
     implementation("org.jetbrains.exposed:exposed:0.17.14")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
     implementation("jaxen:jaxen:1.2.0")
