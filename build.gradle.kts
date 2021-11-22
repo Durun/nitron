@@ -36,7 +36,7 @@ dependencies {
     val kotlinVersion = "1.5.31"
 
     // This dependency is used by the application.
-    implementation("org.antlr:antlr4:4.9.2")
+    implementation("org.antlr:antlr4:4.9.3")
     implementation("com.github.julianthome:inmemantlr-api:1.7.0")
     implementation("com.github.ajalt:clikt:2.8.0")
     implementation("org.xerial:sqlite-jdbc:3.36.0.2")
