@@ -58,7 +58,7 @@ dependencies {
     implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.27.0")
 
     // Use the Kotlin test library.
-    val kotestVersion = "4.6.3"
+    val kotestVersion = "5.0.0"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
 }
