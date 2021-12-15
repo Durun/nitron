@@ -25,7 +25,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.5.0"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 repositories {
