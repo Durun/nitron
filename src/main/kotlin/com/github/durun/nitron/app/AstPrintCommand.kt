@@ -39,12 +39,9 @@ class AstPrintCommand : CliktCommand(
         mustBeWritable = true
     )
 
-    @ExperimentalPathApi
-    private val output: BufferedWriter = outputPath?.bufferedWriter()
-            ?: System.out.bufferedWriter()
-
-    @ExperimentalPathApi
     override fun run() {
+        val output: BufferedWriter = outputPath?.bufferedWriter()
+            ?: System.out.bufferedWriter()
         val config = LangConfigLoader.load(configPath)
         val astBuilder = config.parserConfig.getParser()
         inputs

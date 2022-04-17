@@ -2,7 +2,8 @@ group = "com.github.durun.nitron"
 version = "v0.13"
 
 buildscript {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion: String by extra("1.6.20")
+
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
     }
@@ -14,7 +15,8 @@ buildscript {
 }
 
 plugins {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion = "1.6.20"
+
     `maven-publish`
 
     kotlin("jvm") version kotlinVersion
@@ -22,10 +24,10 @@ plugins {
 
     application
 
-    id("org.jetbrains.dokka") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.6.20"
 
     // for making fatJar
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 repositories {
@@ -33,17 +35,17 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion: String by project
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:4.9.3")
     implementation("com.github.julianthome:inmemantlr-api:1.7.0")
-    implementation("com.github.ajalt:clikt:2.8.0")
-    implementation("org.xerial:sqlite-jdbc:3.36.0.2")
+    implementation("com.github.ajalt.clikt:clikt:3.4.0")
+    implementation("org.xerial:sqlite-jdbc:3.36.0.3")
     implementation("org.jetbrains.exposed:exposed:0.17.14")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt")
     implementation("jaxen:jaxen:1.2.0")
     implementation("org.apache.commons:commons-text:1.9")
 

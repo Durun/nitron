@@ -17,9 +17,9 @@ class AstNormalizerTest : FreeSpec({
 	val config = LangConfigLoader.load(Paths.get("config/lang/java.json"))
     val parser = config.parserConfig.getParser()
     val javaAst = parser.parse(javaCode.reader())
-    val types = parser.nodeTypes
 
     "simple path" {
+        val types = parser.nodeTypes
         val ast = javaAst.copy()
         println(ast)
         val normalizer = AstNormalizer(
@@ -83,6 +83,7 @@ class AstNormalizerTest : FreeSpec({
             println(it)
             normalizer.process(it)
         }
+        println(normalized)
     }
 })
 

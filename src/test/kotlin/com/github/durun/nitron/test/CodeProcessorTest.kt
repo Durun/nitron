@@ -5,10 +5,8 @@ import com.github.durun.nitron.core.config.loader.LangConfigLoader
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
 
 
-@ExperimentalPathApi
 class CodeProcessorTest : FreeSpec({
 	val processor = CodeProcessor(
 			config = LangConfigLoader.load(Paths.get("config/lang/java.json"))

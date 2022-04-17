@@ -30,8 +30,10 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val customConfig: Path? by option("--config")
         .path(mustBeReadable = true)
-    private val config = (customConfig ?: Path.of("config/nitron.json"))
-        .let { NitronConfigLoader.load(it) }
+    private val config by lazy {
+        (customConfig ?: Path.of("config/nitron.json"))
+            .let { NitronConfigLoader.load(it) }
+    }
     private val workingDir: File by option("--dir")
         .file(canBeFile = false, canBeDir = true)
         .defaultLazy { Path.of("tmp").toFile() }
@@ -59,7 +61,6 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     override fun toString(): String = "<preparse>"
 
-    @kotlin.io.path.ExperimentalPathApi
     override fun run() {
         LogLevel = when {
             isVerbose -> Log.Level.VERBOSE
@@ -79,7 +80,6 @@ class ParseCommand : CliktCommand(name = "preparse") {
         }
     }
 
-    @kotlin.io.path.ExperimentalPathApi
     private fun processOneDB(dbFile: Path) {
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)

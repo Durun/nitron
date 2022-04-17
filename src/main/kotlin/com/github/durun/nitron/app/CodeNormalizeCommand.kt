@@ -17,7 +17,7 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.bufferedWriter
 
 class CodeNormalizeCommand : CliktCommand(
-        name = "normalize"
+    name = "normalize"
 ) {
     private val inputs: List<File> by argument(
         name = "input",
@@ -40,12 +40,9 @@ class CodeNormalizeCommand : CliktCommand(
         mustBeWritable = true
     )
 
-    @ExperimentalPathApi
-    private val output: BufferedWriter = outputPath?.bufferedWriter()
-            ?: System.out.bufferedWriter()
-
-    @ExperimentalPathApi
     override fun run() {
+        val output: BufferedWriter = outputPath?.bufferedWriter()
+            ?: System.out.bufferedWriter()
         val config = LangConfigLoader.load(configPath)
         val processor = CodeProcessor(config)
         inputs
@@ -57,14 +54,14 @@ class CodeNormalizeCommand : CliktCommand(
         output.flush()
     }
 
-	private fun CodeProcessor.processText(input: String): String {
-		val ast = this.parse(input)
-		val astList = this.split(ast)
-		val texts = this.proceess(astList).map {
-			val ruleName = if (it is AstRuleNode) it.type.name else null
-			val text = it.getText()
-			"[${ruleName}]\n${text.prependIndent("\t")}"
-		}
-		return texts.joinToString("\n")
-	}
+    private fun CodeProcessor.processText(input: String): String {
+        val ast = this.parse(input)
+        val astList = this.split(ast)
+        val texts = this.proceess(astList).map {
+            val ruleName = if (it is AstRuleNode) it.type.name else null
+            val text = it.getText()
+            "[${ruleName}]\n${text.prependIndent("\t")}"
+        }
+        return texts.joinToString("\n")
+    }
 }

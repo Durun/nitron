@@ -12,9 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.net.URL
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
 
-@ExperimentalPathApi
 class ExtractorTest : FreeSpec({
     "test" {
         val ast = parser.parse(testCode.reader())

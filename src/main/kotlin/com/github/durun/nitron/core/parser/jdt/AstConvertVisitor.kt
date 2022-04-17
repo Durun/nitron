@@ -1122,12 +1122,12 @@ class AstConvertVisitor : ASTVisitor() {
             append(")", lineNo)
             if (node.superInterfaceTypes().isNotEmpty()) {
                 append("implements", lineNo)
-                val it: Iterator<*> = node.superInterfaceTypes().iterator()
-                while (it.hasNext()) {
-                    val t = it.next() as Type
+                val iterator: Iterator<*> = node.superInterfaceTypes().iterator()
+                while (iterator.hasNext()) {
+                    val t = iterator.next() as Type
                     t.accept(this)
                     lineNo = getLineEnd(t)
-                    if (it.hasNext()) append(",", lineNo)
+                    if (iterator.hasNext()) append(",", lineNo)
                 }
             }
             append("{", lineNo)

@@ -5,10 +5,8 @@ import com.github.durun.nitron.core.parser.antlr.AstBuildVisitor
 import com.github.durun.nitron.core.parser.antlr.ParserStore
 import org.snt.inmemantlr.exceptions.ParsingException
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.bufferedReader
 
-@ExperimentalPathApi
 class ParserTester(
 		grammarFiles: Collection<Path>,
 		private val startRuleName: String,

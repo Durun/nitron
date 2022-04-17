@@ -12,7 +12,6 @@ object LanguageTable : IntIdTable("languages") {
         .uniqueIndex("checksum_unique")
 }
 
-@kotlin.io.path.ExperimentalPathApi
 fun LanguageTable.insertAndGetId(langName: String, langConfig: LangConfig): EntityID<Int> {
     return insertAndGetId {
         it[this.name] = langName
