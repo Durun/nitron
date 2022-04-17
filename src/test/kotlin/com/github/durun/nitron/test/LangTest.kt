@@ -15,11 +15,9 @@ import io.kotest.matchers.paths.shouldBeReadable
 import io.kotest.mpp.log
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.toPath
 
 
-@ExperimentalPathApi
 class LangTest : FreeSpec({
 	val configPath = Paths.get("config/nitron.json")
     NitronConfigLoader.load(configPath).langConfig
@@ -28,7 +26,6 @@ class LangTest : FreeSpec({
 })
 
 
-@ExperimentalPathApi
 fun langTestFactory(lang: String, config: LangConfig) = freeSpec {
 	"config for $lang (${config.fileName})" - {
         val parser = ParserStore.getOrNull(config.parserConfig)

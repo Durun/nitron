@@ -6,10 +6,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Collectors
-import kotlin.io.path.ExperimentalPathApi
 
 
-@ExperimentalPathApi
 fun main() = TemporaryTest {
     "parse and dump" - {
         "calculator" {
@@ -121,7 +119,6 @@ private fun collectFiles(dir: Path,
     return resultFiles.collect(Collectors.toList())
 }
 
-@ExperimentalPathApi
 private fun testDefault(lang: String, suffix: String, startRule: String) {
     val grammarDir = baseDir.resolve(lang)
     val exampleDir = grammarDir.resolve("examples")
@@ -132,7 +129,6 @@ private fun testDefault(lang: String, suffix: String, startRule: String) {
     )
 }
 
-@ExperimentalPathApi
 private fun testDefaultWithUtilFiles(lang: String, suffix: String, startRule: String) {
     val grammarDir = baseDir.resolve(lang)
     val exampleDir = grammarDir.resolve("examples")
@@ -144,7 +140,6 @@ private fun testDefaultWithUtilFiles(lang: String, suffix: String, startRule: St
     )
 }
 
-@ExperimentalPathApi
 private fun testParsing(
         grammarFiles: Collection<Path>,
         exampleFiles: Collection<Path>,

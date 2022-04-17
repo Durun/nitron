@@ -10,7 +10,6 @@ import com.github.durun.nitron.core.config.LangConfig
 import com.github.durun.nitron.core.config.loader.LangConfigLoader
 import com.github.durun.nitron.core.parser.antlr.ParserStore
 import com.github.durun.nitron.core.parser.antlr.nodeTypePoolOf
-import com.github.durun.nitron.inout.database.SQLiteDatabase
 import com.github.durun.nitron.inout.model.ast.Structure
 import com.github.durun.nitron.inout.model.ast.table.StructuresJsonWriter
 import io.kotest.core.spec.style.FreeSpec
@@ -22,34 +21,28 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.jetbrains.exposed.sql.Database
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.io.path.ExperimentalPathApi
 
-@ExperimentalPathApi
 class StructuresDBTest : FreeSpec() {
-	private val path = Paths.get("testdata/database/test.db")
-	private val langPath = Paths.get("config/lang/java.json")
-	private val langConfig: LangConfig
-	private val processor: CodeProcessor
-	private val nodeTypePool: NodeTypePool
-	private val db: Database
+    private val path = Paths.get("testdata/database/test.db")
+    private val langPath = Paths.get("config/lang/java.json")
+    private val langConfig: LangConfig = LangConfigLoader.load(langPath)
+    private val processor: CodeProcessor
+    private val nodeTypePool: NodeTypePool
 
-	init {
-		db = SQLiteDatabase.connect(path)
-		langConfig = LangConfigLoader.load(langPath)
-		processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
-		val antlrParser = ParserStore.getOrThrow(langConfig.parserConfig).antlrParser
-		nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
+    init {
+        processor = CodeProcessor(langConfig, outputPath = path.parent.resolve("test.structures"))
+        val antlrParser = ParserStore.getOrThrow(langConfig.parserConfig).antlrParser
+        nodeTypePool = nodeTypePoolOf(langConfig.fileName, antlrParser)
 
-		"prepare" - {
-			"Structure is serializable" {
-				val value = javaCode
-						.let { processor.parse(it) }
-						.let { Structure(nodeTypePool, it) }
-				value.shouldNotBeNull()
-			}
+        "prepare" - {
+            "Structure is serializable" {
+                val value = javaCode
+                    .let { processor.parse(it) }
+                    .let { Structure(nodeTypePool, it) }
+                value.shouldNotBeNull()
+            }
 		}
 
 		"Test faster writer" - {

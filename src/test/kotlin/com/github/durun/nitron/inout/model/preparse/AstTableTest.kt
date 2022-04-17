@@ -13,9 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.net.URL
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
 
-@ExperimentalPathApi
 class AstTableTest : FreeSpec({
     "table" {
         val config = NitronConfigLoader.load(Path.of("config/nitron.json"))
