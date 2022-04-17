@@ -19,18 +19,6 @@ class GenericParserTest : FreeSpec({
             src = """console.log("Hello");"""
         )
     )
-
-    include(
-        tests(
-            "csharp",
-            config.langConfig["csharp"]!!.parserConfig as AntlrParserConfig,
-            src = """
-				class HelloClass {
-				    void hello() { }
-				}
-			""".trimIndent()
-        )
-    )
 })
 
 private fun tests(name: String, config: AntlrParserConfig, src: String) = freeSpec {

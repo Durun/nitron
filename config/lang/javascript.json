@@ -21,7 +21,6 @@
     "normalizeConfig": {
       "mapping": {
         "StringLiteral": "\"S\"",
-        "TemplateStringLiteral": "\"S\"",
         "numericLiteral": "N",
         "bigintLiteral": "N",
         "BooleanLiteral": "$L"

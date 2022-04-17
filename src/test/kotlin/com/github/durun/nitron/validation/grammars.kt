@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 
-fun main() = TemporaryTest {
+fun main() = testReportAsMarkDown {
     "parse and dump" - {
         "calculator" {
             val grammarFiles = listOf(baseDir.resolve("calculator/calculator.g4"))
@@ -23,19 +23,25 @@ fun main() = TemporaryTest {
         "!C++" {
             testDefault("cpp", ".cpp", startRule = "translationunit")
         }
-        "C#" {
+        "!C#" {
             testDefault("csharp", ".cs", startRule = "compilation_unit")
         }
-        "!Go" {
-            testDefault("golang", ".go", startRule = "sourceFile")
+        "Go" {
+            val dir = baseDir.resolve("golang")
+            testParsing(
+                grammarFiles = collectFiles(dir, ".g4"),
+                utilFiles = collectFiles(dir.resolve("Java"), ".java"),
+                exampleFiles = collectFiles(dir.resolve("examples"), ".go"),
+                startRule = "sourceFile"
+            )
         }
-        "Java" {
+        "!Java" {
             testDefault("java/java", ".java", startRule = "compilationUnit")
         }
-        "Java8" {
+        "!Java8" {
             testDefault("java/java8", ".java", startRule = "compilationUnit")
         }
-        "Java9" {
+        "!Java9" {
             testDefault("java/java9", ".java", startRule = "compilationUnit")
         }
         "Kotlin" {
@@ -107,7 +113,7 @@ fun main() = TemporaryTest {
             )
         }
     }
-}.execute()
+}
 
 private val baseDir = Paths.get("config/grammars").toAbsolutePath()
 

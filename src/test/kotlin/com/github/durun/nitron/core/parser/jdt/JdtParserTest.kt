@@ -74,7 +74,7 @@ class JdtParserTest : FreeSpec({
     }
 
     "convert test" {
-        val src = Path.of("config/grammars/java/java/examples/AllInOne8.java").readText().removeComments()
+        val src = Path.of("config/grammars/java/java/examples/AllInOne11.java").readText().removeComments()
 
         val unit = jdtParse(src)
         val converter = AstConvertVisitor()

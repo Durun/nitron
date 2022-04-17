@@ -7,12 +7,12 @@
 	  "c-srcml": "lang/c-srcml.json",
 	  "cpp": "lang/cpp.json",
 	  "cpp-srcml": "lang/cpp-srcml.json",
-	  "csharp": "lang/csharp.json",
 	  "r": "lang/r.json",
 	  "javascript": "lang/javascript.json",
 	  "swift": "lang/swift3.json",
 	  "matlab": "lang/matlab.json",
 	  "erlang": "lang/erlang.json",
-	  "csharp-srcml": "lang/csharp-srcml.json"
+	  "csharp-srcml": "lang/csharp-srcml.json",
+	  "golang": "lang/golang.json"
 	}
 }
