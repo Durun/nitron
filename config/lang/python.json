@@ -3,9 +3,12 @@
 	"parserConfig": {
 	  "type": "antlr",
 	  "grammarFiles": [
-		"../grammars/python/python3/Python3.g4"
+		"../grammars/python/python3/Python3Parser.g4",
+		"../grammars/python/python3/Python3Lexer.g4"
 	  ],
-	  "utilJavaFiles": [],
+	  "utilJavaFiles": [
+		"../grammars/python/python3/Java/Python3LexerBase.java"
+	  ],
 	  "startRule": "file_input"
 	},
 	"processConfig": {

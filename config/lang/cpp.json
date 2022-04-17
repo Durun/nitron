@@ -22,7 +22,7 @@
 	},
 	"normalizeConfig": {
 	  "mapping": {
-		"Literal": "L"
+		"literal": "L"
 	  },
 	  "indexedMapping": {
 		"//declarator[..[@tag!='functionDefinition']]/*/*/*/*/*/Identifier": "$V",
