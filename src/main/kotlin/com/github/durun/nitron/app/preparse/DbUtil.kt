@@ -88,7 +88,6 @@ internal class DbUtil(
         }
     }
 
-    @kotlin.io.path.ExperimentalPathApi
     fun isLanguageConsistent(langName: String, langConfig: LangConfig): Boolean {
         val checksum = langConfig.parserConfig.checksum()
 

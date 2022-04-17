@@ -26,7 +26,6 @@ class AstJsonImportCommand : CliktCommand(
     private val output: File by argument(name = "output", help = "output Database")
         .file(mustBeWritable = true)
 
-    @ExperimentalPathApi
     override fun run() {
         SQLiteDatabase.connect(output.toPath()).writeAstJson(
                 input = input.bufferedReader(),

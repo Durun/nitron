@@ -39,7 +39,6 @@ class AstPrintCommand : CliktCommand(
         mustBeWritable = true
     )
 
-    @ExperimentalPathApi
     override fun run() {
         val output: BufferedWriter = outputPath?.bufferedWriter()
             ?: System.out.bufferedWriter()
