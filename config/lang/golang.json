@@ -31,6 +31,9 @@
 		"IMAGINARY_LIT": "I"
 	  },
 	  "indexedMapping": {
+		"//primaryExpr[not(./following-sibling::*/@tag='arguments')]/operand/operandName/IDENTIFIER": "V",
+		"//declaration/varDecl/varSpec/identifierList/IDENTIFIER": "V",
+		"//shortVarDecl/identifierList/IDENTIFIER": "V"
 	  },
 	  "ignoreRules": [
 		"packageClause",

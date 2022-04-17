@@ -45,6 +45,33 @@ fun main() = testReportAsMarkDown {
             code(funcBody = "12i").normalized() shouldBe normStatements(funcBody = "I")
         }
     }
+    "variable" - {
+        "assignment" {
+            code(funcBody = "x = f()").normalized() shouldBe normStatements(funcBody = "V0 = f ( )")
+        }
+        "declaration" {
+            code(funcBody = "var i int = 1").normalized() shouldBe normStatements(funcBody = "var V0 int = N")
+            code(funcBody = "var i, j int = 1, 2").normalized() shouldBe normStatements(funcBody = "var V0 , V1 int = N , N")
+        }
+        "short declaration" {
+            code(funcBody = "x := 1").normalized() shouldBe normStatements(funcBody = "V0 := N")
+            code(funcBody = "i, j := 1, 2").normalized() shouldBe normStatements(funcBody = "V0 , V1 := N , N")
+        }
+        "argument" {
+            code(funcBody = "f(a)").normalized() shouldBe normStatements(funcBody = "f ( V0 )")
+        }
+        "correct variable index" {
+            code(funcBody = "f(a0, a1, a0, a2)").normalized() shouldBe normStatements(funcBody = "f ( V0 , V1 , V0 , V2 )")
+        }
+        "expression" {
+            code(funcBody = "f((x+y)*z)").normalized() shouldBe normStatements(funcBody = "f ( ( V0 + V1 ) * V2 )")
+            code(funcBody = "f(x+f())").normalized() shouldBe normStatements(funcBody = "f ( V0 + f ( ) )")
+        }
+        "struct access" {
+            code(funcBody = "v.m = f()").normalized() shouldBe normStatements(funcBody = "V0 . m = f ( )")
+            code(funcBody = "f(v.name.length)").normalized() shouldBe normStatements(funcBody = "f ( V0 . name . length )")
+        }
+    }
 }
 
 
