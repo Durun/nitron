@@ -2,7 +2,8 @@ group = "com.github.durun.nitron"
 version = "v0.13"
 
 buildscript {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion: String by extra("1.6.20")
+
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
     }
@@ -14,7 +15,8 @@ buildscript {
 }
 
 plugins {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion = "1.6.20"
+
     `maven-publish`
 
     kotlin("jvm") version kotlinVersion
@@ -33,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion: String by project
 
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:4.9.3")
