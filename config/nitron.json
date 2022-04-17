@@ -13,6 +13,7 @@
 	  "swift": "lang/swift3.json",
 	  "matlab": "lang/matlab.json",
 	  "erlang": "lang/erlang.json",
-	  "csharp-srcml": "lang/csharp-srcml.json"
+	  "csharp-srcml": "lang/csharp-srcml.json",
+	  "golang": "lang/golang.json"
 	}
 }

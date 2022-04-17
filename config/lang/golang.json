@@ -1,0 +1,44 @@
+{
+  "extensions": [
+	".go"
+  ],
+  "parserConfig": {
+	"type": "antlr",
+	"grammarFiles": [
+	  "../grammars/golang/GoParser.g4",
+	  "../grammars/golang/GoLexer.g4"
+	],
+	"utilJavaFiles": [
+	  "../grammars/golang/Java/GoParserBase.java"
+	],
+	"startRule": "sourceFile"
+  },
+  "processConfig": {
+	"splitConfig": {
+	  "splitRules": [
+		"statement"
+	  ]
+	},
+	"normalizeConfig": {
+	  "mapping": {
+		"string_": "\"S\"",
+		"RUNE_LIT": "'R'",
+		"DECIMAL_LIT": "N",
+		"BINARY_LIT": "N",
+		"OCTAL_LIT": "N",
+		"HEX_LIT": "N",
+		"FLOAT_LIT": "F",
+		"IMAGINARY_LIT": "I"
+	  },
+	  "indexedMapping": {
+	  },
+	  "ignoreRules": [
+		"packageClause",
+		"importDecl",
+		"R_CURLY",
+		"EOS",
+		"EOF"
+	  ]
+	}
+  }
+}
