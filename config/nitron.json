@@ -7,7 +7,6 @@
 	  "c-srcml": "lang/c-srcml.json",
 	  "cpp": "lang/cpp.json",
 	  "cpp-srcml": "lang/cpp-srcml.json",
-	  "csharp": "lang/csharp.json",
 	  "r": "lang/r.json",
 	  "javascript": "lang/javascript.json",
 	  "swift": "lang/swift3.json",
