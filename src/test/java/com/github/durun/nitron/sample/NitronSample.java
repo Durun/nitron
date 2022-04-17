@@ -103,7 +103,7 @@ public class NitronSample {
    */
   static void ANTLRParser(String src) {
     // 各種設定を入れてANTLRパーサを生成します
-    NitronParser parser = AntlrParserKt.init(
+    NitronParser parser = AntlrParserKt.fromPaths(
             "java",
             "compilationUnit",  // 翻訳単位の非終端記号名
             List.of(  // 文法ファイル
@@ -112,7 +112,7 @@ public class NitronSample {
             ),
             List.of() // 必要なjavaファイル (この例では無し)
     );
-    AstNode ast = parser.parse(new StringReader(src));
+      AstNode ast = parser.parse(new StringReader(src));
     System.out.println(ast);
   }
 

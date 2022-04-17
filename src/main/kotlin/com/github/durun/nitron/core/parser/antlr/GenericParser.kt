@@ -6,6 +6,12 @@ import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.tool.ast.GrammarRootAST
+import org.eclipse.jdt.core.JavaCore
+import org.eclipse.jdt.core.dom.AST
+import org.eclipse.jdt.core.dom.ASTParser
+import org.eclipse.jdt.core.dom.CompilationUnit
+import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import org.snt.inmemantlr.comp.CunitProvider
 import org.snt.inmemantlr.comp.DefaultCompilerOptionsProvider
 import org.snt.inmemantlr.comp.FileProvider
@@ -20,7 +26,6 @@ import org.snt.inmemantlr.tool.InmemantlrTool
 import java.io.Reader
 import java.lang.reflect.Method
 import java.nio.file.Path
-import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 
 /**
@@ -28,27 +33,27 @@ import kotlin.io.path.readText
  */
 class GenericParser
 private constructor(
-		private val antlr: InmemantlrTool,
-		utilityJavaFiles: Collection<Path>,
-		private val useCached: Boolean = true
+    private val antlr: InmemantlrTool,
+    utilityJavaContents: Collection<String>,
+    private val useCached: Boolean = true
 ) {
-	companion object {
+    companion object {
         private val LOGGER by logger()
 
         /**
          * Instantiate [GenericParser]
-         * @param grammarContent contents of grammar(.g4) files
-         * @param utilityJavaFiles paths to utility(.java) files
+         * @param grammarContents contents of grammar(.g4) files
+         * @param utilityJavaContents contents of utility(.java) files
          */
         fun init(
-            grammarContent: Collection<String>,
-            utilityJavaFiles: Collection<Path> = emptySet(),
+            grammarContents: Collection<String>,
+            utilityJavaContents: Collection<String> = emptySet(),
             toolCustomizer: Tool.() -> Unit = {}
         ): GenericParser {
             val tool = InmemantlrTool()
                 .apply(toolCustomizer)
                 .apply {
-                    val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
+                    val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContents.toSet())
                     // NOTE: Don't change order of sortGrammarByTokenVocab()
                     sorted.forEach {
                         LOGGER.debug { "gast ${it.grammarName}" }
@@ -56,7 +61,7 @@ private constructor(
                     }
                 }
             check(tool.pipelines.isNotEmpty())
-            return GenericParser(tool, utilityJavaFiles)
+            return GenericParser(tool, utilityJavaContents)
         }
 
         /**
@@ -68,7 +73,8 @@ private constructor(
             grammarFiles: Collection<Path>,
             utilityJavaFiles: Collection<Path> = emptySet(),
             toolCustomizer: Tool.() -> Unit = {}
-        ): GenericParser = init(grammarFiles.map { it.readText() }, utilityJavaFiles, toolCustomizer)
+        ): GenericParser =
+            init(grammarFiles.map { it.readText() }, utilityJavaFiles.map { it.readText() }, toolCustomizer)
     }
 
     private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
@@ -97,9 +103,8 @@ private constructor(
 
     private val streamProvider: StreamProvider = DefaultStreamProvider()
     private val fileProvider: FileProvider = FileProvider().apply {
-        utilityJavaFiles.forEach {
-            val name = it.nameWithoutExtension
-            val content = it.readText()
+        utilityJavaContents.forEach { content ->
+            val name = extractClassName(content)
             LOGGER.debug { "add utility" }
             addFiles(MemorySource(name, content))
         }
@@ -124,24 +129,24 @@ private constructor(
         antlr.pipelines.asSequence().mapNotNull {
             runCatching {
                 loadParser(
-						parserName = it.parserName,
-						lexer = loadLexer(input = "".reader(), lexerName = activeLexer)
-				)
-			}.getOrNull()
-		}.firstOrNull() ?: throw IllegalStateException("No valid parsers")
-	}
+                    parserName = it.parserName,
+                    lexer = loadLexer(input = "".reader(), lexerName = activeLexer)
+                )
+            }.getOrNull()
+        }.firstOrNull() ?: throw IllegalStateException("No valid parsers")
+    }
 
-	/**
-	 * Parse given sourcecode.
-	 * If parsing failed, throws [ParsingException].
-	 * Due to grammar compilation, it takes long time to parse first time.
-	 * @param input a reader of sourcecode to parse
-	 * @param entryPoint the rule name to start parsing
-	 * @return parse tree of input in ANTLR format
-	 * @see ParserRuleContext
-	 * @throws ParsingException
-	 */
-	fun parse(input: Reader, entryPoint: String): ParserRuleContext {
+    /**
+     * Parse given sourcecode.
+     * If parsing failed, throws [ParsingException].
+     * Due to grammar compilation, it takes long time to parse first time.
+     * @param input a reader of sourcecode to parse
+     * @param entryPoint the rule name to start parsing
+     * @return parse tree of input in ANTLR format
+     * @see ParserRuleContext
+     * @throws ParsingException
+     */
+    fun parse(input: Reader, entryPoint: String): ParserRuleContext {
 
         listener.reset()
 
@@ -174,19 +179,19 @@ private constructor(
         return data
     }
 
-	private fun selectParser(ruleName: String): String {
-		val p = antlr.pipelines.find {
-			it.g.ruleNames.contains(ruleName)
-		} ?: throw IllegalArgumentException("rule not exist: $ruleName")
-		return p.parserName
-	}
+    private fun selectParser(ruleName: String): String {
+        val p = antlr.pipelines.find {
+            it.g.ruleNames.contains(ruleName)
+        } ?: throw IllegalArgumentException("rule not exist: $ruleName")
+        return p.parserName
+    }
 
-	private fun loadLexer(input: Reader, lexerName: String): Lexer {
+    private fun loadLexer(input: Reader, lexerName: String): Lexer {
         val stream: CharStream = streamProvider.getCharStream(input.readText())
         return compiler.get().instanciateLexer(stream, lexerName, useCached)
     }
 
-	private fun loadParser(lexer: Lexer, parserName: String): Parser {
+    private fun loadParser(lexer: Lexer, parserName: String): Parser {
         val tokens: CommonTokenStream = CommonTokenStream(lexer)
             .apply { fill() }
         return (compiler.get().instanciateParser(tokens, parserName)
@@ -200,3 +205,30 @@ private constructor(
     }
 }
 
+private fun extractClassName(src: String): String {
+    val version = JavaCore.VERSION_17
+    val parser = ASTParser.newParser(AST.JLS17)
+        .apply {
+            @Suppress("UNCHECKED_CAST")
+            val defaultOptions = DefaultCodeFormatterConstants.getEclipseDefaultSettings() as Map<String, String>
+            val options = defaultOptions + mapOf(
+                JavaCore.COMPILER_COMPLIANCE to version,
+                JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM to version,
+                JavaCore.COMPILER_SOURCE to version,
+                JavaCore.COMPILER_DOC_COMMENT_SUPPORT to JavaCore.DISABLED
+            )
+            setCompilerOptions(options)
+            setEnvironment(null, null, null, true)
+        }
+    val unit = try {
+        parser.setSource(src.toCharArray())
+        val result: CompilationUnit = parser.createAST(null) as CompilationUnit  // can be null
+        result
+    } catch (e: NullPointerException) {
+        throw Exception("Failed to parse utility java file", e)
+    } catch (e: Exception) {
+        throw Exception("Internal error: ${e.message}", e)
+    }
+    val cls = (unit.types().firstOrNull() as? TypeDeclaration) ?: throw Exception("Utility java file has no classes.")
+    return cls.name.toString()
+}

@@ -19,7 +19,18 @@ private constructor(
     private val defaultEntryPoint: String
 ) : NitronParser {
     companion object {
-        fun init(
+        fun fromContents(
+            grammarName: String,
+            entryPoint: String,
+            grammarFileContents: Collection<String>,
+            utilityJavaContents: Collection<String> = emptySet(),
+        ): NitronParser {
+            val genericParser = GenericParser.init(grammarFileContents, utilityJavaContents)
+            val buildVisitor = AstBuildVisitor(grammarName, genericParser.antlrParser)
+            return AntlrParser(buildVisitor.nodeTypes, genericParser, buildVisitor, entryPoint)
+        }
+
+        fun fromFiles(
             grammarName: String,
             entryPoint: String,
             grammarFiles: Collection<Path>,
@@ -48,16 +59,23 @@ private constructor(
     }
 }
 
-fun init(
+fun fromContents(
     grammarName: String,
     entryPoint: String,
-    grammarFiles: Collection<Path>,
-    utilityJavaFiles: Collection<Path> = emptySet()
-): NitronParser = NitronParsers.antlr(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
+    grammarFileContents: Collection<String>,
+    utilityJavaContents: Collection<String> = emptySet()
+): NitronParser = AntlrParser.fromContents(grammarName, entryPoint, grammarFileContents, utilityJavaContents)
+
+fun fromPaths(
+    grammarName: String,
+    entryPoint: String,
+    grammarFilePaths: Collection<Path>,
+    utilityJavaPaths: Collection<Path> = emptySet()
+): NitronParser = AntlrParser.fromFiles(grammarName, entryPoint, grammarFilePaths, utilityJavaPaths)
 
 fun NitronParsers.antlr(
     grammarName: String,
     entryPoint: String,
-    grammarFiles: Collection<Path>,
-    utilityJavaFiles: Collection<Path> = emptySet()
-): NitronParser = AntlrParser.init(grammarName, entryPoint, grammarFiles, utilityJavaFiles)
+    grammarFileContents: Collection<String>,
+    utilityJavaContents: Collection<String> = emptySet()
+): NitronParser = AntlrParser.fromContents(grammarName, entryPoint, grammarFileContents, utilityJavaContents)
