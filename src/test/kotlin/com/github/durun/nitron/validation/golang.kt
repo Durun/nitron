@@ -109,6 +109,15 @@ fun main() = testReportAsMarkDown {
             """.trimIndent()
             ).normalized() shouldBe normStatements(funcBody = listOf("for V0 := N ; V0 < N ; V0 ++ {", "call ( )", "}"))
         }
+        "for range block" {
+            code(
+                funcBody = """
+                for i, v := range l {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("for V0 , V1 := range V2 {", "call ( )", "}"))
+        }
         "if block" {
             code(
                 funcBody = """
@@ -174,33 +183,82 @@ fun main() = testReportAsMarkDown {
             code(funcBody = "defer call()").normalized() shouldBe normStatements(funcBody = "defer call ( )")
         }
     }
+    "data" - {
+        "pointer" {
+            code(funcBody = "*p = &i").normalized() shouldBe normStatements(funcBody = "* V0 = & V1")
+        }
+        "struct" {
+            code(funcBody = "Vec{1, 2}").normalized() shouldBe normStatements(funcBody = "Vec { N , N }")
+            code(funcBody = "Vec{X: 1}").normalized() shouldBe normStatements(funcBody = "Vec { X : N }")
+        }
+        "array" {
+            code(funcBody = "a[0]").normalized() shouldBe normStatements(funcBody = "V0 [ N ]")
+            code(funcBody = "a[1:2]").normalized() shouldBe normStatements(funcBody = "V0 [ N : N ]")
+        }
+        "map" {
+            code(funcBody = "map[int]int{ 1: 1 }").normalized() shouldBe normStatements(funcBody = "map [ int ] int { N : N }")
+        }
+        "closure" {
+            code(funcBody = "func(x int) int { return x }").normalized() shouldBe normStatements(
+                funcBody = listOf(
+                    "func ( V0 int ) int {",
+                    "return V0",
+                    "}"
+                )
+            )
+        }
+    }
+    "declaration" - {
+        "function" {
+            code(
+                body = """
+                func f(i int, fn func(int) int) int {
+                    return 0
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(
+                body = listOf(
+                    "func f ( V0 int , V1 func ( int ) int ) int {",
+                    "return N",
+                    "}"
+                )
+            )
+        }
+    }
 }
 
 
 private fun code(
-    funcBody: String = ""
+    funcBody: String = "",
+    body: String = ""
 ): String {
     return """package main
         import "fmt"
         func main() {
           $funcBody
+          return
         }
+        $body
     """.trimIndent()
 }
 
 private fun normStatements(
-    funcBody: List<String> = emptyList()
+    funcBody: List<String> = emptyList(),
+    body: List<String> = emptyList()
 ): List<String> {
     return listOf(
         "func main ( ) {",
         *funcBody.toTypedArray(),
-        "}"
+        "return",
+        "}",
+        *body.toTypedArray()
     )
 }
 
 private fun normStatements(
-    funcBody: String? = null
-) = normStatements(listOfNotNull(funcBody))
+    funcBody: String? = null,
+    body: String? = null
+) = normStatements(listOfNotNull(funcBody), listOfNotNull(body))
 
 private fun String.normalized(): List<String> {
     return processor.split(this)

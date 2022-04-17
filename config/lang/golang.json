@@ -17,7 +17,8 @@
 	"splitConfig": {
 	  "splitRules": [
 		"statement",
-		"exprCaseClause"
+		"exprCaseClause",
+		"functionDecl"
 	  ]
 	},
 	"normalizeConfig": {
@@ -32,9 +33,11 @@
 		"IMAGINARY_LIT": "I"
 	  },
 	  "indexedMapping": {
+		"//parameterDecl/identifierList/IDENTIFIER": "V",
 		"//declaration/varDecl/varSpec/identifierList/IDENTIFIER": "V",
 		"//shortVarDecl/identifierList/IDENTIFIER": "V",
-		"//primaryExpr[not(./following-sibling::*/@tag='arguments')]/operand/operandName/IDENTIFIER": "V"
+		"//rangeClause/identifierList/IDENTIFIER": "V",
+		"//primaryExpr[not(./following-sibling::*/@tag='arguments') and not(../../@tag='key')]/operand/operandName/IDENTIFIER": "V"
 	  },
 	  "ignoreRules": [
 		"packageClause",
