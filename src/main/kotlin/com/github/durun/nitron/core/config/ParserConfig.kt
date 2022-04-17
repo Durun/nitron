@@ -8,6 +8,7 @@ import com.github.durun.nitron.core.parser.NitronParsers
 import com.github.durun.nitron.core.parser.antlr.antlr
 import com.github.durun.nitron.core.parser.jdt.jdt
 import com.github.durun.nitron.core.parser.srcml.srcml
+import com.github.durun.nitron.util.resolveInJar
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.net.URI
@@ -39,10 +40,10 @@ data class AntlrParserConfig(
     }
 
     val grammarFileUris: List<URI> by lazy {
-        grammarFiles.map { dir.resolve(it) }
+        grammarFiles.map { dir.resolveInJar(it) }
     }
     val utilJavaFileUris: List<URI> by lazy {
-        utilJavaFiles.map { dir.resolve(it) }
+        utilJavaFiles.map { dir.resolveInJar(it) }
     }
 
     override fun getParser(): NitronParser = NitronParsers.antlr(
