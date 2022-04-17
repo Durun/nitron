@@ -33,7 +33,6 @@ private constructor(
         }
     }
 
-    @Transient
     override val children: List<AstNode>
         get() = childrenList
 

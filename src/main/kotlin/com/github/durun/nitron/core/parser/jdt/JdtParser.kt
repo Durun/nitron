@@ -21,7 +21,7 @@ class JdtParser(version: String = JavaCore.VERSION_16) : NitronParser {
     override val nodeTypes: NodeTypePool = Companion.nodeTypes
 
     private val parser = ThreadLocal.withInitial {
-        ASTParser.newParser(AST.JLS16)
+        ASTParser.newParser(AST.JLS17)
             .apply {
                 @Suppress("UNCHECKED_CAST")
                 val defaultOptions = DefaultCodeFormatterConstants.getEclipseDefaultSettings() as Map<String, String>
