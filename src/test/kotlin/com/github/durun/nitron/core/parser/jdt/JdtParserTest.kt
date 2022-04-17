@@ -23,34 +23,32 @@ import java.nio.file.Path
 import kotlin.io.path.readText
 
 class JdtParserTest : FreeSpec({
-
-    val src = """
-        package example;
-        import java.util.List;
-        interface I {
-          void greet();
-        }
-        private class C implements I, I2 {
-          @Override
-          void greet() { 
-            System.out.println("Hello, World"); 
-          }
-        }
-        public class HelloWorld {
-           public static void main(String[] args) {
-              y = (x*x) + 1;
-              int t = a
-              // comment
-                * x;
-              call(
-                arg1,
-                arg2
-              );
-           }
-        }
-    """.trimIndent()
-
     "parse" {
+        val src = """
+            package example;
+            import java.util.List;
+            interface I {
+              void greet();
+            }
+            private class C implements I, I2 {
+              @Override
+              void greet() { 
+                System.out.println("Hello, World"); 
+              }
+            }
+            public class HelloWorld {
+               public static void main(String[] args) {
+                  y = (x*x) + 1;
+                  int t = a
+                  // comment
+                    * x;
+                  call(
+                    arg1,
+                    arg2
+                  );
+               }
+            }
+        """.trimIndent()
         val parser = NitronParsers.jdt()
         val ast = parser.parse(src.reader())
         println(ast)
@@ -74,28 +72,6 @@ class JdtParserTest : FreeSpec({
         beginLine shouldBe 1
         endLine shouldBe 23
     }
-
-    val src2 = """
-        class Sample {
-            List<C<?>> field;
-        }
-    """.trimIndent()
-
-    /*
-    "test collector" {
-        val parser = NitronParsers.jdt()
-        val unit = parser.parse(src.reader())
-        val astLines = run {
-            val collector = LineCollectVisitor()
-            unit.accept(collector)
-            collector.result
-        }
-        val textLines = src.lines()
-        astLines.zip(textLines).forAll { (astLine, textLine) ->
-            astLine.joinToString("").removeSpaceAndNL() shouldBe textLine.removeSpaceAndNL()
-        }
-    }
-     */
 
     "convert test" {
         val src = Path.of("config/grammars/java/java/examples/AllInOne8.java").readText().removeComments()
@@ -197,7 +173,7 @@ private class LineCollectVisitor : AstVisitor<Unit> {
 }
 
 private val jdtParser =
-    ASTParser.newParser(AST.JLS16)
+    ASTParser.newParser(AST.JLS17)
         .apply {
             val version = JavaCore.VERSION_16
 

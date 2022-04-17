@@ -36,14 +36,14 @@ class AstSplitterTest : FreeSpec({
             }
         }
 
-        val splitter = AstSplitter(emptyList())
-        val copied = splitter.process(node).first()
+        val copied = AstSplitter(emptyList())
+            .process(node).first()
 
         listOf(
             copied.originalNode to node,
-            copied.children!!.first().originalNode to node.children!!.first(),
-            copied.children!!.last().originalNode to node.children!!.last(),
-            copied.children!!.last().children!!.first().originalNode to node.children!!.last().children!!.first()
+            copied.children!!.first().originalNode to node.children.first(),
+            copied.children!!.last().originalNode to node.children.last(),
+            copied.children!!.last().children!!.first().originalNode to node.children.last().children!!.first()
         ).forAll { (ref, original) ->
             ref shouldBe original
             ref shouldBeSameInstanceAs original

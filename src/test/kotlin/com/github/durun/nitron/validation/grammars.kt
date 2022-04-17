@@ -165,4 +165,5 @@ private fun testParsing(
     // parse
     val asts = parserTester.getAsts()
     println("parse: OK")
+    println(asts)
 }

@@ -11,10 +11,10 @@ import io.kotest.property.arbitrary.take
 
 fun Arb.Companion.structure(typeSet: NodeTypePool? = null): Arb<Structure> {
 	return arbitrary { rs ->
-		val typeSet = typeSet ?: nodeTypePool().sample(rs).value
+		val types = typeSet ?: nodeTypePool().sample(rs).value
 		Structure(
-				nodeTypePool = typeSet,
-				ast = ruleNode(typeSet).sample(rs).value,
+				nodeTypePool = types,
+				ast = ruleNode(types).sample(rs).value,
 				hash = byte().take(16, rs).toList().toMD5()
 		)
 	}
