@@ -30,8 +30,10 @@ class ParseCommand : CliktCommand(name = "preparse") {
 
     private val customConfig: Path? by option("--config")
         .path(mustBeReadable = true)
-    private val config = (customConfig ?: Path.of("config/nitron.json"))
-        .let { NitronConfigLoader.load(it) }
+    private val config by lazy {
+        (customConfig ?: Path.of("config/nitron.json"))
+            .let { NitronConfigLoader.load(it) }
+    }
     private val workingDir: File by option("--dir")
         .file(canBeFile = false, canBeDir = true)
         .defaultLazy { Path.of("tmp").toFile() }

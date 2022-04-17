@@ -19,56 +19,59 @@ import java.nio.file.Path
 
 class RegisterCommand : CliktCommand(name = "preparse-register") {
 
-	private val customConfig: Path? by option("--config")
+    private val customConfig: Path? by option("--config")
         .path(mustBeReadable = true)
-	private val config = (customConfig ?: Path.of("config/nitron.json"))
-		.let { NitronConfigLoader.load(it) }
-	private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
+    private val config by lazy {
+        (customConfig ?: Path.of("config/nitron.json"))
+            .let { NitronConfigLoader.load(it) }
+    }
+    private val dbFile: Path by argument(name = "DATABASE", help = "Database file")
         .path(canBeDir = false)
-	private val remote: URL? by option("--remote", help = "Git repository URL")
-		.convert {
-			val gitUrl = if (it.endsWith(".git")) it else "$it.git"
-			URL(gitUrl)
-		}
-		.validate(gitUrlValidator)
-	private val langArgs: List<String> by option("--lang", help = "Language config name")
-		.multiple()
-		.validate(langsValidator(config))
+    private val remote: URL? by option("--remote", help = "Git repository URL")
+        .convert {
+            val gitUrl = if (it.endsWith(".git")) it else "$it.git"
+            URL(gitUrl)
+        }
+        .validate(gitUrlValidator)
+
+    fun langsValidator(): OptionValidator<Collection<String>> = { inputs ->
+        require(inputs.isNotEmpty()) { "No languages specified" }
+        val languages = config.langConfig.keys
+        val errors = inputs.filterNot { languages.contains(it) }
+        require(errors.isEmpty()) { "Language $errors not found in $languages" }
+    }
+
+    private val langArgs: List<String> by option("--lang", help = "Language config name")
+        .multiple()
+        .validate(langsValidator())
 
 
-	private val log by logger()
+    private val log by logger()
 
-	override fun run() {
-		val db = SQLiteDatabase.connect(dbFile)
-		remote?.registerRemoteRepository(db)
-	}
+    override fun run() {
+        val db = SQLiteDatabase.connect(dbFile)
+        remote?.registerRemoteRepository(db)
+    }
 
-	private fun URL.registerRemoteRepository(db: Database) = transaction(db) {
-		val remoteUrl = this@registerRemoteRepository
-		SchemaUtils.createMissingTablesAndColumns(RepositoryTable)
-		RepositoryTable.insertIgnoreAndGetId(
-			url = remoteUrl,
-			langs = langArgs
-		)
-			?.let { log.debug { "Wrote: $remoteUrl" } }
-			?: run { log.info { "Already exists: $remoteUrl" } }
-	}
+    private fun URL.registerRemoteRepository(db: Database) = transaction(db) {
+        val remoteUrl = this@registerRemoteRepository
+        SchemaUtils.createMissingTablesAndColumns(RepositoryTable)
+        RepositoryTable.insertIgnoreAndGetId(
+            url = remoteUrl,
+            langs = langArgs
+        )
+            ?.let { log.debug { "Wrote: $remoteUrl" } }
+            ?: run { log.info { "Already exists: $remoteUrl" } }
+    }
 }
 
 val gitUrlValidator: OptionValidator<URL> = { url ->
-	require(url.toString().endsWith(".git")) { "Must end with '.git' but: $url" }
-	runCatching {
-		Git.lsRemoteRepository()
-			.setRemote(url.toString())
-			.call()
-	}.onFailure {
-		require(false) { "Invalid remote: ${it.localizedMessage}" }
-	}
-}
-
-fun langsValidator(config: NitronConfig): OptionValidator<Collection<String>> = { inputs ->
-	require(inputs.isNotEmpty()) { "No languages specified" }
-	val languages = config.langConfig.keys
-	val errors = inputs.filterNot { languages.contains(it) }
-	require(errors.isEmpty()) { "Language $errors not found in $languages" }
+    require(url.toString().endsWith(".git")) { "Must end with '.git' but: $url" }
+    runCatching {
+        Git.lsRemoteRepository()
+            .setRemote(url.toString())
+            .call()
+    }.onFailure {
+        require(false) { "Invalid remote: ${it.localizedMessage}" }
+    }
 }

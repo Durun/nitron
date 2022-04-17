@@ -27,8 +27,6 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
 
     private val customConfig: Path? by option("--config")
         .path(mustBeReadable = true)
-    private val config = (customConfig ?: Path.of("config/nitron.json"))
-        .let { NitronConfigLoader.load(it) }
     private val workingDir: File by option("--dir")
         .file(canBeFile = false, canBeDir = true)
         .defaultLazy { Path.of("tmp").toFile() }
@@ -70,6 +68,8 @@ class FetchCommand : CliktCommand(name = "preparse-fetch") {
     }
 
     private fun processOneDB(dbFile: Path) {
+        val config = (customConfig ?: Path.of("config/nitron.json"))
+            .let { NitronConfigLoader.load(it) }
         val db = SQLiteDatabase.connect(dbFile)
         val dbUtil = DbUtil(db)
         val gitUtil = GitUtil(workingDir, branch)
