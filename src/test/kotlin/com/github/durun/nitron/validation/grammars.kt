@@ -26,8 +26,14 @@ fun main() = testReportAsMarkDown {
         "!C#" {
             testDefault("csharp", ".cs", startRule = "compilation_unit")
         }
-        "!Go" {
-            testDefault("golang", ".go", startRule = "sourceFile")
+        "Go" {
+            val dir = baseDir.resolve("golang")
+            testParsing(
+                grammarFiles = collectFiles(dir, ".g4"),
+                utilFiles = collectFiles(dir.resolve("Java"), ".java"),
+                exampleFiles = collectFiles(dir.resolve("examples"), ".go"),
+                startRule = "sourceFile"
+            )
         }
         "!Java" {
             testDefault("java/java", ".java", startRule = "compilationUnit")
