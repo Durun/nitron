@@ -42,18 +42,18 @@ private constructor(
 
         /**
          * Instantiate [GenericParser]
-         * @param grammarContent contents of grammar(.g4) files
+         * @param grammarContents contents of grammar(.g4) files
          * @param utilityJavaContents contents of utility(.java) files
          */
         fun init(
-            grammarContent: Collection<String>,
+            grammarContents: Collection<String>,
             utilityJavaContents: Collection<String> = emptySet(),
             toolCustomizer: Tool.() -> Unit = {}
         ): GenericParser {
             val tool = InmemantlrTool()
                 .apply(toolCustomizer)
                 .apply {
-                    val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContent.toSet())
+                    val sorted: Collection<GrammarRootAST> = sortGrammarByTokenVocab(grammarContents.toSet())
                     // NOTE: Don't change order of sortGrammarByTokenVocab()
                     sorted.forEach {
                         LOGGER.debug { "gast ${it.grammarName}" }

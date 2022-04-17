@@ -9,6 +9,7 @@ import com.github.durun.nitron.core.parser.antlr.antlr
 import com.github.durun.nitron.core.parser.jdt.jdt
 import java.io.StringReader
 import java.nio.file.Path
+import kotlin.io.path.readText
 
 
 /**
@@ -89,11 +90,11 @@ fun sample_ANTLRParser(src: String) {
     val parser = NitronParsers.antlr(
         grammarName = "java",           // 名前
         entryPoint = "compilationUnit", // 翻訳単位の非終端記号名
-        grammarFiles = listOf(          // 文法ファイル
-            Path.of("config/grammars/java/java8/Java8Lexer.g4"),
-            Path.of("config/grammars/java/java8/Java8Parser.g4")
+        grammarFileContents = listOf(          // 文法ファイル
+            Path.of("config/grammars/java/java8/Java8Lexer.g4").readText(),
+            Path.of("config/grammars/java/java8/Java8Parser.g4").readText()
         ),
-        utilityJavaFiles = listOf()     // 必要なjavaファイル (この例では無し)
+        utilityJavaContents = listOf()     // 必要なjavaファイル (この例では無し)
     )
     val ast = parser.parse(src.reader())
     println(ast)
