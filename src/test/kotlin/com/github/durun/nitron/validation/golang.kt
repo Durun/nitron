@@ -48,6 +48,7 @@ fun main() = testReportAsMarkDown {
     "variable" - {
         "assignment" {
             code(funcBody = "x = f()").normalized() shouldBe normStatements(funcBody = "V0 = f ( )")
+            code(funcBody = "x, y = f()").normalized() shouldBe normStatements(funcBody = "V0 , V1 = f ( )")
         }
         "declaration" {
             code(funcBody = "var i int = 1").normalized() shouldBe normStatements(funcBody = "var V0 int = N")
@@ -72,6 +73,107 @@ fun main() = testReportAsMarkDown {
             code(funcBody = "f(v.name.length)").normalized() shouldBe normStatements(funcBody = "f ( V0 . name . length )")
         }
     }
+    "split statements" - {
+        "expression statements" {
+            code(
+                funcBody = """
+                call1()
+                call2()
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("call1 ( )", "call2 ( )"))
+        }
+        "while block" {
+            code(
+                funcBody = """
+                for i < 5 {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("for V0 < N {", "call ( )", "}"))
+        }
+        "forever block" {
+            code(
+                funcBody = """
+                for {
+                  break
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("for {", "break", "}"))
+        }
+        "for block" {
+            code(
+                funcBody = """
+                for i := 0; i < 10; i++ {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("for V0 := N ; V0 < N ; V0 ++ {", "call ( )", "}"))
+        }
+        "if block" {
+            code(
+                funcBody = """
+                if cond {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("if V0 {", "call ( )", "}"))
+        }
+        "if with short statement" {
+            code(
+                funcBody = """
+                if v := 1; cond {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(funcBody = listOf("if V0 := N ; V1 {", "call ( )", "}"))
+        }
+        "if-else block" {
+            code(
+                funcBody = """
+                if cond {
+                  call()
+                } else {
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(
+                funcBody = listOf(
+                    "if V0 {",
+                    "call ( )",
+                    "} else {",
+                    "call ( )",
+                    "}"
+                )
+            )
+        }
+        "switch" {
+            code(
+                funcBody = """
+                switch x := 1; x {
+                case 1:
+                  call()
+                default:
+                  call()
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(
+                funcBody = listOf(
+                    "switch V0 := N ; V0 {",
+                    "case N :",
+                    "call ( )",
+                    "default :",
+                    "call ( )",
+                    "}"
+                )
+            )
+        }
+        "return statement" {
+            code(funcBody = "return call()").normalized() shouldBe normStatements(funcBody = "return call ( )")
+        }
+        "defer statement" {
+            code(funcBody = "defer call()").normalized() shouldBe normStatements(funcBody = "defer call ( )")
+        }
+    }
 }
 
 
@@ -91,7 +193,8 @@ private fun normStatements(
 ): List<String> {
     return listOf(
         "func main ( ) {",
-        *funcBody.toTypedArray()
+        *funcBody.toTypedArray(),
+        "}"
     )
 }
 

@@ -16,7 +16,8 @@
   "processConfig": {
 	"splitConfig": {
 	  "splitRules": [
-		"statement"
+		"statement",
+		"exprCaseClause"
 	  ]
 	},
 	"normalizeConfig": {
@@ -31,15 +32,14 @@
 		"IMAGINARY_LIT": "I"
 	  },
 	  "indexedMapping": {
-		"//primaryExpr[not(./following-sibling::*/@tag='arguments')]/operand/operandName/IDENTIFIER": "V",
 		"//declaration/varDecl/varSpec/identifierList/IDENTIFIER": "V",
-		"//shortVarDecl/identifierList/IDENTIFIER": "V"
+		"//shortVarDecl/identifierList/IDENTIFIER": "V",
+		"//primaryExpr[not(./following-sibling::*/@tag='arguments')]/operand/operandName/IDENTIFIER": "V"
 	  },
 	  "ignoreRules": [
 		"packageClause",
 		"importDecl",
-		"R_CURLY",
-		"EOS",
+		"//EOS[not(./text()=';')]",
 		"EOF"
 	  ]
 	}
