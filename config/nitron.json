@@ -13,6 +13,7 @@
 	  "matlab": "lang/matlab.json",
 	  "erlang": "lang/erlang.json",
 	  "csharp-srcml": "lang/csharp-srcml.json",
-	  "golang": "lang/golang.json"
+	  "golang": "lang/golang.json",
+	  "typescript": "lang/typescript.json"
 	}
 }
