@@ -59,6 +59,7 @@ fun main() = testReportAsMarkDown {
         "member access" {
             code(funcBody = "v.m = f()").normalized() shouldBe normStatements(funcBody = "V0 . m = f ( )")
             code(funcBody = "f(v.name.length)").normalized() shouldBe normStatements(funcBody = "f ( V0 . name . length )")
+            code(funcBody = "v.f()").normalized() shouldBe normStatements(funcBody = "V0 . f ( )")
         }
     }
     "split statements" - {
@@ -194,6 +195,31 @@ fun main() = testReportAsMarkDown {
         }
         "return statement" {
             code(funcBody = "return call();").normalized() shouldBe normStatements(funcBody = "return call ( ) ;")
+        }
+        "try-catch block" {
+            code(
+                funcBody = """
+                try {
+                  call();
+                } catch (e) {
+                  call();
+                } finally {
+                  call();
+                }
+            """.trimIndent()
+            ).normalized() shouldBe normStatements(
+                funcBody = listOf(
+                    "try {",
+                    "call ( ) ;",
+                    "}",
+                    "catch ( V0 ) {",
+                    "call ( ) ;",
+                    "}",
+                    "finally {",
+                    "call ( ) ;",
+                    "}"
+                )
+            )
         }
     }
     "data" - {

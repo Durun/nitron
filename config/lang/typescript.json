@@ -16,7 +16,9 @@
     "splitConfig": {
       "splitRules": [
         "statement",
-        "caseClause"
+        "caseClause",
+        "catchProduction",
+        "finallyProduction"
       ]
     },
     "normalizeConfig": {
@@ -29,7 +31,8 @@
         "//variableDeclaration/identifierOrKeyWord[not(./following-sibling::*/*[1]/@tag='OpenParen')]/Identifier": "V",
         "//singleExpression[not(./following-sibling::*/@tag='arguments')]/identifierName[not(./preceding-sibling::*/@tag='Dot')]/Identifier": "V",
         "//parameterList/parameter/*/identifierOrPattern/identifierName/Identifier": "V",
-        "//arrowFunctionParameters/formalParameterList/formalParameterArg/identifierOrKeyWord/Identifier": "V"
+        "//arrowFunctionParameters/formalParameterList/formalParameterArg/identifierOrKeyWord/Identifier": "V",
+        "//catchProduction/Identifier": "V"
       },
       "ignoreRules": [
         "importStatement",
