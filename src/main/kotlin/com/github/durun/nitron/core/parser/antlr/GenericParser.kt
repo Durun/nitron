@@ -9,8 +9,8 @@ import org.antlr.v4.tool.ast.GrammarRootAST
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.jdt.core.dom.ASTParser
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.CompilationUnit
-import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import org.snt.inmemantlr.comp.CunitProvider
 import org.snt.inmemantlr.comp.DefaultCompilerOptionsProvider
@@ -229,6 +229,6 @@ private fun extractClassName(src: String): String {
     } catch (e: Exception) {
         throw Exception("Internal error: ${e.message}", e)
     }
-    val cls = (unit.types().firstOrNull() as? TypeDeclaration) ?: throw Exception("Utility java file has no classes.")
+    val cls = (unit.types().firstOrNull() as? AbstractTypeDeclaration) ?: throw Exception("Utility java file has no classes.")
     return cls.name.toString()
 }
