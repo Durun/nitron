@@ -1,19 +1,19 @@
 {
-    "langConfigFiles": {
-	  "java-jdt": "lang/java-jdt.json",
-	  "java": "lang/java.json",
-	  "kotlin": "lang/kotlin.json",
-	  "python": "lang/python.json",
-	  "c-srcml": "lang/c-srcml.json",
-	  "cpp": "lang/cpp.json",
-	  "cpp-srcml": "lang/cpp-srcml.json",
-	  "r": "lang/r.json",
-	  "javascript": "lang/javascript.json",
-	  "swift": "lang/swift3.json",
-	  "matlab": "lang/matlab.json",
-	  "erlang": "lang/erlang.json",
-	  "csharp-srcml": "lang/csharp-srcml.json",
-	  "golang": "lang/golang.json",
-	  "typescript": "lang/typescript.json"
-	}
+  "langConfigFiles": {
+    "java-jdt": "lang/java-jdt.json",
+    "java": "lang/java.json",
+    "kotlin": "lang/kotlin.json",
+    "python3": "lang/python3.json",
+    "c-srcml": "lang/c-srcml.json",
+    "cpp": "lang/cpp.json",
+    "cpp-srcml": "lang/cpp-srcml.json",
+    "r": "lang/r.json",
+    "javascript": "lang/javascript.json",
+    "swift": "lang/swift3.json",
+    "matlab": "lang/matlab.json",
+    "erlang": "lang/erlang.json",
+    "csharp-srcml": "lang/csharp-srcml.json",
+    "golang": "lang/golang.json",
+    "typescript": "lang/typescript.json"
+  }
 }

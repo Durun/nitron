@@ -13,23 +13,20 @@
 	},
 	"processConfig": {
 		"splitConfig": {
-			"splitRules": ["stmt"]
+			"splitRules": [
+			]
 		},
 		"normalizeConfig": {
 			"mapping": {
 				"STRING": "\"S\"",
 				"NUMBER": "N",
-				"INDENT": "INDENT",
-				"DEDENT": "DEDENT"
+				"INDENT": "{",
+				"DEDENT": "}"
 			},
 			"indexedMapping": {
 				"atom/NAME": "$V"
 			},
 			"ignoreRules": [
-				"import_stmt",
-				"pass_stmt",
-				"NEWLINE",
-				"EOF"
 			]
 		}
 	}
