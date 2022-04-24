@@ -16,40 +16,40 @@ private val processor = CodeProcessor(config)
 fun main() = testReportAsMarkDown {
     "normalize literals" - {
         "string" {
-            code(funcBody = """call("hello");""").normalize() shouldBe normStatements(funcBody = """call ( "S" ) ;""")
+            code(funcBody = """call("hello");""").normalized() shouldBe normStatements(funcBody = """call ( "S" ) ;""")
         }
         "char" {
-            code(funcBody = "call('A');").normalize() shouldBe normStatements(funcBody = "call ( 'C' ) ;")
+            code(funcBody = "call('A');").normalized() shouldBe normStatements(funcBody = "call ( 'C' ) ;")
         }
         "number" {
-            code(funcBody = "call(123);").normalize() shouldBe normStatements(funcBody = "call ( N ) ;")
+            code(funcBody = "call(123);").normalized() shouldBe normStatements(funcBody = "call ( N ) ;")
         }
     }
     "normalize variables" - {
         "assignment" {
-            code(funcBody = "x = f();").normalize() shouldBe normStatements(funcBody = "\$V0 = f () ;")
+            code(funcBody = "x = f();").normalized() shouldBe normStatements(funcBody = "\$V0 = f () ;")
         }
         "variable declaration" {
-            code(funcBody = "int x = f();").normalize() shouldBe normStatements(funcBody = "int \$V0 = f () ;")
-            code(funcBody = "int x, y;").normalize() shouldBe normStatements(funcBody = "int \$V0 , \$V1 ;")
+            code(funcBody = "int x = f();").normalized() shouldBe normStatements(funcBody = "int \$V0 = f () ;")
+            code(funcBody = "int x, y;").normalized() shouldBe normStatements(funcBody = "int \$V0 , \$V1 ;")
         }
         "argument" {
-            code(funcBody = "f(a1);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 ) ;")
+            code(funcBody = "f(a1);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 ) ;")
         }
         "correct variable index" {
-            code(funcBody = "f(a0, a1, a0, a2);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 , \$V1 , \$V0 , \$V2 ) ;")
+            code(funcBody = "f(a0, a1, a0, a2);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 , \$V1 , \$V0 , \$V2 ) ;")
         }
         "expression" {
-            code(funcBody = "f((x+y)*z);").normalize() shouldBe normStatements(funcBody = "f ( ( \$V0 + \$V1 ) * \$V2 ) ;")
-            code(funcBody = "f(x+f());").normalize() shouldBe normStatements(funcBody = "f ( \$V0 + f () ) ;")
+            code(funcBody = "f((x+y)*z);").normalized() shouldBe normStatements(funcBody = "f ( ( \$V0 + \$V1 ) * \$V2 ) ;")
+            code(funcBody = "f(x+f());").normalized() shouldBe normStatements(funcBody = "f ( \$V0 + f () ) ;")
         }
         "member access" {
-            code(funcBody = "f(m.name);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 . name ) ;")
-            code(funcBody = "f(m.name.length);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 . name . length ) ;")
+            code(funcBody = "f(m.name);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 . name ) ;")
+            code(funcBody = "f(m.name.length);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 . name . length ) ;")
         }
         "member pointer access" {
-            code(funcBody = "f(m->name);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 -> name ) ;")
-            code(funcBody = "f(m->name.length);").normalize() shouldBe normStatements(funcBody = "f ( \$V0 -> name . length ) ;")
+            code(funcBody = "f(m->name);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 -> name ) ;")
+            code(funcBody = "f(m->name.length);").normalized() shouldBe normStatements(funcBody = "f ( \$V0 -> name . length ) ;")
         }
     }
     "split statements" - {
@@ -59,7 +59,7 @@ fun main() = testReportAsMarkDown {
                 invoke1();
                 invoke2();
             """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "invoke1 () ;",
                     "invoke2 () ;"
@@ -67,7 +67,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "while statement" {
-            code(funcBody = "while(cond) invoke();").normalize() shouldBe normStatements(
+            code(funcBody = "while(cond) invoke();").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "while ( \$V0 )",
                     "invoke () ;"
@@ -81,7 +81,7 @@ fun main() = testReportAsMarkDown {
                   invoke();
                 }
                 """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "while ( \$V0 ) {",
                     "invoke () ;"
@@ -95,7 +95,7 @@ fun main() = testReportAsMarkDown {
                   invoke();
                 }while(cond);
                 """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "do {",
                     "invoke () ;",
@@ -104,7 +104,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "for statement" {
-            code(funcBody = "for(int i=0; i<5; i++) invoke();").normalize() shouldBe normStatements(
+            code(funcBody = "for(int i=0; i<5; i++) invoke();").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "for ( int \$V0 = N ; \$V0 < N ; \$V0 ++ )",
                     "invoke () ;"
@@ -119,7 +119,7 @@ fun main() = testReportAsMarkDown {
                   continue;
                 }
                 """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "for ( int \$V0 = N ; \$V0 < N ; \$V0 ++ ) {",
                     "invoke () ;",
@@ -128,7 +128,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "if statement" {
-            code(funcBody = "if(cond) invoke();").normalize() shouldBe normStatements(
+            code(funcBody = "if(cond) invoke();").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "if ( \$V0 )",
                     "invoke () ;"
@@ -143,7 +143,7 @@ fun main() = testReportAsMarkDown {
                       invoke2();
                     }
                 """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "if ( \$V0 ) {",
                     "invoke1 () ;",
@@ -152,7 +152,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "if-else statement" {
-            code(funcBody = "if (cond) f1(); else f2();").normalize() shouldBe normStatements(
+            code(funcBody = "if (cond) f1(); else f2();").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "if ( \$V0 )",
                     "f1 () ;",
@@ -162,7 +162,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "if-else block" {
-            code(funcBody = "if (cond) { f1(); } else { f2(); }").normalize() shouldBe normStatements(
+            code(funcBody = "if (cond) { f1(); } else { f2(); }").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "if ( \$V0 ) {",
                     "f1 () ;",
@@ -172,7 +172,7 @@ fun main() = testReportAsMarkDown {
             )
         }
         "else-if statement" {
-            code(funcBody = "if (cond0) f1(); else if (cond1) f2();").normalize() shouldBe normStatements(
+            code(funcBody = "if (cond0) f1(); else if (cond1) f2();").normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "if ( \$V0 )",
                     "f1 () ;",
@@ -190,7 +190,7 @@ fun main() = testReportAsMarkDown {
                       default:
                     }
                 """.trimIndent()
-            ).normalize() shouldBe normStatements(
+            ).normalized() shouldBe normStatements(
                 funcBody = listOf(
                     "switch ( \$V0 ) {",
                     "case N :",
@@ -200,15 +200,15 @@ fun main() = testReportAsMarkDown {
             )
         }
         "return statement" {
-            code(funcBody = "return invoke();").normalize() shouldBe normStatements(funcBody = "return invoke () ;")
+            code(funcBody = "return invoke();").normalized() shouldBe normStatements(funcBody = "return invoke () ;")
         }
     }
     "ignoring" - {
         "include" {
-            "#include <stdio.h>".normalize() shouldBe emptyList()
+            "#include <stdio.h>".normalized() shouldBe emptyList()
         }
         "modifier" {
-            code(global = "const int x = 0;").normalize() shouldBe normStatements(global = "int \$V0 = N ;")
+            code(global = "const int x = 0;").normalized() shouldBe normStatements(global = "int \$V0 = N ;")
         }
     }
 }
@@ -242,7 +242,7 @@ private fun normStatements(
     funcBody: String? = null
 ) = normStatements(listOfNotNull(global), listOfNotNull(funcBody))
 
-private fun String.normalize(): List<String> {
+private fun String.normalized(): List<String> {
     return processor.split(this)
         .mapNotNull { processor.proceess(it) }
         .onEach { println(it.accept(AstPrintVisitor)) }
