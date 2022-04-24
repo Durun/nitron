@@ -14,6 +14,8 @@
 	"processConfig": {
 		"splitConfig": {
 			"splitRules": [
+				"stmt",
+				"suite"
 			]
 		},
 		"normalizeConfig": {
@@ -24,9 +26,17 @@
 				"DEDENT": "}"
 			},
 			"indexedMapping": {
-				"atom/NAME": "$V"
+				"//typedargslist/tfpdef/NAME": "V",
+				"//argument/test[not(./following-sibling::*/@tag='ASSIGN') and not(./ancestor::classdef)]//atom_expr[not(./trailer[1]/*[1]/@tag='OPEN_PAREN')]/atom/NAME": "V",
+				"//dictorsetmaker/test[not(./following-sibling::*/@tag='COLON')]//atom_expr[not(./trailer[1]/*[1]/@tag='OPEN_PAREN')]/atom/NAME": "V",
+				"//atom_expr[not(./trailer[1]/*[1]/@tag='OPEN_PAREN') and not(./ancestor::classdef) and not(./ancestor::funcdef) and not(./ancestor::except_clause) and not(./ancestor::annassign) and not(./ancestor::argument) and not(./ancestor::dictorsetmaker)]/atom/NAME": "V",
+				"//except_clause/NAME": "V",
+				"//varargslist/vfpdef/NAME": "V"
 			},
 			"ignoreRules": [
+				"import_stmt",
+				"NEWLINE",
+				"EOF"
 			]
 		}
 	}
