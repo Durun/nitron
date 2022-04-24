@@ -64,6 +64,10 @@ fun main() = testReportAsMarkDown {
         "floating point" {
             "3.14".normalized() shouldBe listOf("N")
         }
+        "boolean" {
+            "True".normalized() shouldBe listOf("True")
+            "False".normalized() shouldBe listOf("False")
+        }
     }
     "variables" - {
         "assignment" {
