@@ -35,7 +35,7 @@ class GenericParser
 private constructor(
     private val antlr: InmemantlrTool,
     utilityJavaContents: Collection<String>,
-    private val useCached: Boolean = true
+    private val useCached: Boolean
 ) {
     companion object {
         private val LOGGER by logger()
@@ -48,7 +48,8 @@ private constructor(
         fun init(
             grammarContents: Collection<String>,
             utilityJavaContents: Collection<String> = emptySet(),
-            toolCustomizer: Tool.() -> Unit = {}
+            toolCustomizer: Tool.() -> Unit = {},
+            useCached: Boolean = false
         ): GenericParser {
             val tool = InmemantlrTool()
                 .apply(toolCustomizer)
@@ -61,7 +62,7 @@ private constructor(
                     }
                 }
             check(tool.pipelines.isNotEmpty())
-            return GenericParser(tool, utilityJavaContents)
+            return GenericParser(tool, utilityJavaContents, useCached)
         }
 
         /**
@@ -72,9 +73,10 @@ private constructor(
         fun fromFiles(
             grammarFiles: Collection<Path>,
             utilityJavaFiles: Collection<Path> = emptySet(),
-            toolCustomizer: Tool.() -> Unit = {}
+            toolCustomizer: Tool.() -> Unit = {},
+            useCached: Boolean = false
         ): GenericParser =
-            init(grammarFiles.map { it.readText() }, utilityJavaFiles.map { it.readText() }, toolCustomizer)
+            init(grammarFiles.map { it.readText() }, utilityJavaFiles.map { it.readText() }, toolCustomizer, useCached)
     }
 
     private val compilerOptions: DefaultCompilerOptionsProvider = DefaultCompilerOptionsProvider()
