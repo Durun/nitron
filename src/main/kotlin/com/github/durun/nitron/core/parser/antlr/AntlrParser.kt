@@ -53,7 +53,7 @@ private constructor(
         val ast = try {
             tree.accept(buildVisitor)
         } catch (e: Exception) {
-            throw ParsingException("Failed to convert ANTLR tree into nitron tree")
+            throw ParsingException("Failed to convert ANTLR tree into nitron tree", e)
         }
         return ast
     }
