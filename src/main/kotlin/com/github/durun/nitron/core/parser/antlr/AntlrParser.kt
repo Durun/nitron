@@ -15,7 +15,7 @@ private class AntlrParser
 private constructor(
     override val nodeTypes: NodeTypePool,
     private val genericParser: GenericParser,
-    private val buildVisitor: ParseTreeVisitor<AstNode>,
+    private val buildVisitor: ParseTreeVisitor<AstNode?>,
     private val defaultEntryPoint: String
 ) : NitronParser {
     companion object {
@@ -52,6 +52,7 @@ private constructor(
         }
         val ast = try {
             tree.accept(buildVisitor)
+                ?: throw ParsingException("Tree is empty: ${nodeTypes.getRuleType(tree.ruleIndex)}")
         } catch (e: Exception) {
             throw ParsingException("Failed to convert ANTLR tree into nitron tree", e)
         }
