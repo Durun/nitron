@@ -1,0 +1,46 @@
+{
+  "extensions": [
+    ".php"
+  ],
+  "parserConfig": {
+    "type": "antlr",
+    "grammarFiles": [
+      "../grammars/php/PhpParser.g4",
+      "../grammars/php/PhpLexer.g4"
+    ],
+    "utilJavaFiles": [
+      "../grammars/php/Java/PhpLexerBase.java"
+    ],
+    "startRule": "htmlDocument"
+  },
+  "processConfig": {
+    "splitConfig": {
+      "splitRules": [
+        "statement",
+        "classStatement",
+        "switchBlock"
+      ]
+    },
+    "normalizeConfig": {
+      "mapping": {
+        "stringConstant": "\"S\"",
+        "string": "\"S\"",
+        "numericConstant": "N",
+        "Real": "R"
+      },
+      "indexedMapping": {
+        "VarName": "$V"
+      },
+      "ignoreRules": [
+        "//expressionStatement[./expression/constant/qualifiedNamespaceName]",
+        "//namespaceDeclaration/Namespace",
+        "//namespaceDeclaration/namespaceNameList",
+        "//namespaceDeclaration/OpenCurlyBracket",
+        "//namespaceDeclaration/CloseCurlyBracket",
+        "useDeclaration",
+        "memberModifier",
+        "EOF"
+      ]
+    }
+  }
+}
