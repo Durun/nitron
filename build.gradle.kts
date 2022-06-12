@@ -1,5 +1,5 @@
 group = "com.github.durun.nitron"
-version = "v0.17"
+version = "v0.18"
 
 buildscript {
     val kotlinVersion: String by extra("1.6.20")
