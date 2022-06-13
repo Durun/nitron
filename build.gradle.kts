@@ -40,7 +40,7 @@ dependencies {
     // This dependency is used by the application.
     implementation("org.antlr:antlr4:4.9.3")
     implementation("com.github.julianthome:inmemantlr-api:1.9.2")
-    implementation("com.github.ajalt.clikt:clikt:3.4.1")
+    implementation("com.github.ajalt.clikt:clikt:3.5.0")
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
     implementation("org.jetbrains.exposed:exposed:0.17.14")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
