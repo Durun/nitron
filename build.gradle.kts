@@ -38,7 +38,7 @@ dependencies {
     val kotlinVersion: String by project
 
     // This dependency is used by the application.
-    implementation("org.antlr:antlr4:4.9.3")
+    implementation("org.antlr:antlr4:4.12.0")
     implementation("com.github.julianthome:inmemantlr-api:1.9.2")
     implementation("com.github.ajalt.clikt:clikt:3.4.1")
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
